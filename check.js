@@ -112,10 +112,11 @@ function GetAccessToken(access_token_value, shop_domain) {
         return;
       }
       console.log(".env file updated successfully.");
+      console.log("shopname in env file:-", process.env.shopName);
     });
   });
 }
-console.log("shopname in env file:-", process.env.shopName); // Move it here
+ // Move it here
 // console.log(process.env);
 
 // Example usage
