@@ -75,7 +75,6 @@
 
 // console.log(fiftyCharToken);
 
-
 const path = require('path');
 const fs = require('fs');
 require('dotenv').config();
@@ -112,13 +111,12 @@ function GetAccessToken(access_token_value, shop_domain) {
         return;
       }
       console.log(".env file updated successfully.");
-      console.log("shopname in env file:-", process.env.shopName);
     });
   });
 }
- // Move it here
-// console.log(process.env);
+console.log("shopname in env file:-", process.env.shopName);
 
 // Example usage
-GetAccessToken("myAccessToken", "myShopDomain");
+GetAccessToken("myAccessToken", "myShopDomain1");
+
 
