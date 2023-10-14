@@ -65,12 +65,59 @@
 //     console.log(i + ' to ' + concatenatedValue);
 // }
 
-const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-let fiftyCharToken = '';
+// const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+// let fiftyCharToken = '';
 
-for (let i = 0; i < 50; i++) {
-  const randomIndex = Math.floor(Math.random() * characters.length);
-  fiftyCharToken += characters.charAt(randomIndex);
+// for (let i = 0; i < 50; i++) {
+//   const randomIndex = Math.floor(Math.random() * characters.length);
+//   fiftyCharToken += characters.charAt(randomIndex);
+// }
+
+// console.log(fiftyCharToken);
+
+
+const path = require('path');
+const fs = require('fs');
+require('dotenv').config();
+
+function GetAccessToken(access_token_value, shop_domain) {
+  const envFilePath = path.join(__dirname, ".env");
+  const newVariables = {
+    accessToken: access_token_value,
+    shopName: shop_domain
+  };
+
+  fs.readFile(envFilePath, "utf-8", (err, data) => {
+    if (err) {
+      console.error("Error reading .env file:", err);
+      return;
+    }
+
+    const envVariables = {};
+    data.split("\n").forEach((line) => {
+      const [key, value] = line.split("=");
+      if (key && value) {
+        envVariables[key] = value;
+      }
+    });
+
+    const mergedVariables = { ...envVariables, ...newVariables };
+    const updatedEnvContent = Object.keys(mergedVariables)
+      .map((key) => `${key}=${mergedVariables[key]}`)
+      .join("\n");
+
+    fs.writeFile(envFilePath, updatedEnvContent, "utf-8", (err) => {
+      if (err) {
+        console.error("Error writing .env file:", err);
+        return;
+      }
+      console.log(".env file updated successfully.");
+    });
+  });
 }
+console.log("shopname in env file:-", process.env.shopName); // Move it here
+// console.log(process.env);
 
-console.log(fiftyCharToken);
+// Example usage
+GetAccessToken("myAccessToken", "myShopDomain");
+

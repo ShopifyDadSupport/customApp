@@ -133,18 +133,18 @@ app.get("/shopify/callback", (req, res) => {
 });
 
 function GetAccessToken(access_token_value, shop_domain) {
-  console.log("accessToken:", access_token_value,shop_domain);
-
   const envFilePath = path.join(__dirname, ".env");
   const newVariables = {
     accessToken: access_token_value,
-    shopName:shop_domain
+    shopName: shop_domain
   };
+
   fs.readFile(envFilePath, "utf-8", (err, data) => {
     if (err) {
       console.error("Error reading .env file:", err);
       return;
     }
+
     const envVariables = {};
     data.split("\n").forEach((line) => {
       const [key, value] = line.split("=");
@@ -152,10 +152,12 @@ function GetAccessToken(access_token_value, shop_domain) {
         envVariables[key] = value;
       }
     });
+
     const mergedVariables = { ...envVariables, ...newVariables };
     const updatedEnvContent = Object.keys(mergedVariables)
       .map((key) => `${key}=${mergedVariables[key]}`)
       .join("\n");
+
     fs.writeFile(envFilePath, updatedEnvContent, "utf-8", (err) => {
       if (err) {
         console.error("Error writing .env file:", err);
@@ -164,7 +166,6 @@ function GetAccessToken(access_token_value, shop_domain) {
       console.log(".env file updated successfully.");
     });
   });
-  console.log("shopname in env file:-",process.env.shopName);
 }
 
 // var request = require('request');
