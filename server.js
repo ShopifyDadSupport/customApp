@@ -11,7 +11,6 @@ const express = require("express");
 const path = require("path");
 const dotenv = require("dotenv");
 var cron = require("node-cron");
-
 const fs = require("fs");
 const storeOrderId = './storeOrderId';
 const storeOrderId1 = './refreshgetod'
@@ -134,7 +133,7 @@ app.get("/shopify/callback", (req, res) => {
 });
 
 function GetAccessToken(access_token_value, shop_domain) {
-  console.log("accessToken:", access_token_value);
+  console.log("accessToken:", access_token_value,shop_domain);
 
   const envFilePath = path.join(__dirname, ".env");
   const newVariables = {
