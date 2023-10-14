@@ -117,7 +117,7 @@ app.get("/shopify/callback", (req, res) => {
 
           .then((apiResponse) => {
             GetAccessToken(accessToken, shop);
-            console.log("accessToken:", accessToken);
+            console.log("accessToken:", accessToken,process.env.shopName);
             res.redirect("/?shop=" + shop);
           })
           .catch((error) => {
