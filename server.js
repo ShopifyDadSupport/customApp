@@ -164,6 +164,7 @@ function GetAccessToken(access_token_value, shop_domain) {
       console.log(".env file updated successfully.");
     });
   });
+  console.log("shopname in env file:-",process.env.shopName);
 }
 
 // var request = require('request');
