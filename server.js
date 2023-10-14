@@ -138,6 +138,7 @@ function GetAccessToken(access_token_value, shop_domain) {
   const envFilePath = path.join(__dirname, ".env");
   const newVariables = {
     accessToken: access_token_value,
+    shopName:shop_domain
   };
   fs.readFile(envFilePath, "utf-8", (err, data) => {
     if (err) {
