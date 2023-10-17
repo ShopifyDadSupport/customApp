@@ -42,7 +42,7 @@ const apisecret = SHOPIFY_API_SECRET;
 const scopes =
   "read_orders,write_orders,read_products,write_products,read_customers,write_customers,read_shipping,write_shipping ,read_themes,write_themes,read_checkouts,write_checkouts";
 
-const forwardingaddress = "https://4f69-2405-201-6007-91bd-adfc-d34a-a0c0-f891.ngrok-free.app";
+const forwardingaddress = "https://dynamic-auto-shipp-app.onrender.com";
 
 
 app.use(bodyParser.json({ limit: "10mb" }));
