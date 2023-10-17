@@ -23,7 +23,7 @@ const { json } = require("express");
 dotenv.config();
 const bodyParser = require("body-parser");
 const { captureRejectionSymbol } = require("events");
-const { SHOPIFY_API_KEY, SHOPIFY_API_SECRET } = process.env;
+const { SHOPIFY_API_KEY, SHOPIFY_API_SECRET,accessToken,shopName } = process.env;
 const app = express();
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
@@ -117,7 +117,7 @@ app.get("/shopify/callback", (req, res) => {
 
           .then((apiResponse) => {
             GetAccessToken(accessToken, shop);
-            console.log("accessToken:", accessToken,process.env.shopName);
+            console.log("accessToken:", accessToken);
             res.redirect("/?shop=" + shop);
           })
           .catch((error) => {
@@ -177,12 +177,13 @@ function checkScriptTagExistence(existingScriptTags, desiredSrc) {
     return scriptTag.src === desiredSrc;
   });
 }
-
+var shop_url = `https://${process.env.shopName}/admin/api/2023-04/script_tags.json`
+console.log(accessToken)
 var optionsGet = {
   'method': 'GET',
-  'url': 'https://genucel105.myshopify.com/admin/api/2023-04/script_tags.json',
+  'url': shop_url,
   'headers': {
-    'x-shopify-access-token': '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'
+    'x-shopify-access-token': accessToken
   }
 };
 
@@ -194,9 +195,9 @@ request(optionsGet, function (error, response) {
   if (!checkScriptTagExistence(existingScriptTags, desiredSrc)) {
     var optionsPost = {
       'method': 'POST',
-      'url': 'https://genucel105.myshopify.com/admin/api/2023-04/script_tags.json',
+      'url': `https://${process.env.shopName}/admin/api/2023-04/script_tags.json`,
       'headers': {
-        'x-shopify-access-token': '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',
+        'x-shopify-access-token': accessToken,
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
@@ -223,8 +224,8 @@ app.post("/scriptrender/toggle", async (req, res) => {
 
   if (isChecked === true) {
     console.log("working fine.......");
-    const shopifyAccessToken = "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";
-    const shopifyStoreUrl = "https://genucel105.myshopify.com";
+    const shopifyAccessToken = accessToken;
+    const shopifyStoreUrl = `https://${process.env.shopName}`;
     const apiVersion = "2023-01";
     const src = "https://shopify.unimedcrm.com/ChamonixShopifyAuthontication/sealAppScripttag.js";
     const event = "onload";
@@ -657,9 +658,9 @@ function createOrder(orderId) {
   var request = require("request");
   var options = {
     method: "GET",
-    url: `https://genucel105.myshopify.com/admin/api/2022-10/orders/${orderId}.json`,
+    url: `https://${process.env.shopName}/admin/api/2022-10/orders/${orderId}.json`,
     headers: {
-      "x-shopify-access-token": "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",
+      "x-shopify-access-token": accessToken,
     },
   };
   request(options, function (error, response) {
@@ -911,9 +912,10 @@ function createOrder(orderId) {
     const request = require("request-promise");
     var options = {
       method: "POST",
-      url: "https://ecc126651bc4692bf22cdbeafaa10f7b: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@genucel105.myshopify.com/admin/api/2023-07/orders.json",
+      url: `https://${process.env.shopName}/admin/api/2023-07/orders.json`,
       headers: {
         "Content-Type": "application/json",
+        'x-shopify-access-token': accessToken
       },
       body: JSON.stringify({
         order: {
