@@ -75,48 +75,61 @@
 
 // console.log(fiftyCharToken);
 
-const path = require('path');
-const fs = require('fs');
-require('dotenv').config();
+// const path = require('path');
+// const fs = require('fs');
+// require('dotenv').config();
 
-function GetAccessToken(access_token_value, shop_domain) {
-  const envFilePath = path.join(__dirname, ".env");
-  const newVariables = {
-    accessToken: access_token_value,
-    shopName: shop_domain
-  };
+// function GetAccessToken(access_token_value, shop_domain) {
+//   const envFilePath = path.join(__dirname, ".env");
+//   const newVariables = {
+//     accessToken: access_token_value,
+//     shopName: shop_domain
+//   };
 
-  fs.readFile(envFilePath, "utf-8", (err, data) => {
-    if (err) {
-      console.error("Error reading .env file:", err);
-      return;
-    }
+//   fs.readFile(envFilePath, "utf-8", (err, data) => {
+//     if (err) {
+//       console.error("Error reading .env file:", err);
+//       return;
+//     }
 
-    const envVariables = {};
-    data.split("\n").forEach((line) => {
-      const [key, value] = line.split("=");
-      if (key && value) {
-        envVariables[key] = value;
-      }
-    });
+//     const envVariables = {};
+//     data.split("\n").forEach((line) => {
+//       const [key, value] = line.split("=");
+//       if (key && value) {
+//         envVariables[key] = value;
+//       }
+//     });
 
-    const mergedVariables = { ...envVariables, ...newVariables };
-    const updatedEnvContent = Object.keys(mergedVariables)
-      .map((key) => `${key}=${mergedVariables[key]}`)
-      .join("\n");
+//     const mergedVariables = { ...envVariables, ...newVariables };
+//     const updatedEnvContent = Object.keys(mergedVariables)
+//       .map((key) => `${key}=${mergedVariables[key]}`)
+//       .join("\n");
 
-    fs.writeFile(envFilePath, updatedEnvContent, "utf-8", (err) => {
-      if (err) {
-        console.error("Error writing .env file:", err);
-        return;
-      }
-      console.log(".env file updated successfully.");
-    });
-  });
+//     fs.writeFile(envFilePath, updatedEnvContent, "utf-8", (err) => {
+//       if (err) {
+//         console.error("Error writing .env file:", err);
+//         return;
+//       }
+//       console.log(".env file updated successfully.");
+//     });
+//   });
+// }
+// console.log("shopname in env file:-", process.env.shopName);
+
+// // Example usage
+// GetAccessToken("myAccessToken", "myShopDomain1");
+
+
+// Get the URL
+// Get the URL
+var url = "https://chamoixapp.myshopify.com/admin/oauth/authorize?client_id=1f484431ebf7cbe9f1b06963f7357765&scope=read_orders,write_orders,read_products,write_products,read_customers,write_customers,read_shipping,write_shipping,read_themes,write_themes,read_checkouts,write_checkouts&state=169758650438300&redirect_uri=https://dynamic-auto-shipp-app.onrender.com/shopify/callback";
+function getParameter(url, param) {
+  var params = new URLSearchParams(new URL(url).search);
+  return params.get(param);
 }
-console.log("shopname in env file:-", process.env.shopName);
 
-// Example usage
-GetAccessToken("myAccessToken", "myShopDomain1");
+// Get the client_id value
+var clientId = getParameter(url, 'client_id');
 
-
+// Output the value
+console.log(clientId);
