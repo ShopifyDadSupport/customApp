@@ -84,7 +84,9 @@ app.get("/shopify/callback", (req, res) => {
   const clientId = req.query.clientId; // Assuming you pass clientId as a query parameter
 
   console.log("clientId::===", clientId);
-  const { shop, hmac, code, shopState } = req.query;
+  // const { shop, hmac, code, shopState } = req.query;
+  const { hmac, host, shop, timestamp } = req.query;
+
   // const stateCookie = cookie.parse(req.headers.cookie).shopState;
   // if (shopState !== stateCookie) {
   //   return res.status(400).send("request origin cannot be found");
@@ -134,13 +136,16 @@ app.get("/shopify/callback", (req, res) => {
 
             // Get the first part
             const shop__name = parts[0];
-            console.log("djkasssssssssssssssssssssssssssssssssssssssss=:=",accessTokenPayload,shop__name);
-          const redirectURL = `https://admin.shopify.com/store/${shopName}/apps/${clientId}`;
+          // const redirectURL = `https://admin.shopify.com/store/${shopName}/apps/${clientId}`;
 
-          res.writeHead(302, {
-              'Location': redirectURL
-          });
-          res.end();
+          // res.writeHead(302, {
+          //     'Location': redirectURL
+          // });
+          // res.end();
+          const redirect_uri = `${HOST_URL}?hmac=${hmac}&host=${host}&shop=${shop}&timestamp=${timestamp}`;
+          console.log("djkasssssssssssssssssssssssssssssssssssssssss=:=",accessTokenPayload,shop__name,"djksdhjad::-",redirect_uri);
+
+          return res.redirect(redirect_uri);
           })
           .catch((error) => {
             res.status(error.statusCode).send(error.error.error_description);
