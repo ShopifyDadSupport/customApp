@@ -142,10 +142,10 @@ app.get("/shopify/callback", (req, res) => {
           //     'Location': redirectURL
           // });
           // res.end();
-          const redirect_uri = `${HOST_URL}?hmac=${hmac}&host=${host}&shop=${shop}&timestamp=${timestamp}`;
+          const redirect_uri = `https://admin.shopify.com/store/${shopName}/apps/${clientId}?hmac=${hmac}&host=${host}&shop=${shop}&timestamp=${timestamp}`;
           console.log("djkasssssssssssssssssssssssssssssssssssssssss=:=",accessTokenPayload,shop__name,"djksdhjad::-",redirect_uri);
 
-          return res.redirect(redirect_uri);
+           res.redirect(redirect_uri);
           })
           .catch((error) => {
             res.status(error.statusCode).send(error.error.error_description);
