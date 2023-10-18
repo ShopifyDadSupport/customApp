@@ -127,9 +127,16 @@ app.get("/shopify/callback", (req, res) => {
           .then((apiResponse) => {
             GetAccessToken(accessToken, shop);
             console.log("accessToken:", accessToken);
-console.log("djkasssssssssssssssssssssssssssssssssssssssss=:=",accessTokenPayload);
+              const url = shop;
 
-            res.redirect("/?shop=" + shop);
+            // Split the URL by '.'
+            const parts = url.split('.');
+
+            // Get the first part
+            const shop__name = parts[0];
+console.log("djkasssssssssssssssssssssssssssssssssssssssss=:=",accessTokenPayload,shop__name);
+
+           res.redirect(`https://admin.shopify.com/store/${shop__name}/apps/${accessTokenPayload.client_id}`);
           })
           .catch((error) => {
             res.status(error.statusCode).send(error.error.error_description);
