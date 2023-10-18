@@ -144,10 +144,12 @@ app.get("/shopify/callback", async (req, res) => {
 
           console.log("djkasssssssssssssssssssssssssssssssssssssssss=:=",accessTokenPayload,shop__name,"djksdhjad::-",redirect_uri);
         
-          // Redirect first to "/?shop=" + shop
-          res.redirect("/?shop=" + shop);
-          // Delay for a short period (e.g., 1 second) before redirecting to redirect_ur
-          res.redirect(redirect_uri);
+          // // Redirect first to "/?shop=" + shop
+          // res.redirect("/?shop=" + shop);
+          // // Delay for a short period (e.g., 1 second) before redirecting to redirect_ur
+          // res.redirect(redirect_uri);
+          res.writeHead(301, { Location: redirect_uri });
+          res.end();
           })
           .catch((error) => {
             res.status(error.statusCode).send(error.error.error_description);
