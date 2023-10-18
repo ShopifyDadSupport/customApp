@@ -3,7 +3,7 @@ const nonce = require("nonce")();
 const request = require("request-promise");
 const querystring = require("querystring");
 const databaseData = require("./db/demo_db_connection");
-const sendSubscriptionEmail = require("./sendSubscriptionEmail");
+const sendSubscriptionEmail = require('./sendSubscriptionEmail');
 const mysql = require("mysql");
 const axios = require("axios");
 const cookie = require("cookie");
@@ -12,8 +12,8 @@ const path = require("path");
 const dotenv = require("dotenv");
 var cron = require("node-cron");
 const fs = require("fs");
-const storeOrderId = "./storeOrderId";
-const storeOrderId1 = "./refreshgetod";
+const storeOrderId = './storeOrderId';
+const storeOrderId1 = './refreshgetod'
 // const storeOrderId1 = './refreshgetod.json';
 
 // const path = require('path');
@@ -23,8 +23,7 @@ const { json } = require("express");
 dotenv.config();
 const bodyParser = require("body-parser");
 const { captureRejectionSymbol } = require("events");
-const { SHOPIFY_API_KEY, SHOPIFY_API_SECRET, accessToken, shopName } =
-  process.env;
+const { SHOPIFY_API_KEY, SHOPIFY_API_SECRET,accessToken,shopName } = process.env;
 const app = express();
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
@@ -45,10 +44,11 @@ const scopes =
 
 const forwardingaddress = "https://dynamic-auto-shipp-app.onrender.com";
 
+
 app.use(bodyParser.json({ limit: "10mb" }));
 app.use(bodyParser.urlencoded({ limit: "10mb", extended: true }));
 
-var shopify_client_id = [];
+var shopify_client_id=[];
 
 app.get("/shopify", (req, res) => {
   // Shop Name
@@ -72,6 +72,9 @@ app.get("/shopify", (req, res) => {
 
     res.cookie("state", state);
     res.redirect(shopifyURL);
+
+  
+
   } else {
     return res.status(400).send('Missing "Shop Name" parameter!! please add');
   }
@@ -82,15 +85,10 @@ app.get("/shopify/callback", async (req, res) => {
   // const { shop, hmac, code, shopState } = req.query;
   const { hmac, host, shop, code, timestamp } = req.query;
 
-  const stateCookie = req.cookies.shopState; // Access the 'shopState' cookie
-
-  // Assuming 'shopState' is a parameter in the request
-  const shopState = req.query.shopState;
-
-  if (shopState !== stateCookie) {
-    return res.status(400).send("request origin cannot be found");
-  }
-
+  // const stateCookie = cookie.parse(req.headers.cookie).shopState;
+  // if (shopState !== stateCookie) {
+  //   return res.status(400).send("request origin cannot be found");
+  // }
   if (shop && hmac && code) {
     const Map = Object.assign({}, req.query);
     delete Map["hmac"];
@@ -126,55 +124,51 @@ app.get("/shopify/callback", async (req, res) => {
         request
           .get(apiRequestURL, { headers: apiRequestHeaders })
 
-          .then(async (apiResponse) => {
+          .then(async(apiResponse) => {
             GetAccessToken(accessToken, shop);
             console.log("accessToken:", accessToken);
-            res.redirect("/?shop=" + shop);
-            // const redirectURL = `https://admin.shopify.com/store/${shopName}/apps/${clientId}`;
+              const url = shop;
 
-            // res.writeHead(302, {
-            //     'Location': redirectURL
-            // });
-            // res.end();
+            // Split the URL by '.'
+            const parts = url.split('.');
 
-            //
+            // Get the first part
+            const shop__name = parts[0];
+          // const redirectURL = `https://admin.shopify.com/store/${shopName}/apps/${clientId}`;
+
+          // res.writeHead(302, {
+          //     'Location': redirectURL
+          // });
+          // res.end();
+          // const redirect_uri = `https://admin.shopify.com/store/${shop__name}/apps/${accessTokenPayload.client_id}`;
+
+          // console.log("djkasssssssssssssssssssssssssssssssssssssssss=:=",accessTokenPayload,shop__name,"djksdhjad::-",redirect_uri,req.query.shop);
+        
+          // // // Redirect first to "/?shop=" + shop
+          res.redirect("/?shop=" + shop);
+          // // // Delay for a short period (e.g., 1 second) before redirecting to redirect_ur
+          // // res.redirect(redirect_uri);
+          // res.writeHead(301, { Location: redirect_uri });
+          // 
           })
           .catch((error) => {
             res.status(error.statusCode).send(error.error.error_description);
           });
       })
-
       .catch((error) => {
         res.status(error.statusCode).send(error.error.error_description);
       });
-      // const url = shop;
-
-      // // Split the URL by '.'
-      // const parts = url.split(".");
-
-      // // Get the first part
-      // const shop__name = parts[0];
-      // const redirect_uri = `https://admin.shopify.com/store/${shop__name}/apps/${accessTokenPayload.client_id}`;
-
-      // console.log("djkasssssssssssssssssssssssssssssssssssssssss=:=",accessTokenPayload,shop__name,"djksdhjad::-",redirect_uri,req.query.shop);
-
-      // // // Redirect first to "/?shop=" + shop
-      // // res.redirect("/?shop=" + shop);
-      // // // Delay for a short period (e.g., 1 second) before redirecting to redirect_ur
-      // // res.redirect(redirect_uri);
-      // res.writeHead(301, { Location: redirect_uri });
-      // res.end();
-
   } else {
     return res.status(400).send("required parameter missing");
   }
+  // res.end();
 });
 
 function GetAccessToken(access_token_value, shop_domain) {
   const envFilePath = path.join(__dirname, ".env");
   const newVariables = {
     accessToken: access_token_value,
-    shopName: shop_domain,
+    shopName: shop_domain
   };
 
   fs.readFile(envFilePath, "utf-8", (err, data) => {
@@ -215,37 +209,36 @@ function checkScriptTagExistence(existingScriptTags, desiredSrc) {
     return scriptTag.src === desiredSrc;
   });
 }
-var shop_url = `https://${process.env.shopName}/admin/api/2023-04/script_tags.json`;
-console.log(accessToken);
+var shop_url = `https://${process.env.shopName}/admin/api/2023-04/script_tags.json`
+console.log(accessToken)
 var optionsGet = {
-  method: "GET",
-  url: shop_url,
-  headers: {
-    "x-shopify-access-token": accessToken,
-  },
+  'method': 'GET',
+  'url': shop_url,
+  'headers': {
+    'x-shopify-access-token': accessToken
+  }
 };
 
 request(optionsGet, function (error, response) {
   if (error) throw new Error(error);
   var existingScriptTags = JSON.parse(response.body).script_tags;
-  var desiredSrc =
-    "https://shopify.unimedcrm.com/ChamonixShopifyAuthontication/pageScripttag.js";
+  var desiredSrc = 'https://shopify.unimedcrm.com/ChamonixShopifyAuthontication/pageScripttag.js';
 
   if (!checkScriptTagExistence(existingScriptTags, desiredSrc)) {
     var optionsPost = {
-      method: "POST",
-      url: `https://${process.env.shopName}/admin/api/2023-04/script_tags.json`,
-      headers: {
-        "x-shopify-access-token": accessToken,
-        "Content-Type": "application/json",
+      'method': 'POST',
+      'url': `https://${process.env.shopName}/admin/api/2023-04/script_tags.json`,
+      'headers': {
+        'x-shopify-access-token': accessToken,
+        'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        script_tag: {
-          src: desiredSrc,
-          event: "onload",
-          display_scope: "all",
-        },
-      }),
+        "script_tag": {
+          "src": desiredSrc,
+          "event": "onload",
+          "display_scope": "all"
+        }
+      })
     };
 
     request(optionsPost, function (error, response) {
@@ -253,9 +246,9 @@ request(optionsGet, function (error, response) {
       console.log(response.body);
     });
   } else {
-    console.log("Script tag already exists.");
+    console.log('Script tag already exists.');
   }
-});
+})
 app.post("/scriptrender/toggle", async (req, res) => {
   console.log("scriptrender........");
   const isChecked = req.body.isChecked;
@@ -266,8 +259,7 @@ app.post("/scriptrender/toggle", async (req, res) => {
     const shopifyAccessToken = accessToken;
     const shopifyStoreUrl = `https://${process.env.shopName}`;
     const apiVersion = "2023-01";
-    const src =
-      "https://shopify.unimedcrm.com/ChamonixShopifyAuthontication/sealAppScripttag.js";
+    const src = "https://shopify.unimedcrm.com/ChamonixShopifyAuthontication/sealAppScripttag.js";
     const event = "onload";
     const displayScope = "all";
 
@@ -356,8 +348,10 @@ app.post("/scriptrender/toggle", async (req, res) => {
 
     // Example usage
     await checkIfScriptTagExists();
+
   } else {
-    console.log("skjdhsjdhjgdhshggb......");
+
+    console.log("skjdhsjdhjgdhshggb......")
     //   const shopifyAccessToken = "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";
     //   // const shopifyStoreUrl = 'https://genucel105.myshopify.com';
     //   const apiVersion = "2023-01";
@@ -400,13 +394,7 @@ app.post("/scriptrender/toggle", async (req, res) => {
 // var storeAllOrderDate = [];
 app.post("/webhooks/orders/create", (req, res) => {
   console.log("working fine");
-  var firstItemTitle,
-    firstItemPrice,
-    firstItemQuantity,
-    firstItemSKU,
-    firstVariantTitle,
-    first_vendor,
-    firstItemPropertyValue;
+  var firstItemTitle, firstItemPrice, firstItemQuantity, firstItemSKU, firstVariantTitle, first_vendor, firstItemPropertyValue;
 
   try {
     const orderData = req.body;
@@ -567,10 +555,7 @@ app.post("/webhooks/orders/create", (req, res) => {
           const propertyName = property.name;
           const propertyValue = property.value;
           const line_items_price = lineItem.price;
-          console.log(
-            "valueeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
-            line_items_price
-          );
+          console.log("valueeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",line_items_price)
           const numberOnly = parseInt(propertyValue.match(/\d+/)[0], 10);
           var timestamp = orderData.created_at;
           var OrderId = orderData.id;
@@ -605,25 +590,22 @@ app.post("/webhooks/orders/create", (req, res) => {
             if (reshipped_note_attributes_name == "Reshipped order") {
               console.log("this is Reshipped order data");
             } else {
-              const characters =
-                "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-              let fiftyCharToken = "";
-
-              for (let i = 0; i < 50; i++) {
-                const randomIndex = Math.floor(
-                  Math.random() * characters.length
-                );
-                fiftyCharToken += characters.charAt(randomIndex);
-              }
-
-              console.log(fiftyCharToken);
+            const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+            let fiftyCharToken = '';
+            
+            for (let i = 0; i < 50; i++) {
+              const randomIndex = Math.floor(Math.random() * characters.length);
+              fiftyCharToken += characters.charAt(randomIndex);
+            }
+            
+            console.log(fiftyCharToken);
 
               databaseData.getConnection((err, connection) => {
                 if (err) {
-                  console.error("Error connecting to MySQL:", err);
+                  console.error('Error connecting to MySQL:', err);
                   return;
                 }
-
+              
                 const insertQuery = `
                   INSERT INTO subscriptionorder (
                     subscription_order_name,
@@ -647,9 +629,9 @@ app.post("/webhooks/orders/create", (req, res) => {
                     portalToken
                   ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 `;
-
+              
                 const status = "Active";
-
+              
                 connection.query(
                   insertQuery,
                   [
@@ -671,16 +653,16 @@ app.post("/webhooks/orders/create", (req, res) => {
                     shippingAddress_city,
                     shippingAddress_zip,
                     shippingAddress_country,
-                    fiftyCharToken,
+                    fiftyCharToken
                   ],
                   (err, result) => {
                     connection.release(); // Release the connection when done
-
+              
                     if (err) {
                       console.error("Error inserting data:", err);
                       return;
                     }
-
+              
                     console.log("Data inserted successfully!");
                     console.log("Inserted ID:", result.insertId);
                     //  sendSubscriptionEmail.callSealSubscription(Customer_Email,orderId);
@@ -688,6 +670,7 @@ app.post("/webhooks/orders/create", (req, res) => {
                   }
                 );
               });
+              
             }
           }
         });
@@ -811,7 +794,7 @@ function createOrder(orderId) {
       var orderData_total_tax = responseData.order.total_tax;
       var orderData_total_discounts = responseData.order.total_discounts;
       var orderData_total_line_items_price =
-        responseData.order.total_line_items_price;
+      responseData.order.total_line_items_price;
       console.log("Email:", responseData.order.email);
       console.log("Currency:", responseData.order.currency);
       console.log("Financial Status:", responseData.order.financial_status);
@@ -964,7 +947,7 @@ function createOrder(orderId) {
       url: `https://${process.env.shopName}/admin/api/2023-07/orders.json`,
       headers: {
         "Content-Type": "application/json",
-        "x-shopify-access-token": accessToken,
+        'x-shopify-access-token': accessToken
       },
       body: JSON.stringify({
         order: {
@@ -1095,43 +1078,34 @@ function createOrder(orderId) {
             const createOrderDate = updatedDate;
             // const orderId = OrderId;
             databaseData.getConnection((err, connection) => {
-              const updateQuery =
-                "UPDATE subscriptionorder SET create_order_date = ?, Next_Shipment_Date = ? WHERE subscription_order_id = ?";
-
-              databaseData.query(
-                updateQuery,
-                [originalDate, updatedDate, orderId],
-                (err, result) => {
-                  if (err) {
-                    console.error("Error updating data:", err);
-                    return;
-                  }
-
-                  console.log("Data updated successfully!");
-                  console.log("Affected rows:", result.affectedRows);
+              const updateQuery = "UPDATE subscriptionorder SET create_order_date = ?, Next_Shipment_Date = ? WHERE subscription_order_id = ?";
+            
+              databaseData.query(updateQuery, [originalDate, updatedDate, orderId], (err, result) => {
+                if (err) {
+                  console.error("Error updating data:", err);
+                  return;
                 }
-              );
-
-              const insertQuery =
-                "INSERT INTO reshipped_order (subscription_order_id, reshipped_order_id, reshipped_create_date) VALUES (?, ?, ?)";
+            
+                console.log("Data updated successfully!");
+                console.log("Affected rows:", result.affectedRows);
+              });
+            
+              const insertQuery = "INSERT INTO reshipped_order (subscription_order_id, reshipped_order_id, reshipped_create_date) VALUES (?, ?, ?)";
               const subscriptionOrderId = orderId; // Subscription Order ID
               const reshippedOrderIds = reship_OrderId; // Comma-separated list of reshipped_order_ids
               const reshippedCreate_Date = createOrderDate;
-
-              databaseData.query(
-                insertQuery,
-                [subscriptionOrderId, reshippedOrderIds, reshippedCreate_Date],
-                (err, result) => {
-                  if (err) {
-                    console.error("Error inserting data:", err);
-                    return;
-                  }
-
-                  console.log("Data inserted successfully!");
-                  console.log("Inserted ID:", result.insertId);
+            
+              databaseData.query(insertQuery, [subscriptionOrderId, reshippedOrderIds, reshippedCreate_Date], (err, result) => {
+                if (err) {
+                  console.error("Error inserting data:", err);
+                  return;
                 }
-              );
+            
+                console.log("Data inserted successfully!");
+                console.log("Inserted ID:", result.insertId);
+              });
             });
+            
           });
         });
       } else {
@@ -1140,6 +1114,7 @@ function createOrder(orderId) {
     });
 
     // console.log('Recurring Order created:', orderData);
+
   }
 }
 
@@ -1147,10 +1122,10 @@ function createOrder(orderId) {
 app.get("/subscription/order", (req, res) => {
   databaseData.getConnection((err, connection) => {
     const query = 'SELECT * FROM subscriptionorder where Status = "Active"';
-
+    
     databaseData.query(query, (error, results, fields) => {
       connection.release(); // Release the connection when done
-
+  
       if (error) {
         console.error("Error fetching data:", error);
         res.status(500).send("Error fetching data");
@@ -1159,42 +1134,39 @@ app.get("/subscription/order", (req, res) => {
       }
     });
   });
+  
 });
 
 app.post("/subscription/order/:subscriptionPortalToken", (req, res) => {
   const subscriptionPortalToken = req.params.subscriptionPortalToken;
   const cancellationDateTime = req.body.cancellationDateTime;
   const status = "Cancelled";
-  databaseData.getConnection((err, connection) => {
-    const updateQuery =
-      "UPDATE subscriptionorder SET Status = ?, subscription_cancel_date = ? WHERE portalToken = ?";
-
-    databaseData.query(
-      updateQuery,
-      [status, cancellationDateTime, subscriptionPortalToken],
-      (err, result) => {
-        connection.release(); // Release the connection when done
-
-        if (err) {
-          console.error("Error updating data:", err);
-          return;
-        }
-
-        console.log("Data updated successfully!");
-        console.log("Affected rows:", result.affectedRows);
-        res.status(200).json({ message: "cancelled" });
+  databaseData.getConnection((err, connection) => {     
+    const updateQuery = "UPDATE subscriptionorder SET Status = ?, subscription_cancel_date = ? WHERE portalToken = ?";
+    
+    databaseData.query(updateQuery, [status, cancellationDateTime, subscriptionPortalToken], (err, result) => {
+      connection.release(); // Release the connection when done
+  
+      if (err) {
+        console.error("Error updating data:", err);
+        return;
       }
-    );
+  
+      console.log("Data updated successfully!");
+      console.log("Affected rows:", result.affectedRows);
+      res.status(200).json({ message: "cancelled" });
+    });
   });
+  
 });
 
 app.get("/subscription/cancelledorder", (req, res) => {
   databaseData.getConnection((err, connection) => {
     const query = 'SELECT * FROM subscriptionorder where Status = "Cancelled"';
-
+  
     databaseData.query(query, (error, results, fields) => {
       connection.release(); // Release the connection when done
-
+  
       if (error) {
         console.error("Error fetching data:", error);
         res.status(500).send("Error fetching data");
@@ -1203,12 +1175,13 @@ app.get("/subscription/cancelledorder", (req, res) => {
       }
     });
   });
+  
 });
 // Define a global variable to temporarily store the store_name
 // let tempStoreName = '';
 
 // POST route to add interval days
-app.post("/add/addIntervalDays", (req, res) => {
+app.post('/add/addIntervalDays', (req, res) => {
   console.log("working addIntervalDays.........", req.body);
 
   const add_interval_days = req.body.tag;
@@ -1220,72 +1193,58 @@ app.post("/add/addIntervalDays", (req, res) => {
   // Read existing JSON file
   let existingData = [];
   try {
-    const rawData = fs.readFileSync("storeData.json");
+    const rawData = fs.readFileSync('storeData.json');
     existingData = JSON.parse(rawData);
   } catch (error) {
-    console.log("No existing data found.");
+    console.log('No existing data found.');
   }
 
   // Check if the new data is unique based on store_name
-  const isUnique = existingData.every(
-    (item) => item.store_name !== newData.store_name
-  );
+  const isUnique = existingData.every(item => item.store_name !== newData.store_name);
 
   if (isUnique) {
     // Add the new data to the existing array
     existingData.push(newData);
 
     // Write the updated array back to the JSON file
-    fs.writeFile(
-      "storeData.json",
-      JSON.stringify(existingData, null, 2),
-      "utf-8",
-      (err) => {
-        if (err) {
-          console.error("Error writing JSON file:", err);
-        } else {
-          console.log("Data has been added to storeData.json");
-        }
+    fs.writeFile('storeData.json', JSON.stringify(existingData, null, 2), 'utf-8', err => {
+      if (err) {
+        console.error('Error writing JSON file:', err);
+      } else {
+        console.log('Data has been added to storeData.json');
       }
-    );
+    });
   } else {
-    console.log("Data is not unique.");
+    console.log('Data is not unique.');
   }
   // Store the value in the global variable
   databaseData.getConnection((err, connection) => {
-    const insertQuery =
-      "INSERT INTO subscriptionintervaldays (subscription_interval_days, subscription_current_store_name) VALUES (?, ?)";
-
-    databaseData.query(
-      insertQuery,
-      [add_interval_days, store_name],
-      (err, result) => {
-        connection.release(); // Release the connection when done
-
-        if (err) {
-          console.error("Error inserting data:", err);
-          return;
-        }
-
-        console.log("Data inserted successfully!");
-        console.log("Inserted ID:", result.insertId);
+    const insertQuery = "INSERT INTO subscriptionintervaldays (subscription_interval_days, subscription_current_store_name) VALUES (?, ?)";
+  
+    databaseData.query(insertQuery, [add_interval_days, store_name], (err, result) => {
+      connection.release(); // Release the connection when done
+  
+      if (err) {
+        console.error("Error inserting data:", err);
+        return;
       }
-    );
-
+  
+      console.log("Data inserted successfully!");
+      console.log("Inserted ID:", result.insertId);
+    });
+  
     res.status(200).json({ message: add_interval_days, url: store_name });
   });
+  
 });
 
 // GET route to retrieve interval days based on store_name
-app.get("/getadd/addIntervalDays", (req, res) => {
-  const storeDataName = require("./storeData.json");
+app.get('/getadd/addIntervalDays', (req, res) => {
+  const storeDataName = require('./storeData.json');
   const hostDataName = storeDataName[0].store_name;
-  console.log(
-    "asdlhasuoidUODUOASHDUOGDYI;GASDYGASYULDGYUASGYSGDYIGDYI;ASGDYIASDOUSGYIS",
-    storeDataName[0].store_name
-  );
+  console.log("asdlhasuoidUODUOASHDUOGDYI;GASDYGASYULDGYUASGYSGDYIGDYI;ASGDYIASDOUSGYIS", storeDataName[0].store_name)
   // const selectQuery =
-  // "SELECT subscription_interval_days FROM subscriptionintervaldays WHERE subscription_current_store_name = ?";
+    // "SELECT subscription_interval_days FROM subscriptionintervaldays WHERE subscription_current_store_name = ?";
   //   databaseData.query(selectQuery, [hostDataName], (err, results) => {
   //     if (err) {
   //       console.error("Error fetching data:", err);
@@ -1297,27 +1256,26 @@ app.get("/getadd/addIntervalDays", (req, res) => {
   //   });
   // });
   databaseData.getConnection((err, connection) => {
-    const selectQuery =
-      "SELECT subscription_interval_days FROM subscriptionintervaldays";
-
+    const selectQuery = "SELECT subscription_interval_days FROM subscriptionintervaldays";
+  
     databaseData.query(selectQuery, (err, results) => {
       connection.release(); // Release the connection when done
-
+  
       if (err) {
         console.error("Error fetching data:", err);
         res.status(500).json({ error: "Error fetching data" });
         return;
       }
-
-      const intervalDays = results.map(
-        (result) => result.subscription_interval_days
-      );
+  
+      const intervalDays = results.map(result => result.subscription_interval_days);
       res.status(200).json({ subscription_interval_days: intervalDays });
     });
   });
+  
 });
 
-app.post("/remove/addIntervaldays", (req, res) => {
+
+app.post('/remove/addIntervaldays', (req, res) => {
   const remove_interval_days = req.body.tag;
   const remove_store_name = req.body.url;
   // console.log("working on it this rout................", remove_interval_days, remove_store_name);
@@ -1330,29 +1288,24 @@ app.post("/remove/addIntervaldays", (req, res) => {
   //   console.log('Deleted rows:', results.affectedRows);
   //   res.status(200).json({ message: remove_interval_days, url: remove_store_name });
   // });
-  console.log(
-    "working on it this rout................",
-    remove_interval_days,
-    remove_store_name
-  );
+  console.log("working on it this rout................", remove_interval_days, remove_store_name);
   databaseData.getConnection((err, connection) => {
     const selectDeleteQuery = `DELETE FROM subscriptionintervaldays WHERE subscription_interval_days ='${remove_interval_days}'`;
-
+  
     databaseData.query(selectDeleteQuery, (err, results) => {
       connection.release(); // Release the connection when done
-
+  
       if (err) {
-        console.error("Error executing DELETE query:", err);
+        console.error('Error executing DELETE query:', err);
         return;
       }
-
-      console.log("Deleted rows:", results.affectedRows);
-      res
-        .status(200)
-        .json({ message: remove_interval_days, url: remove_store_name });
+  
+      console.log('Deleted rows:', results.affectedRows);
+      res.status(200).json({ message: remove_interval_days, url: remove_store_name });
     });
   });
-});
+  
+})
 app.post("/subscriptionPortal/order/:orderId", (req, res) => {
   const orderId = req.params.orderId;
   const subscriptionPortalToken = req.body.subscriptionPortalToken;
@@ -1360,7 +1313,7 @@ app.post("/subscriptionPortal/order/:orderId", (req, res) => {
     orderIdvalue: subscriptionPortalToken,
   };
 
-  const dataFilePath = path.join(__dirname, "storeOrderId.json");
+  const dataFilePath = path.join(__dirname, 'storeOrderId.json');
 
   fs.writeFile(dataFilePath, JSON.stringify(newData, null, 2), (err) => {
     if (err) {
@@ -1371,33 +1324,37 @@ app.post("/subscriptionPortal/order/:orderId", (req, res) => {
       res.status(200).send("Data saved successfully");
     }
   });
+
 });
 
-app.get("/subscriptionPortal/order", (req, res) => {
-  fs.readFile("storeOrderId.json", "utf8", (err, data) => {
+
+app.get('/subscriptionPortal/order', (req, res) => {
+  fs.readFile('storeOrderId.json', 'utf8', (err, data) => {
     if (err) {
-      console.error("Error reading file:", err);
-      res.status(500).send("Error reading file");
+      console.error('Error reading file:', err);
+      res.status(500).send('Error reading file');
     } else {
       const subscriptionPortalToken = JSON.parse(data).orderIdvalue;
       console.log("subscription order id :- ", subscriptionPortalToken);
       databaseData.getConnection((err, connection) => {
         const query = `SELECT * FROM subscriptionorder WHERE portalToken = '${subscriptionPortalToken}'`;
-
+      
         databaseData.query(query, (error, results) => {
           connection.release(); // Release the connection when done
-
+      
           if (error) {
-            console.error("Error fetching data:", error);
-            res.status(500).send("Error fetching data");
+            console.error('Error fetching data:', error);
+            res.status(500).send('Error fetching data');
           } else {
             res.json(results); // Send fetched data as JSON response
           }
         });
       });
+      
     }
   });
-});
+
+})
 
 app.post("/resendSubscriptionEmail/order/:orderId", (req, res) => {
   const orderId = req.params.orderId;
@@ -1419,22 +1376,22 @@ app.post("/resendSubscriptionEmail/order/:orderId", (req, res) => {
   //     res.status(200).send("Data saved successfully");
   //   }
   // });
-  const nodemailer = require("nodemailer");
+  const nodemailer = require('nodemailer');
   const email = "saddam@priorware.com";
   const transporter = nodemailer.createTransport({
-    service: "Gmail",
+    service: 'Gmail',
     auth: {
-      user: "webdeveloper@unimedint.com",
-      pass: "usadhsdasaoribpl",
-    },
+      user: 'webdeveloper@unimedint.com',
+      pass: 'usadhsdasaoribpl'
+    }
   });
 
   // Define the email options
   const mailOptions = {
-    from: "webdeveloper@unimedint.com",
+    from: 'webdeveloper@unimedint.com',
     to: orderEmail,
-    subject: "Test Email",
-    text: "This is a test email from Node.js",
+    subject: 'Test Email',
+    text: 'This is a test email from Node.js',
     html: `<table style="width:100%;border-spacing:0;border-collapse:collapse">
 <tbody><tr>
   <td style="font-family:-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,&quot;Roboto&quot;,&quot;Oxygen&quot;,&quot;Ubuntu&quot;,&quot;Cantarell&quot;,&quot;Fira Sans&quot;,&quot;Droid Sans&quot;,&quot;Helvetica Neue&quot;,sans-serif;padding-bottom:40px;border-width:0">
@@ -1480,18 +1437,18 @@ app.post("/resendSubscriptionEmail/order/:orderId", (req, res) => {
     e.preventDefault();
     console.log("working fine")
 }</script>
-</table>`,
+</table>`
   };
   // Send the email
   transporter.sendMail(mailOptions, function (error, info) {
     if (error) {
-      console.log("Error occurred:");
+      console.log('Error occurred:');
       console.log(error.message);
     } else {
       // res.send({ message: "Successful... check email!" });
-      console.log("Email sent successfully!");
+      console.log('Email sent successfully!');
       res.send({ message: "Successfull... check email!" });
-      console.log("Message ID: " + info.messageId);
+      console.log('Message ID: ' + info.messageId);
     }
   });
 });
@@ -1508,63 +1465,59 @@ function scheduleDailySynOrder() {
   const timeDifference = targetTime - now;
   setTimeout(() => {
     databaseData.getConnection((err, connection) => {
-      const query =
-        'SELECT Next_Shipment_Date, subscription_order_id FROM subscriptionorder WHERE Status = "Active"';
+      const query = 'SELECT Next_Shipment_Date, subscription_order_id FROM subscriptionorder WHERE Status = "Active"';
       let datesArray;
-
+    
       databaseData.query(query, (error, results) => {
         connection.release(); // Release the connection when done
-
+    
         if (error) {
           console.error("Error executing query:", error);
           return;
         }
-
+    
         datesArray = results.map((row) => {
           const nextShipmentDate = new Date(row.Next_Shipment_Date);
-
+    
           return {
             createOrder: nextShipmentDate.toISOString().slice(0, 10),
             OrderId: row.subscription_order_id,
           };
         });
-
+    
         const currentDate = new Date().toISOString().slice(0, 10);
         let consecutiveMatches = 0;
-
+    
         for (const dateData of datesArray) {
           if (dateData.createOrder === currentDate) {
             consecutiveMatches++;
             createOrder(dateData.OrderId); // Call createOrder with the OrderId
           }
         }
-
+    
         if (consecutiveMatches > 0) {
-          console.log(
-            `Matched date ${consecutiveMatches} time(s) continuously.`
-          );
+          console.log(`Matched date ${consecutiveMatches} time(s) continuously.`);
         } else {
-          console.log(
-            "Current date does not match or the matches are not consecutive."
-          );
+          console.log("Current date does not match or the matches are not consecutive.");
         }
-
+    
         console.log("Formatted Results:", datesArray);
       });
     });
-
+    
     scheduleDailySynOrder();
   }, timeDifference);
 }
 scheduleDailySynOrder();
 
+
 databaseData.getConnection((err, connection) => {
   if (err) {
-    console.error("Error connecting to MySQL:", err);
-    return;
+      console.error('Error connecting to MySQL:', err);
+      return;
   }
-
-  console.log("Connected to MySQL!");
+  
+  console.log('Connected to MySQL!');
 
   // You can now use the 'connection' object to execute queries
 
@@ -1629,6 +1582,7 @@ databaseData.getConnection((err, connection) => {
 //   //   console.log("Row count:", rowCount);
 //   // });
 
+
 //   /*================================================ commemnt local code =========================================== */
 //   // var options = {
 //   //   'method': 'POST',
@@ -1650,105 +1604,91 @@ databaseData.getConnection((err, connection) => {
 //   //   })
 //   // };
 // });
-app.post("/send/portal/data", (req, res) => {
-  console.log(
-    "DATA VALUE ..................................KKKKKKKKKKKKKKKKKKKKKKPPPPPPPPPPPPPPPPPPPPPPPPPPP"
-  );
-  const receivedData = req.body;
-  const next_shippment_formattedDate =
-    receivedData.next_shippment_formattedDate;
-  const portalToken = receivedData.subscription_order_id; //portalToken value only name changed
-  //  console.log("receivedData",receivedData);
-  const selecte_value = receivedData.selecte_value;
-  const data_seal_quantity = receivedData.data_seal_quantity;
-  const data_seal_email = receivedData.data_seal_email;
-  const shipping_first_name = receivedData.shipping_first_name;
-  const shipping_last_name = receivedData.shipping_last_name;
-  const shipping_address1 = receivedData.shipping_address1;
-  const shipping_address2 = receivedData.shipping_address2;
-  const shipping_zip = receivedData.shipping_zip;
-  const shopping_phone = receivedData.shopping_phone;
-  const shipping_company = receivedData.shipping_company;
-  const discount_code = receivedData.discount_code;
-  // console.log('Received data:', portalToken, selecte_value,data_seal_quantity,data_seal_email,shipping_first_name,shipping_last_name,shipping_address1,shipping_address2,shipping_zip,shopping_phone,shipping_company,discount_code);
-  // Process the receivedData here as needed
-  databaseData.getConnection((err, connection) => {
-    if (err) {
-      console.error("Error connecting to MySQL:", err);
-      return;
-    }
-
-    const updateQuery =
-      "UPDATE subscriptionorder SET Next_Shipment_Date = ?, subscription_interval_days = ?, subscription_customer_email = ?, subscription_product_Quantity = ?, subscriptionshipping_address_first_name = ?, subscriptionshipping_shippingAddress_last_name = ?, subscriptionshipping_shippingAddress_address1 = ?, subscriptionshippingAddress_zip = ? WHERE portalToken = ?";
-
-    connection.query(
-      updateQuery,
-      [
-        next_shippment_formattedDate,
-        selecte_value,
-        data_seal_email,
-        data_seal_quantity,
-        shipping_first_name,
-        shipping_last_name,
-        shipping_address1,
-        shipping_zip,
-        portalToken,
-      ],
-      (err, result) => {
-        connection.release(); // Release the connection when done
-
-        if (err) {
-          console.error("Error updating data:", err);
+  app.post('/send/portal/data', (req, res) => {
+console.log("DATA VALUE ..................................KKKKKKKKKKKKKKKKKKKKKKPPPPPPPPPPPPPPPPPPPPPPPPPPP")
+    const receivedData = req.body
+    const next_shippment_formattedDate =  receivedData.next_shippment_formattedDate;
+     const portalToken = receivedData.subscription_order_id;//portalToken value only name changed
+    //  console.log("receivedData",receivedData);
+     const selecte_value = receivedData.selecte_value;
+     const data_seal_quantity = receivedData.data_seal_quantity;
+     const data_seal_email = receivedData.data_seal_email;
+     const shipping_first_name = receivedData.shipping_first_name;
+     const shipping_last_name = receivedData.shipping_last_name;
+     const shipping_address1 = receivedData.shipping_address1;
+     const shipping_address2 = receivedData.shipping_address2;
+     const shipping_zip = receivedData.shipping_zip;
+     const shopping_phone = receivedData.shopping_phone;
+     const shipping_company = receivedData.shipping_company; 
+     const  discount_code = receivedData.discount_code;
+    // console.log('Received data:', portalToken, selecte_value,data_seal_quantity,data_seal_email,shipping_first_name,shipping_last_name,shipping_address1,shipping_address2,shipping_zip,shopping_phone,shipping_company,discount_code);
+    // Process the receivedData here as needed
+    databaseData.getConnection((err, connection) => {
+      if (err) {
+          console.error('Error connecting to MySQL:', err);
           return;
-        }
-
-        console.log("Data updated successfully!");
-        console.log("Affected rows:", result.affectedRows);
       }
-    );
-    // Send a response back to the client
-    res.send("Data received successfully!");
+  
+      const updateQuery =
+          "UPDATE subscriptionorder SET Next_Shipment_Date = ?, subscription_interval_days = ?, subscription_customer_email = ?, subscription_product_Quantity = ?, subscriptionshipping_address_first_name = ?, subscriptionshipping_shippingAddress_last_name = ?, subscriptionshipping_shippingAddress_address1 = ?, subscriptionshippingAddress_zip = ? WHERE portalToken = ?";
+  
+      connection.query(
+          updateQuery,
+          [next_shippment_formattedDate, selecte_value, data_seal_email, data_seal_quantity, shipping_first_name, shipping_last_name, shipping_address1, shipping_zip, portalToken],
+          (err, result) => {
+              connection.release(); // Release the connection when done
+  
+              if (err) {
+                  console.error("Error updating data:", err);
+                  return;
+              }
+  
+              console.log("Data updated successfully!");
+              console.log("Affected rows:", result.affectedRows);
+          }
+      );
+      // Send a response back to the client
+      res.send('Data received successfully!');
   });
   getupdateDetails(portalToken);
 });
-app.post("/userauth", (req, res) => {
-  const { username, password } = req.body;
-  console.log("userName,password", username, password);
-  databaseData.getConnection((err, connection) => {
-    if (err) {
-      return res.status(500).json({ message: "Database connection error" });
-    }
-
-    const query =
-      "SELECT * FROM userAuth WHERE user_name = ? AND user_pass = ?";
-
-    connection.query(query, [username, password], (error, results) => {
-      connection.release(); // Release the connection back to the pool
-
-      if (error) {
-        return res.status(500).json({ message: "Internal server error" });
+  app.post('/userauth', (req, res) => {
+    const { username, password } = req.body;
+    console.log("userName,password", username, password);
+    databaseData.getConnection((err, connection) => {
+      if (err) {
+        return res.status(500).json({ message: 'Database connection error' });
       }
-
-      if (results.length === 0) {
-        return res.status(401).json({ message: "Invalid credentials" });
-      }
-
-      const user = results[0];
-      const token = "generate_your_token_here"; // Replace with actual token generation logic
-
-      res.status(200).json({ token });
+  
+      const query = 'SELECT * FROM userAuth WHERE user_name = ? AND user_pass = ?';
+  
+      connection.query(query, [username, password], (error, results) => {
+        connection.release(); // Release the connection back to the pool
+  
+        if (error) {
+          return res.status(500).json({ message: 'Internal server error' });
+        }
+  
+        if (results.length === 0) {
+          return res.status(401).json({ message: 'Invalid credentials' });
+        }
+  
+        const user = results[0];
+        const token = 'generate_your_token_here'; // Replace with actual token generation logic
+  
+        res.status(200).json({ token });
+      });
     });
   });
-});
-
-app.post("/order/:subscription_order_id", (req, res) => {
-  const orderId = req.params.portalToken;
+  
+  app.post('/order/:subscription_order_id', (req, res) => {
+    const orderId = req.params.portalToken;
   const portalToken = req.body.portalToken;
   const newData = {
     orderIdvalue: portalToken,
   };
 
-  const dataFilePath = path.join(__dirname, "storeOrderId.json");
+  const dataFilePath = path.join(__dirname, 'storeOrderId.json');
 
   fs.writeFile(dataFilePath, JSON.stringify(newData, null, 2), (err) => {
     if (err) {
@@ -1760,55 +1700,58 @@ app.post("/order/:subscription_order_id", (req, res) => {
     }
   });
 
-  // res.json({ receivedParams: { urlParam: subscription_order_id, requestBodyParam: requestBodyID } });
-});
-app.get("/order", (req, res) => {
-  fs.readFile("storeOrderId.json", "utf8", (err, data) => {
-    if (err) {
-      console.error("Error reading file:", err);
-      res.status(500).send("Error reading file");
-    } else {
-      const subscriptionPortalToken = JSON.parse(data).orderIdvalue;
-      console.log("subscription order id :- ", subscriptionPortalToken);
-      databaseData.getConnection((err, connection) => {
-        const query = `SELECT * FROM subscriptionorder WHERE portalToken = '${subscriptionPortalToken}'`;
-
-        databaseData.query(query, (error, results) => {
-          connection.release(); // Release the connection when done
-
-          if (error) {
-            console.error("Error fetching data:", error);
-            res.status(500).send("Error fetching data");
-          } else {
-            res.json(results); // Send fetched data as JSON response
-          }
-        });
-      });
-    }
+    // res.json({ receivedParams: { urlParam: subscription_order_id, requestBodyParam: requestBodyID } });
   });
-});
-
-function getupdateDetails(portalTokenValue) {
-  console.log("sdskjdsadnsdjkh", portalTokenValue);
-  app.get("/subscriptionPortal/orderdetails", (req, res) => {
-    const subscriptionPortalToken = portalTokenValue;
-    console.log("subscription order id :- ", subscriptionPortalToken);
-    databaseData.getConnection((err, connection) => {
-      const query = `SELECT * FROM subscriptionorder WHERE portalToken = '${subscriptionPortalToken}'`;
-
-      databaseData.query(query, (error, results) => {
-        connection.release(); // Release the connection when done
-
-        if (error) {
-          console.error("Error fetching data:", error);
-          res.status(500).send("Error fetching data");
-        } else {
-          res.json(results); // Send fetched data as JSON response
-        }
-      });
+  app.get('/order', (req, res) => {
+    fs.readFile('storeOrderId.json', 'utf8', (err, data) => {
+      if (err) {
+        console.error('Error reading file:', err);
+        res.status(500).send('Error reading file');
+      } else {
+        const subscriptionPortalToken = JSON.parse(data).orderIdvalue;
+        console.log("subscription order id :- ", subscriptionPortalToken);
+        databaseData.getConnection((err, connection) => {
+          const query = `SELECT * FROM subscriptionorder WHERE portalToken = '${subscriptionPortalToken}'`;
+        
+          databaseData.query(query, (error, results) => {
+            connection.release(); // Release the connection when done
+        
+            if (error) {
+              console.error('Error fetching data:', error);
+              res.status(500).send('Error fetching data');
+            } else {
+              res.json(results); // Send fetched data as JSON response
+            }
+          });
+        });
+        
+      }
     });
   });
-}
+
+  function getupdateDetails(portalTokenValue){
+    console.log("sdskjdsadnsdjkh",portalTokenValue)
+    app.get('/subscriptionPortal/orderdetails', (req, res) => {
+    
+          const subscriptionPortalToken = portalTokenValue;
+          console.log("subscription order id :- ", subscriptionPortalToken);
+          databaseData.getConnection((err, connection) => {
+            const query = `SELECT * FROM subscriptionorder WHERE portalToken = '${subscriptionPortalToken}'`;
+          
+            databaseData.query(query, (error, results) => {
+              connection.release(); // Release the connection when done
+          
+              if (error) {
+                console.error('Error fetching data:', error);
+                res.status(500).send('Error fetching data');
+              } else {
+                res.json(results); // Send fetched data as JSON response
+              }
+            });
+          });
+    })
+
+  }
 
 app.listen(7709, () => {
   console.log("running on port 7707");
