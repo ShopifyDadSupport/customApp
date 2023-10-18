@@ -140,7 +140,7 @@ app.get("/shopify/callback", (req, res) => {
           res.writeHead(302, {
               'Location': redirectURL
           });
-          // res.end();
+          res.end();
           })
           .catch((error) => {
             res.status(error.statusCode).send(error.error.error_description);
