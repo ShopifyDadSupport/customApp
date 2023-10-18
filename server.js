@@ -140,10 +140,11 @@ app.get("/shopify/callback", (req, res) => {
           //     'Location': redirectURL
           // });
           // res.end();
-          const redirect_uri = `https://admin.shopify.com/store/${shop__name}/apps/${accessTokenPayload.client_id}`;
-          console.log("djkasssssssssssssssssssssssssssssssssssssssss=:=",accessTokenPayload,shop__name,"djksdhjad::-",redirect_uri);
+          // const redirect_uri = `https://admin.shopify.com/store/${shop__name}/apps/${accessTokenPayload.client_id}`;
+          // console.log("djkasssssssssssssssssssssssssssssssssssssssss=:=",accessTokenPayload,shop__name,"djksdhjad::-",redirect_uri);
 
-           res.redirect(redirect_uri);
+          //  res.redirect(redirect_uri);
+          res.redirect("/?shop=" + shop);
           })
           .catch((error) => {
             res.status(error.statusCode).send(error.error.error_description);
