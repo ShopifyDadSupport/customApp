@@ -123,8 +123,8 @@ app.get("/shopify", (req, res) => {
   }
 });
 
-console.log("djkasssssssssssssssssssssssssssssssssssssssss=:=",process.env.clientId);
 app.get("/shopify/callback", (req, res) => {
+
   const { shop, hmac, code, shopState } = req.query;
   // const stateCookie = cookie.parse(req.headers.cookie).shopState;
   // if (shopState !== stateCookie) {
@@ -168,6 +168,8 @@ app.get("/shopify/callback", (req, res) => {
           .then((apiResponse) => {
             GetAccessToken(accessToken, shop);
             console.log("accessToken:", accessToken);
+console.log("djkasssssssssssssssssssssssssssssssssssssssss=:=",process.env.clientId);
+
             res.redirect("/?shop=" + shop);
           })
           .catch((error) => {
