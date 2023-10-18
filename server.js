@@ -140,7 +140,7 @@ app.get("/shopify/callback", (req, res) => {
           //     'Location': redirectURL
           // });
           // res.end();
-          const redirect_uri = `https://admin.shopify.com/store/${shopName}/apps/${clientId}`;
+          const redirect_uri = `https://admin.shopify.com/store/${shopName}/apps/${accessTokenPayload.client_id}`;
           console.log("djkasssssssssssssssssssssssssssssssssssssssss=:=",accessTokenPayload,shop__name,"djksdhjad::-",redirect_uri);
 
            res.redirect(redirect_uri);
