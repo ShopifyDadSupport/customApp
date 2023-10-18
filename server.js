@@ -80,7 +80,7 @@ app.get("/shopify", (req, res) => {
   }
 });
 
-app.get("/shopify/callback", (req, res) => {
+app.get("/shopify/callback", async (req, res) => {
   const clientId = req.query.clientId; // Assuming you pass clientId as a query parameter
   // const { shop, hmac, code, shopState } = req.query;
   const { hmac, host, shop, code, timestamp } = req.query;
@@ -124,7 +124,7 @@ app.get("/shopify/callback", (req, res) => {
         request
           .get(apiRequestURL, { headers: apiRequestHeaders })
 
-          .then((apiResponse) => {
+          .then(async(apiResponse) => {
             GetAccessToken(accessToken, shop);
             console.log("accessToken:", accessToken);
               const url = shop;
@@ -140,11 +140,18 @@ app.get("/shopify/callback", (req, res) => {
           //     'Location': redirectURL
           // });
           // res.end();
-          // const redirect_uri = `https://admin.shopify.com/store/${shop__name}/apps/${accessTokenPayload.client_id}`;
-          // console.log("djkasssssssssssssssssssssssssssssssssssssssss=:=",accessTokenPayload,shop__name,"djksdhjad::-",redirect_uri);
+          const redirect_uri = `https://admin.shopify.com/store/${shop__name}/apps/${accessTokenPayload.client_id}`;
 
-          //  res.redirect(redirect_uri);
+          console.log("djkasssssssssssssssssssssssssssssssssssssssss=:=",accessTokenPayload,shop__name,"djksdhjad::-",redirect_uri);
+        
+          // Redirect first to "/?shop=" + shop
           res.redirect("/?shop=" + shop);
+        
+          // Delay for a short period (e.g., 1 second) before redirecting to redirect_uri
+          await new Promise(resolve => setTimeout(resolve, 1000));
+        
+          // Redirect to redirect_uri
+          res.redirect(redirect_uri);
           })
           .catch((error) => {
             res.status(error.statusCode).send(error.error.error_description);
