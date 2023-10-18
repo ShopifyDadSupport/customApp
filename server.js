@@ -146,11 +146,7 @@ app.get("/shopify/callback", async (req, res) => {
         
           // Redirect first to "/?shop=" + shop
           res.redirect("/?shop=" + shop);
-        
-          // Delay for a short period (e.g., 1 second) before redirecting to redirect_uri
-          await new Promise(resolve => setTimeout(resolve, 1000));
-        
-          // Redirect to redirect_uri
+          // Delay for a short period (e.g., 1 second) before redirecting to redirect_ur
           res.redirect(redirect_uri);
           })
           .catch((error) => {
