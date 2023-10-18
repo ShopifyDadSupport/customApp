@@ -124,7 +124,8 @@ app.get("/shopify", (req, res) => {
 });
 
 app.get("/shopify/callback", (req, res) => {
-
+  const stateValue = req.cookies.state;
+  console.log(stateValue);
   const { shop, hmac, code, shopState } = req.query;
   // const stateCookie = cookie.parse(req.headers.cookie).shopState;
   // if (shopState !== stateCookie) {
