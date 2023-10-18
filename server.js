@@ -84,14 +84,46 @@ app.get("/shopify", (req, res) => {
     // Output the value
     console.log("clientId::===",clientId);
 
-    shopify_client_id.push(clientId);
+    // shopify_client_id.push(clientId);
+    const envFilePath = path.join(__dirname, ".env");
+    const newVariables = {
+      clientId: clientId,
+    };
+  
+    fs.readFile(envFilePath, "utf-8", (err, data) => {
+      if (err) {
+        console.error("Error reading .env file:", err);
+        return;
+      }
+  
+      const envVariables = {};
+      data.split("\n").forEach((line) => {
+        const [key, value] = line.split("=");
+        if (key && value) {
+          envVariables[key] = value;
+        }
+      });
+  
+      const mergedVariables = { ...envVariables, ...newVariables };
+      const updatedEnvContent = Object.keys(mergedVariables)
+        .map((key) => `${key}=${mergedVariables[key]}`)
+        .join("\n");
+  
+      fs.writeFile(envFilePath, updatedEnvContent, "utf-8", (err) => {
+        if (err) {
+          console.error("Error writing .env file:", err);
+          return;
+        }
+        console.log(".env file updated successfully.");
+      });
+    });
 
   } else {
     return res.status(400).send('Missing "Shop Name" parameter!! please add');
   }
 });
 
-console.log("djkasssssssssssssssssssssssssssssssssssssssss=:=",shopify_client_id);
+console.log("djkasssssssssssssssssssssssssssssssssssssssss=:=",process.env.clientId);
 app.get("/shopify/callback", (req, res) => {
   const { shop, hmac, code, shopState } = req.query;
   // const stateCookie = cookie.parse(req.headers.cookie).shopState;
