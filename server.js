@@ -124,13 +124,7 @@ app.get("/shopify/callback", async (req, res) => {
           .then(async (apiResponse) => {
             GetAccessToken(accessToken, shop);
             console.log("accessToken:", accessToken);
-            const url = shop;
-
-            // Split the URL by '.'
-            const parts = url.split(".");
-
-            // Get the first part
-            const shop__name = parts[0];
+    
             // const redirectURL = `https://admin.shopify.com/store/${shopName}/apps/${clientId}`;
 
             // res.writeHead(302, {
@@ -148,6 +142,13 @@ app.get("/shopify/callback", async (req, res) => {
       .catch((error) => {
         res.status(error.statusCode).send(error.error.error_description);
       });
+      const url = shop;
+
+      // Split the URL by '.'
+      const parts = url.split(".");
+
+      // Get the first part
+      const shop__name = parts[0];
       const redirect_uri = `https://admin.shopify.com/store/${shop__name}/apps/${accessTokenPayload.client_id}`;
 
       console.log("djkasssssssssssssssssssssssssssssssssssssssss=:=",accessTokenPayload,shop__name,"djksdhjad::-",redirect_uri,req.query.shop);
