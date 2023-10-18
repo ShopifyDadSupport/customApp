@@ -48,6 +48,8 @@ const forwardingaddress = "https://dynamic-auto-shipp-app.onrender.com";
 app.use(bodyParser.json({ limit: "10mb" }));
 app.use(bodyParser.urlencoded({ limit: "10mb", extended: true }));
 
+var shopify_client_id=[];
+
 app.get("/shopify", (req, res) => {
   // Shop Name
   const shop = req.query.shop;
@@ -82,10 +84,14 @@ app.get("/shopify", (req, res) => {
     // Output the value
     console.log("clientId::===",clientId);
 
+    shopify_client_id.push(clientId);
+
   } else {
     return res.status(400).send('Missing "Shop Name" parameter!! please add');
   }
 });
+
+console.log("djkasssssssssssssssssssssssssssssssssssssssss=:=",shopify_client_id);
 app.get("/shopify/callback", (req, res) => {
   const { shop, hmac, code, shopState } = req.query;
   // const stateCookie = cookie.parse(req.headers.cookie).shopState;
