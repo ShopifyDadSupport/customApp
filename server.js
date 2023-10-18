@@ -82,8 +82,6 @@ app.get("/shopify", (req, res) => {
 
 app.get("/shopify/callback", (req, res) => {
   const clientId = req.query.clientId; // Assuming you pass clientId as a query parameter
-
-  console.log("clientId::===", clientId);
   // const { shop, hmac, code, shopState } = req.query;
   const { hmac, host, shop, code, timestamp } = req.query;
 
@@ -142,7 +140,7 @@ app.get("/shopify/callback", (req, res) => {
           //     'Location': redirectURL
           // });
           // res.end();
-          const redirect_uri = `https://admin.shopify.com/store/${shopName}/apps/${clientId}?hmac=${hmac}&host=${host}&shop=${shop}&timestamp=${timestamp}`;
+          const redirect_uri = `https://admin.shopify.com/store/${shopName}/apps/${clientId}`;
           console.log("djkasssssssssssssssssssssssssssssssssssssssss=:=",accessTokenPayload,shop__name,"djksdhjad::-",redirect_uri);
 
            res.redirect(redirect_uri);
