@@ -85,7 +85,7 @@ app.get("/shopify/callback", (req, res) => {
 
   console.log("clientId::===", clientId);
   // const { shop, hmac, code, shopState } = req.query;
-  const { hmac, host, shop, timestamp } = req.query;
+  const { hmac, host, shop, code, timestamp } = req.query;
 
   // const stateCookie = cookie.parse(req.headers.cookie).shopState;
   // if (shopState !== stateCookie) {
