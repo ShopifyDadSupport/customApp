@@ -25,7 +25,7 @@ export default function PaginationApp() {
   
   useEffect(() => {
     // Fetch data from the API
-    fetch("https://auto-shipped.onrender.com/subscription/order")
+    fetch("https://dynamic-auto-shipp-app.onrender.com/subscription/order")
       .then((response) => response.json())
       .then((data) => {
         setData(data);
@@ -86,7 +86,7 @@ export default function PaginationApp() {
 
     // Send a DELETE request to your backend API using Axios
     axios
-      .post(`https://auto-shipped.onrender.com/subscription/order/${subscriptionPortalToken}`, {
+      .post(`https://dynamic-auto-shipp-app.onrender.com/subscription/order/${subscriptionPortalToken}`, {
         cancellationDateTime: date_with_time,
       })
       .then((response) => {

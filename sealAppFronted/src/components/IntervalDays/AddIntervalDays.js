@@ -25,7 +25,7 @@ function TagsInput() {
     setCurrentURL(window.location.hostname);
     localStorage.setItem("tempStoreName", window.location.hostname);
 
-    fetch("https://auto-shipped.onrender.com/getadd/addIntervalDays")
+    fetch("https://dynamic-auto-shipp-app.onrender.com/getadd/addIntervalDays")
       .then((response) => response.json())
       .then((data) => {
         setData(data.subscription_interval_days);
@@ -46,7 +46,7 @@ function TagsInput() {
   const removeTag = (tag, index) => {
     console.log(tag, index);
     axios
-      .post("https://auto-shipped.onrender.com/remove/addIntervaldays", {
+      .post("https://dynamic-auto-shipp-app.onrender.com/remove/addIntervaldays", {
         tag: tag,
         url: currentURL,
       })
@@ -90,7 +90,7 @@ function TagsInput() {
     }
 
     axios
-      .post("https://auto-shipped.onrender.com/add/addIntervalDays", {
+      .post("https://dynamic-auto-shipp-app.onrender.com/add/addIntervalDays", {
         tag: inputValue,
         url: currentURL,
       })
