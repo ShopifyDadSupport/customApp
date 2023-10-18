@@ -149,7 +149,7 @@ app.get("/shopify/callback", async (req, res) => {
           // // Delay for a short period (e.g., 1 second) before redirecting to redirect_ur
           // res.redirect(redirect_uri);
           res.writeHead(301, { Location: redirect_uri });
-          res.end();
+          // 
           })
           .catch((error) => {
             res.status(error.statusCode).send(error.error.error_description);
@@ -161,6 +161,7 @@ app.get("/shopify/callback", async (req, res) => {
   } else {
     return res.status(400).send("required parameter missing");
   }
+  res.end();
 });
 
 function GetAccessToken(access_token_value, shop_domain) {
