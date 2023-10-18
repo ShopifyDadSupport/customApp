@@ -73,16 +73,7 @@ app.get("/shopify", (req, res) => {
     res.cookie("state", state);
     res.redirect(shopifyURL);
 
-    function getParameter(shopifyURL, param) {
-      var params = new URLSearchParams(new URL(shopifyURL).search);
-      return params.get(param);
-    }
-    
-    // Get the client_id value
-    var clientId = getParameter(shopifyURL, 'client_id');
-    
-    // Output the value
-    console.log("clientId::===",clientId);
+  
 
   } else {
     return res.status(400).send('Missing "Shop Name" parameter!! please add');
@@ -136,7 +127,7 @@ app.get("/shopify/callback", (req, res) => {
           .then((apiResponse) => {
             GetAccessToken(accessToken, shop);
             console.log("accessToken:", accessToken);
-console.log("djkasssssssssssssssssssssssssssssssssssssssss=:=",process.env.clientId);
+console.log("djkasssssssssssssssssssssssssssssssssssssssss=:=",accessTokenPayload);
 
             res.redirect("/?shop=" + shop);
           })
