@@ -82,10 +82,15 @@ app.get("/shopify/callback", async (req, res) => {
   // const { shop, hmac, code, shopState } = req.query;
   const { hmac, host, shop, code, timestamp } = req.query;
 
-  // const stateCookie = cookie.parse(req.headers.cookie).shopState;
-  // if (shopState !== stateCookie) {
-  //   return res.status(400).send("request origin cannot be found");
-  // }
+  const stateCookie = req.cookies.shopState; // Access the 'shopState' cookie
+
+  // Assuming 'shopState' is a parameter in the request
+  const shopState = req.query.shopState;
+
+  if (shopState !== stateCookie) {
+    return res.status(400).send("request origin cannot be found");
+  }
+
   if (shop && hmac && code) {
     const Map = Object.assign({}, req.query);
     delete Map["hmac"];
@@ -124,7 +129,7 @@ app.get("/shopify/callback", async (req, res) => {
           .then(async (apiResponse) => {
             GetAccessToken(accessToken, shop);
             console.log("accessToken:", accessToken);
-    
+            res.redirect("/?shop=" + shop);
             // const redirectURL = `https://admin.shopify.com/store/${shopName}/apps/${clientId}`;
 
             // res.writeHead(302, {
@@ -142,23 +147,23 @@ app.get("/shopify/callback", async (req, res) => {
       .catch((error) => {
         res.status(error.statusCode).send(error.error.error_description);
       });
-      const url = shop;
+      // const url = shop;
 
-      // Split the URL by '.'
-      const parts = url.split(".");
+      // // Split the URL by '.'
+      // const parts = url.split(".");
 
-      // Get the first part
-      const shop__name = parts[0];
-      const redirect_uri = `https://admin.shopify.com/store/${shop__name}/apps/${accessTokenPayload.client_id}`;
+      // // Get the first part
+      // const shop__name = parts[0];
+      // const redirect_uri = `https://admin.shopify.com/store/${shop__name}/apps/${accessTokenPayload.client_id}`;
 
-      console.log("djkasssssssssssssssssssssssssssssssssssssssss=:=",accessTokenPayload,shop__name,"djksdhjad::-",redirect_uri,req.query.shop);
+      // console.log("djkasssssssssssssssssssssssssssssssssssssssss=:=",accessTokenPayload,shop__name,"djksdhjad::-",redirect_uri,req.query.shop);
 
-      // // Redirect first to "/?shop=" + shop
-      // res.redirect("/?shop=" + shop);
-      // // Delay for a short period (e.g., 1 second) before redirecting to redirect_ur
-      // res.redirect(redirect_uri);
-      res.writeHead(301, { Location: redirect_uri });
-      res.end();
+      // // // Redirect first to "/?shop=" + shop
+      // // res.redirect("/?shop=" + shop);
+      // // // Delay for a short period (e.g., 1 second) before redirecting to redirect_ur
+      // // res.redirect(redirect_uri);
+      // res.writeHead(301, { Location: redirect_uri });
+      // res.end();
 
   } else {
     return res.status(400).send("required parameter missing");
