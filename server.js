@@ -1549,8 +1549,8 @@ app.post("/webhooks/customers/data_request", (req, res) => {
         VALUES (?, ?, ?, ?, ?);
       `;
     
-      const updateValues = [shop_id, shop_domain, new_email, new_phone, customer_id];
-      const insertValues = [shop_id, shop_domain, customer_id, email, phone];
+      const updateValues = [shop_id, shop_domain, customer_email, customer_phone, customer_id];
+      const insertValues = [shop_id, shop_domain, customer_id, customer_email, customer_phone];
     
       // Attempt to update
       connection.query(updateQuery, updateValues, (updateError, updateResults) => {
@@ -1619,8 +1619,8 @@ app.post("/webhooks/customers/redact", (req, res) => {
         VALUES (?, ?, ?, ?, ?);
       `;
     
-      const updateValues = [shop_id, shop_domain, new_email, new_phone, customer_id];
-      const insertValues = [shop_id, shop_domain, customer_id, email, phone];
+      const updateValues = [shop_id, shop_domain, customer_email, customer_phone, customer_id];
+      const insertValues = [shop_id, shop_domain, customer_id, customer_email, customer_phone];
     
       // Attempt to update
       connection.query(updateQuery, updateValues, (updateError, updateResults) => {
