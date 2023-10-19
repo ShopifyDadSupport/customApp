@@ -1472,7 +1472,7 @@ app.post('/webhooks/customers/data_request', (req, res) => {
   const hmacHeader = req.get('X-Shopify-Hmac-Sha256');
   const webhookPayload = JSON.stringify(req.body);
 
-  const verified = gdpr_data_request(webhookPayload, hmacHeader, process.env.accessToken);
+  const verified = gdpr_data_request(webhookPayload, hmacHeader, process.env.SHOPIFY_API_SECRET);
     console.log("verified webhooks:::::",verified)
   if (verified) {
     const { shop_id, shop_domain, customer } = req.body;
