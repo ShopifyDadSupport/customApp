@@ -1485,7 +1485,7 @@ app.post('/webhooks/customers/data_request', (req, res) => {
     //   order_request_value = JSON.stringify(req.body.orders_requested);
     // }
 
-    console.log("verified webhooks:-",customer_id,customer_email,customer_phone,order_request);
+    console.log("verified webhooks:-",customer_id,customer_email,customer_phone);
     databaseData.getConnection((err, connection) => {
       if (err) {
         console.error(err);
