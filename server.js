@@ -4,7 +4,8 @@ const request = require("request-promise");
 const querystring = require("querystring");
 const databaseData = require("./db/demo_db_connection");
 const sendSubscriptionEmail = require('./sendSubscriptionEmail');
-const gdpr_data_request = require('./gdpr/cust_data_request')
+const gdpr_data_request = require('./gdpr/cust_data_request');
+const cust_data_erasure = require('./gdpr/cust_data_erasure');
 const mysql = require("mysql");
 const axios = require("axios");
 const cookie = require("cookie");
@@ -1481,10 +1482,6 @@ app.post('/webhooks/customers/data_request', (req, res) => {
     const customer_phone = customer.phone || '';
     // const order_request_value = null; // Initialize order_request_value
 
-    // if (req.body.orders_requested && req.body.orders_requested.length > 0) {
-    //   order_request_value = JSON.stringify(req.body.orders_requested);
-    // }
-
     console.log("verified webhooks:-",customer_id,customer_email,customer_phone);
     databaseData.getConnection((err, connection) => {
       if (err) {
@@ -1509,7 +1506,43 @@ app.post('/webhooks/customers/data_request', (req, res) => {
     return res.sendStatus(401);
   }
 });
+app.post('/webhooks/customers/redact', (req, res) => {
+  const hmacHeader = req.get('X-Shopify-Hmac-Sha256');
+  const webhookPayload = JSON.stringify(req.body);
 
+  const verified = cust_data_erasure(webhookPayload, hmacHeader, process.env.SHOPIFY_API_SECRET);
+    console.log("verified webhooks:::::",verified)
+  if (verified) {
+    const { shop_id, shop_domain, customer } = req.body;
+    const customer_id = customer.id;
+    const customer_email = customer.email;
+    const customer_phone = customer.phone || '';
+    // const order_request_value = null; // Initialize order_request_value
+
+    console.log("verified webhooks:-",customer_id,customer_email,customer_phone);
+    databaseData.getConnection((err, connection) => {
+      if (err) {
+        console.error(err);
+        return res.sendStatus(500);
+      }
+    
+      const query = `INSERT INTO gdpr_customer_redact (shop_id, shop_domain, customer_id, email, phone) VALUES (?, ?, ?, ?, ?)`;
+    
+      connection.query(query, [shop_id, shop_domain, customer_id, customer_email, customer_phone], (error, results) => {
+        connection.release(); // Release the connection when you're done with it
+    
+        if (error) {
+          console.error(error);
+          return res.sendStatus(500);
+        }
+        return res.sendStatus(200);
+      });
+    });
+    
+  } else {
+    return res.sendStatus(401);
+  }
+});
 
 function scheduleDailySynOrder() {
   const now = new Date();
