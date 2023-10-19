@@ -1478,7 +1478,7 @@ app.post('/webhooks/customers/data_request', (req, res) => {
     const { shop_id, shop_domain, customer } = req.body;
     const customer_id = customer.id;
     const customer_email = customer.email;
-    const customer_phone = customer.phone;
+    const customer_phone = customer.phone || '';
     // const order_request_value = null; // Initialize order_request_value
 
     // if (req.body.orders_requested && req.body.orders_requested.length > 0) {
