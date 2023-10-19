@@ -1479,7 +1479,7 @@ app.post('/webhooks/customers/data_request', (req, res) => {
     const customer_id = customer.id;
     const customer_email = customer.email;
     const customer_phone = customer.phone;
-    const order_request = req.body.orders_requested;
+    const order_request = req.body.orders_requested || null;
     console.log("verified webhooks:-",customer_id,customer_email,customer_phone,order_request);
     databaseData.getConnection((err, connection) => {
       if (err) {
@@ -1487,15 +1487,9 @@ app.post('/webhooks/customers/data_request', (req, res) => {
         return res.sendStatus(500);
       }
     
-      const query = `
-        INSERT INTO gdpr_data_request 
-        (shop_id, shop_domain, customer_id, email, phone, orders_requested) 
-        VALUES (?, ?, ?, ?, ?, ?)
-      `;
+      const query = `INSERT INTO gdpr_data_request (shop_id, shop_domain, customer_id, email, phone, orders_requested) VALUES (?, ?, ?, ?, ?, ?)`;
     
-      const values = [shop_id, shop_domain, customer_id, customer_email, customer_phone || null, order_request];
-    
-      connection.query(query, values, (error, results) => {
+      connection.query(query, [shop_id, shop_domain, customer_id, customer_email, customer_phone || null, order_request], (error, results) => {
         connection.release(); // Release the connection when you're done with it
     
         if (error) {
