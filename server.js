@@ -44,7 +44,6 @@ const scopes =
 
 const forwardingaddress = "https://dynamic-auto-shipp-app.onrender.com";
 
-
 app.use(bodyParser.json({ limit: "10mb" }));
 app.use(bodyParser.urlencoded({ limit: "10mb", extended: true }));
 
@@ -1453,6 +1452,23 @@ app.post("/resendSubscriptionEmail/order/:orderId", (req, res) => {
     }
   });
 });
+
+
+app.post('/webhooks/customers/data_request', (req, res) => {
+  console.log("working fine...........customer data requedt......")
+  const hmacHeader = req.get('X-Shopify-Hmac-Sha256');
+  const webhookPayload = JSON.stringify(req.body);
+
+  const verified = verifyWebhook(webhookPayload, hmacHeader);
+
+  if (verified) {
+    console.log("sajdbsbnsgyhbh");
+  } else {
+    res.status(401).send('Unauthorized');
+  }
+});
+
+
 function scheduleDailySynOrder() {
   const now = new Date();
   const targetTime = new Date(now);
