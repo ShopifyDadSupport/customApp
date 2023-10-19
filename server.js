@@ -1534,31 +1534,42 @@ app.post("/webhooks/customers/data_request", (req, res) => {
         console.error(err);
         return res.sendStatus(500);
       }
-
-      const query = `INSERT INTO gdpr_data_request (shop_id, shop_domain, customer_id, email, phone)VALUES (?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE shop_id = ?, shop_domain = ?, customer_id = ?, email = ?, phone = ?;`;
-
-      const values = [
-        shop_id,
-        shop_domain,
-        customer_id,
-        customer_email,
-        customer_phone,
-        shop_id,
-        shop_domain,
-        customer_id,
-        customer_email,
-        customer_phone,
-      ];
-
-      connection.query(query, values, (error, results) => {
-        connection.release(); // Release the connection when you're done with it
-
-        if (error) {
-          console.error(error);
-          return res.sendStatus(500);
+    
+      const updateQuery = `
+        UPDATE gdpr_data_request 
+        SET shop_id = ?, 
+            shop_domain = ?, 
+            email = ?, 
+            phone = ?
+        WHERE customer_id = ?; 
+      `;
+    
+      const insertQuery = `
+        INSERT INTO gdpr_data_request (shop_id, shop_domain, customer_id, email, phone) 
+        VALUES (?, ?, ?, ?, ?);
+      `;
+    
+      const updateValues = [shop_id, shop_domain, new_email, new_phone, customer_id];
+      const insertValues = [shop_id, shop_domain, customer_id, email, phone];
+    
+      // Attempt to update
+      connection.query(updateQuery, updateValues, (updateError, updateResults) => {
+        if (updateError) {
+          console.error(updateError);
+          // If update fails, attempt to insert
+          connection.query(insertQuery, insertValues, (insertError, insertResults) => {
+            connection.release(); // Release the connection when you're done with it
+    
+            if (insertError) {
+              console.error(insertError);
+              return res.sendStatus(500);
+            }
+            return res.sendStatus(200);
+          });
+        } else {
+          connection.release(); // Release the connection when you're done with it
+          return res.sendStatus(200);
         }
-
-        return res.sendStatus(200);
       });
     });
   } else {
@@ -1593,31 +1604,42 @@ app.post("/webhooks/customers/redact", (req, res) => {
         console.error(err);
         return res.sendStatus(500);
       }
-
-      const query = `INSERT INTO gdpr_customer_redact (shop_id, shop_domain, customer_id, email, phone)VALUES (?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE shop_id = ?, shop_domain = ?, customer_id = ?, email = ?, phone = ?;`;
-
-      const values = [
-        shop_id,
-        shop_domain,
-        customer_id,
-        customer_email,
-        customer_phone,
-        shop_id,
-        shop_domain,
-        customer_id,
-        customer_email,
-        customer_phone,
-      ];
-
-      connection.query(query, values, (error, results) => {
-        connection.release(); // Release the connection when you're done with it
-
-        if (error) {
-          console.error(error);
-          return res.sendStatus(500);
+    
+      const updateQuery = `
+        UPDATE gdpr_customer_redact 
+        SET shop_id = ?, 
+            shop_domain = ?, 
+            email = ?, 
+            phone = ?
+        WHERE customer_id = ?; 
+      `;
+    
+      const insertQuery = `
+        INSERT INTO gdpr_customer_redact (shop_id, shop_domain, customer_id, email, phone) 
+        VALUES (?, ?, ?, ?, ?);
+      `;
+    
+      const updateValues = [shop_id, shop_domain, new_email, new_phone, customer_id];
+      const insertValues = [shop_id, shop_domain, customer_id, email, phone];
+    
+      // Attempt to update
+      connection.query(updateQuery, updateValues, (updateError, updateResults) => {
+        if (updateError) {
+          console.error(updateError);
+          // If update fails, attempt to insert
+          connection.query(insertQuery, insertValues, (insertError, insertResults) => {
+            connection.release(); // Release the connection when you're done with it
+    
+            if (insertError) {
+              console.error(insertError);
+              return res.sendStatus(500);
+            }
+            return res.sendStatus(200);
+          });
+        } else {
+          connection.release(); // Release the connection when you're done with it
+          return res.sendStatus(200);
         }
-
-        return res.sendStatus(200);
       });
     });
   } else {
@@ -1642,25 +1664,39 @@ app.post("/webhooks/shop/redact", (req, res) => {
         console.error(err);
         return res.sendStatus(500);
       }
-
-      const query = `INSERT INTO gdpr_shop_redact (shop_id, shop_domain )VALUES (?, ?) ON DUPLICATE KEY UPDATE shop_id = ?, shop_domain = ?;`;
-
-      const values = [
-        shop_id,
-        shop_domain,
-        shop_id,
-        shop_domain,
-      ];
-
-      connection.query(query, values, (error, results) => {
-        connection.release(); // Release the connection when you're done with it
-
-        if (error) {
-          console.error(error);
-          return res.sendStatus(500);
+    
+      const updateQuery = `
+        UPDATE gdpr_customer_redact 
+        SET shop_domain = ?, 
+        WHERE shop_id = ?; 
+      `;
+    
+      const insertQuery = `
+        INSERT INTO gdpr_customer_redact (shop_id, shop_domain) 
+        VALUES (?, ?);
+      `;
+    
+      const updateValues = [shop_id, shop_domain];
+      const insertValues = [shop_id, shop_domain];
+    
+      // Attempt to update
+      connection.query(updateQuery, updateValues, (updateError, updateResults) => {
+        if (updateError) {
+          console.error(updateError);
+          // If update fails, attempt to insert
+          connection.query(insertQuery, insertValues, (insertError, insertResults) => {
+            connection.release(); // Release the connection when you're done with it
+    
+            if (insertError) {
+              console.error(insertError);
+              return res.sendStatus(500);
+            }
+            return res.sendStatus(200);
+          });
+        } else {
+          connection.release(); // Release the connection when you're done with it
+          return res.sendStatus(200);
         }
-
-        return res.sendStatus(200);
       });
     });
   } else {
