@@ -1494,7 +1494,7 @@ app.post('/webhooks/customers/data_request', (req, res) => {
     
       const query = `INSERT INTO gdpr_data_request (shop_id, shop_domain, customer_id, email, phone) VALUES (?, ?, ?, ?, ?)`;
     
-      connection.query(query, [shop_id, shop_domain, customer_id, customer_email, customer_phone || null], (error, results) => {
+      connection.query(query, [shop_id, shop_domain, customer_id, customer_email, customer_phone], (error, results) => {
         connection.release(); // Release the connection when you're done with it
     
         if (error) {
