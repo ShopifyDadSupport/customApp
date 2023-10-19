@@ -5,7 +5,7 @@ function verifyWebhook(data, hmacHeader, SHOPIFY_APP_SECRET) {
       .createHmac('sha256', SHOPIFY_APP_SECRET)
       .update(data)
       .digest('base64');
-      console.log("value boolean ::",crypto.timingSafeEqual(Buffer.from(hmacHeader), Buffer.from(calculatedHmac)),"===================",calculatedHmac)
+      console.log("value boolean ::",Buffer.from(hmacHeader),"===================",Buffer.from(calculatedHmac))
     return crypto.timingSafeEqual(Buffer.from(hmacHeader), Buffer.from(calculatedHmac));
   }
 
