@@ -1473,7 +1473,7 @@ app.post('/webhooks/customers/data_request', (req, res) => {
   const webhookPayload = JSON.stringify(req.body);
 
   const verified = gdpr_data_request(webhookPayload, hmacHeader, process.env.accessToken);
-
+    console.log("verified webhooks:::::",verified)
   if (verified) {
     const { shop_id, shop_domain, customer } = req.body;
     const customer_id = customer.id;
