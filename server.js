@@ -4,6 +4,7 @@ const request = require("request-promise");
 const querystring = require("querystring");
 const databaseData = require("./db/demo_db_connection");
 const sendSubscriptionEmail = require('./sendSubscriptionEmail');
+const gdpr_data_request = require('./gdpr/cust_data_request')
 const mysql = require("mysql");
 const axios = require("axios");
 const cookie = require("cookie");
@@ -1454,17 +1455,52 @@ app.post("/resendSubscriptionEmail/order/:orderId", (req, res) => {
 });
 
 
+// app.post('', (req, res) => {
+//   console.log("working fine...........customer data requedt......")
+//   const hmacHeader = req.get('X-Shopify-Hmac-Sha256');
+//   const webhookPayload = JSON.stringify(req.body);
+
+//   const verified = verifyWebhook(webhookPayload, hmacHeader);
+
+//   if (verified) {
+//     console.log("sajdbsbnsgyhbh");
+//   } else {
+//     res.status(401).send('Unauthorized');
+//   }
+// });
 app.post('/webhooks/customers/data_request', (req, res) => {
-  console.log("working fine...........customer data requedt......")
   const hmacHeader = req.get('X-Shopify-Hmac-Sha256');
   const webhookPayload = JSON.stringify(req.body);
 
-  const verified = verifyWebhook(webhookPayload, hmacHeader);
+  const verified = gdpr_data_request(webhookPayload, hmacHeader, process.env.accessToken);
 
   if (verified) {
-    console.log("sajdbsbnsgyhbh");
+    const { shop_id, shop_domain, customer } = req.body;
+    const customer_id = customer.id;
+    const customer_email = customer.email;
+    const customer_phone = customer.phone;
+    const order_request = req.body.orders_requested;
+    databaseData.getConnection((err, connection) => {
+      if (err) {
+        console.error(err);
+        return res.sendStatus(500);
+      }
+    
+      const query = `INSERT INTO gdpr_data_request (shop_id, shop_domain, customer_id, email, phone, orders_requested) VALUES (?, ?, ?, ?, ?, ?)`;
+    
+      connection.query(query, [shop_id, shop_domain, customer_id, customer_email, customer_phone, order_request], (error, results) => {
+        connection.release(); // Release the connection when you're done with it
+    
+        if (error) {
+          console.error(error);
+          return res.sendStatus(500);
+        }
+        return res.sendStatus(200);
+      });
+    });
+    
   } else {
-    res.status(401).send('Unauthorized');
+    return res.sendStatus(401);
   }
 });
 
