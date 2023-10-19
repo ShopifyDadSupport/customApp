@@ -122,14 +122,22 @@
 
 // Get the URL
 // Get the URL
-var url = "https://chamoixapp.myshopify.com/admin/oauth/authorize?client_id=1f484431ebf7cbe9f1b06963f7357765&scope=read_orders,write_orders,read_products,write_products,read_customers,write_customers,read_shipping,write_shipping,read_themes,write_themes,read_checkouts,write_checkouts&state=169758650438300&redirect_uri=https://dynamic-auto-shipp-app.onrender.com/shopify/callback";
-function getParameter(url, param) {
-  var params = new URLSearchParams(new URL(url).search);
-  return params.get(param);
-}
+// var url = "https://chamoixapp.myshopify.com/admin/oauth/authorize?client_id=1f484431ebf7cbe9f1b06963f7357765&scope=read_orders,write_orders,read_products,write_products,read_customers,write_customers,read_shipping,write_shipping,read_themes,write_themes,read_checkouts,write_checkouts&state=169758650438300&redirect_uri=https://dynamic-auto-shipp-app.onrender.com/shopify/callback";
+// function getParameter(url, param) {
+//   var params = new URLSearchParams(new URL(url).search);
+//   return params.get(param);
+// }
 
-// Get the client_id value
-var clientId = getParameter(url, 'client_id');
+// // Get the client_id value
+// var clientId = getParameter(url, 'client_id');
 
-// Output the value
-console.log(clientId);
+// // Output the value
+// console.log(clientId);
+
+const crypto = require('crypto');
+  
+const a = Buffer.alloc("<Buffer 73 4e 39 35 43 67 42 55 44 2f 47 70 46 39 43 38 36 65 72 4e 79 69 66 4e 55 73 67 37 68 78 67 49 36 4e 50 2f 41 6c 71 52 4e 45 55 3d>"); 
+const b = Buffer.alloc("<Buffer 35 71 75 70 36 4e 72 44 68 69 57 62 41 4d 38 6e 4d 78 51 4f 44 6b 34 53 42 42 50 57 6c 53 74 37 43 6f 43 6f 71 34 7a 6c 67 34 4d 3d>"); 
+  
+let res = crypto.timingSafeEqual(a, b); 
+console.log(res);
