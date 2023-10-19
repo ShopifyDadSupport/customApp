@@ -1605,48 +1605,53 @@ app.post("/webhooks/customers/redact", (req, res) => {
       customer_phone
     );
     databaseData.getConnection((err, connection) => {
-      if (err) {
-        console.error(err);
-        return res.sendStatus(500);
-      }
+      const checkExistenceQuery = "SELECT * FROM gdpr_customer_redact WHERE customer_id = ?";
+      
+      databaseData.query(checkExistenceQuery, [customer_id], (err, rows) => {
+        if (err) {
+          console.error("Error checking existence:", err);
+          return;
+        }
     
-      const updateQuery = `
-        UPDATE gdpr_customer_redact 
-        SET shop_id = ?, 
-            shop_domain = ?, 
-            email = ?, 
-            phone = ?
-        WHERE customer_id = ?; 
-      `;
+        if (rows.length > 0) {
+          // Customer_id exists, perform update
+          const updateQuery =
+            "UPDATE gdpr_customer_redact SET shop_id = ?, shop_domain = ?, email = ?, phone = ? WHERE customer_id = ?";
     
-      const insertQuery = `
-        INSERT INTO gdpr_customer_redact (shop_id, shop_domain, customer_id, email, phone) 
-        VALUES (?, ?, ?, ?, ?);
-      `;
+          databaseData.query(
+            updateQuery,
+            [shop_id, shop_domain, customer_email, customer_phone, customer_id],
+            (err, result) => {
+              if (err) {
+                console.error("Error updating data:", err);
+                return;
+              }
     
-      const updateValues = [shop_id, shop_domain, customer_email, customer_phone, customer_id];
-      const insertValues = [shop_id, shop_domain, customer_id, customer_email, customer_phone];
-    
-      // Attempt to update
-      connection.query(updateQuery, updateValues, (updateError, updateResults) => {
-        if (updateError) {
-          console.error(updateError);
-          // If update fails, attempt to insert
-          connection.query(insertQuery, insertValues, (insertError, insertResults) => {
-            connection.release(); // Release the connection when you're done with it
-    
-            if (insertError) {
-              console.error(insertError);
-              return res.sendStatus(500);
+              console.log("Data updated successfully!");
+              console.log("Affected rows:", result.affectedRows);
             }
-            return res.sendStatus(200);
-          });
+          );
         } else {
-          connection.release(); // Release the connection when you're done with it
-          return res.sendStatus(200);
+          // Customer_id does not exist, perform insert
+          const insertQuery =
+            "INSERT INTO gdpr_customer_redact (shop_id, shop_domain, customer_id, email, phone) VALUES (?, ?, ?, ?, ?)";
+          
+          databaseData.query(
+            insertQuery,
+            [shop_id, shop_domain, customer_id, customer_email, customer_phone],
+            (err, result) => {
+              if (err) {
+                console.error("Error inserting data:", err);
+                return;
+              }
+    
+              console.log("Data inserted successfully!");
+              console.log("Inserted ID:", result.insertId);
+            }
+          );
         }
       });
-    });
+    });    
   } else {
     return res.sendStatus(401);
   }
@@ -1665,45 +1670,53 @@ app.post("/webhooks/shop/redact", (req, res) => {
     const { shop_id, shop_domain,} = req.body;
     // const order_request_value = null; // Initialize order_request_value
     databaseData.getConnection((err, connection) => {
-      if (err) {
-        console.error(err);
-        return res.sendStatus(500);
-      }
+      const checkExistenceQuery = "SELECT * FROM gdpr_shop_redact WHERE shop_id = ?";
+      
+      databaseData.query(checkExistenceQuery, [customer_id], (err, rows) => {
+        if (err) {
+          console.error("Error checking existence:", err);
+          return;
+        }
     
-      const updateQuery = `
-        UPDATE gdpr_customer_redact 
-        SET shop_domain = ?, 
-        WHERE shop_id = ?; 
-      `;
+        if (rows.length > 0) {
+          // Customer_id exists, perform update
+          const updateQuery =
+            "UPDATE gdpr_shop_redact SET shop_domain = ? WHERE shop_id = ?";
     
-      const insertQuery = `
-        INSERT INTO gdpr_customer_redact (shop_id, shop_domain) 
-        VALUES (?, ?);
-      `;
+          databaseData.query(
+            updateQuery,
+            [shop_domain, shop_id],
+            (err, result) => {
+              if (err) {
+                console.error("Error updating data:", err);
+                return;
+              }
     
-      const updateValues = [shop_id, shop_domain];
-      const insertValues = [shop_id, shop_domain];
-    
-      // Attempt to update
-      connection.query(updateQuery, updateValues, (updateError, updateResults) => {
-        if (updateError) {
-          console.error(updateError);
-          // If update fails, attempt to insert
-          connection.query(insertQuery, insertValues, (insertError, insertResults) => {
-            connection.release(); // Release the connection when you're done with it
-    
-            if (insertError) {
-              console.error(insertError);
-              return res.sendStatus(500);
+              console.log("Data updated successfully!");
+              console.log("Affected rows:", result.affectedRows);
             }
-            return res.sendStatus(200);
-          });
+          );
         } else {
-          connection.release(); // Release the connection when you're done with it
-          return res.sendStatus(200);
+          // Customer_id does not exist, perform insert
+          const insertQuery =
+            "INSERT INTO gdpr_shop_redact (shop_id, shop_domain) VALUES (?, ?)";
+          
+          databaseData.query(
+            insertQuery,
+            [shop_id, shop_domain],
+            (err, result) => {
+              if (err) {
+                console.error("Error inserting data:", err);
+                return;
+              }
+    
+              console.log("Data inserted successfully!");
+              console.log("Inserted ID:", result.insertId);
+            }
+          );
         }
       });
-    });
+    }); 
   } else {
     return res.sendStatus(401);
   }
