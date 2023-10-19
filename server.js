@@ -1487,9 +1487,15 @@ app.post('/webhooks/customers/data_request', (req, res) => {
         return res.sendStatus(500);
       }
     
-      const query = `INSERT INTO gdpr_data_request (shop_id, shop_domain, customer_id, email, phone, orders_requested) VALUES (?, ?, ?, ?, ?, ?)`;
+      const query = `
+        INSERT INTO gdpr_data_request 
+        (shop_id, shop_domain, customer_id, email, phone, orders_requested) 
+        VALUES (?, ?, ?, ?, ?, ?)
+      `;
     
-      connection.query(query, [shop_id, shop_domain, customer_id, customer_email, customer_phone, order_request], (error, results) => {
+      const values = [shop_id, shop_domain, customer_id, customer_email, customer_phone || null, order_request];
+    
+      connection.query(query, values, (error, results) => {
         connection.release(); // Release the connection when you're done with it
     
         if (error) {
