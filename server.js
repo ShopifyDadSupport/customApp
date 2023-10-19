@@ -6,6 +6,7 @@ const databaseData = require("./db/demo_db_connection");
 const sendSubscriptionEmail = require("./sendSubscriptionEmail");
 const gdpr_data_request = require("./gdpr/cust_data_request");
 const cust_data_erasure = require("./gdpr/cust_data_erasure");
+const gdpr_shop_redact = require('./gdpr/shop_data_erasure');
 const mysql = require("mysql");
 const axios = require("axios");
 const cookie = require("cookie");
@@ -1606,6 +1607,49 @@ app.post("/webhooks/customers/redact", (req, res) => {
         customer_id,
         customer_email,
         customer_phone,
+      ];
+
+      connection.query(query, values, (error, results) => {
+        connection.release(); // Release the connection when you're done with it
+
+        if (error) {
+          console.error(error);
+          return res.sendStatus(500);
+        }
+
+        return res.sendStatus(200);
+      });
+    });
+  } else {
+    return res.sendStatus(401);
+  }
+});
+app.post("/webhooks/shop/redact", (req, res) => {
+  const hmacHeader = req.get("X-Shopify-Hmac-Sha256");
+  const webhookPayload = JSON.stringify(req.body);
+
+  const verified = gdpr_shop_redact(
+    webhookPayload,
+    hmacHeader,
+    process.env.SHOPIFY_API_SECRET
+  );
+  console.log("verified webhooks:::::", verified);
+  if (verified) {
+    const { shop_id, shop_domain,} = req.body;
+    // const order_request_value = null; // Initialize order_request_value
+    databaseData.getConnection((err, connection) => {
+      if (err) {
+        console.error(err);
+        return res.sendStatus(500);
+      }
+
+      const query = `INSERT INTO gdpr_shop_redact (shop_id, shop_domain )VALUES (?, ?) ON DUPLICATE KEY UPDATE shop_id = ?, shop_domain = ?;`;
+
+      const values = [
+        shop_id,
+        shop_domain,
+        shop_id,
+        shop_domain,
       ];
 
       connection.query(query, values, (error, results) => {
