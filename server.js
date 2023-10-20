@@ -6,7 +6,7 @@ const databaseData = require("./db/demo_db_connection");
 const sendSubscriptionEmail = require("./sendSubscriptionEmail");
 const gdpr_data_request = require("./gdpr/cust_data_request");
 const cust_data_erasure = require("./gdpr/cust_data_erasure");
-const gdpr_shop_redact = require('./gdpr/shop_data_erasure');
+const gdpr_shop_redact = require("./gdpr/shop_data_erasure");
 const mysql = require("mysql");
 const axios = require("axios");
 const cookie = require("cookie");
@@ -44,7 +44,7 @@ const apiKey = SHOPIFY_API_KEY;
 const apisecret = SHOPIFY_API_SECRET;
 
 const scopes =
-  "read_orders,write_orders,read_products,write_products,read_customers,write_customers,read_shipping,write_shipping ,read_themes,write_themes,read_checkouts,write_checkouts";
+  "read_orders,write_orders,read_script_tags,write_script_tags,read_products,write_products,read_customers,write_customers,read_shipping,write_shipping ,read_themes,write_themes,read_checkouts,write_checkouts";
 
 const forwardingaddress = "https://dynamic-auto-shipp-app.onrender.com";
 
@@ -171,28 +171,29 @@ function GetAccessToken(access_token_value, shop_domain) {
   const envFilePath = path.join(__dirname, ".env");
 
   databaseData.getConnection((err, connection) => {
-    const checkExistenceQuery = "SELECT * FROM GetAccessTokenWithDomainName WHERE DomainName = ?";
-    
+    const checkExistenceQuery =
+      "SELECT * FROM GetAccessTokenWithDomainName WHERE DomainName = ?";
+
     databaseData.query(checkExistenceQuery, [shop_domain], (err, rows) => {
       if (err) {
         console.error("Error checking existence:", err);
         return;
       }
-  
+
       if (rows.length > 0) {
         // Customer_id exists, perform update
         const updateQuery =
           "UPDATE GetAccessTokenWithDomainName SET AccessToken = ? WHERE  DomainName = ?";
-  
+
         databaseData.query(
           updateQuery,
-          [access_token_value,shop_domain],
+          [access_token_value, shop_domain],
           (err, result) => {
             if (err) {
               console.error("Error updating data:", err);
               return;
             }
-  
+
             console.log("Data updated successfully!");
             console.log("Affected rows:", result.affectedRows);
           }
@@ -201,7 +202,7 @@ function GetAccessToken(access_token_value, shop_domain) {
         // Customer_id does not exist, perform insert
         const insertQuery =
           "INSERT INTO GetAccessTokenWithDomainName (AccessToken, DomainName) VALUES (?, ?)";
-        
+
         databaseData.query(
           insertQuery,
           [access_token_value, shop_domain],
@@ -210,14 +211,14 @@ function GetAccessToken(access_token_value, shop_domain) {
               console.error("Error inserting data:", err);
               return;
             }
-  
+
             console.log("Data inserted successfully!");
             console.log("Inserted ID:", result.insertId);
           }
         );
       }
     });
-  }); 
+  });
   const newVariables = {
     accessToken: access_token_value,
     shopName: shop_domain,
@@ -250,60 +251,70 @@ function GetAccessToken(access_token_value, shop_domain) {
       console.log(".env file updated successfully.");
     });
   });
-  pageScriptTag(access_token_value,shop_domain);
+  pageScriptTag(access_token_value, shop_domain);
 }
+function pageScriptTag(access_token_value, shop_domain) {
+  function checkScriptTagExistence(existingScriptTags, desiredSrc) {
+    return existingScriptTags.some(function (scriptTag) {
+      return scriptTag.src === desiredSrc;
+    });
+  }
 
-// var request = require('request');
+  var shop_url = `https://${shop_domain}/admin/api/2023-04/script_tags.json`;
+  
+  var optionsGet = {
+    method: "GET",
+    url: shop_url,
+    headers: {
+      "x-shopify-access-token": access_token_value,
+    },
+  };
 
-// Check if the script tag already exists
-function pageScriptTag(access_token_value,shop_domain){
-function checkScriptTagExistence(existingScriptTags, desiredSrc) {
-  return existingScriptTags.some(function (scriptTag) {
-    return scriptTag.src === desiredSrc;
+  request(optionsGet, function (error, response) {
+    if (error) {
+      console.error(error);
+      return;
+    }
+
+    try {
+      var existingScriptTags = JSON.parse(response.body).script_tags;
+      var desiredSrc =
+        "https://shopify.unimedcrm.com/ChamonixShopifyAuthontication/pageScripttag.js";
+
+      if (!checkScriptTagExistence(existingScriptTags, desiredSrc)) {
+        var optionsPost = {
+          method: "POST",
+          url: `https://${shop_domain}/admin/api/2023-04/script_tags.json`,
+          headers: {
+            "x-shopify-access-token": access_token_value,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            script_tag: {
+              src: desiredSrc,
+              event: "onload",
+              display_scope: "all",
+            },
+          }),
+        };
+
+        request(optionsPost, function (error, response) {
+          if (error) {
+            console.error(error);
+            return;
+          }
+
+          console.log(response.body);
+        });
+      } else {
+        console.log("Script tag already exists.");
+      }
+    } catch (parseError) {
+      console.error("Error parsing response:", parseError);
+    }
   });
 }
-var shop_url = `https://${shop_domain}/admin/api/2023-04/script_tags.json`;
-console.log(accessToken);
-var optionsGet = {
-  method: "GET",
-  url: shop_url,
-  headers: {
-    "x-shopify-access-token": access_token_value,
-  },
-};
 
-request(optionsGet, function (error, response) {
-  if (error) throw new Error(error);
-  var existingScriptTags = JSON.parse(response.body).script_tags;
-  var desiredSrc =
-    "https://shopify.unimedcrm.com/ChamonixShopifyAuthontication/pageScripttag.js";
-
-  if (!checkScriptTagExistence(existingScriptTags, desiredSrc)) {
-    var optionsPost = {
-      method: "POST",
-      url: `https://${shop_domain}/admin/api/2023-04/script_tags.json`,
-      headers: {
-        "x-shopify-access-token": access_token_value,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        script_tag: {
-          src: desiredSrc,
-          event: "onload",
-          display_scope: "all",
-        },
-      }),
-    };
-
-    request(optionsPost, function (error, response) {
-      if (error) throw new Error(error);
-      console.log(response.body);
-    });
-  } else {
-    console.log("Script tag already exists.");
-  }
-});
-}
 app.post("/scriptrender/toggle", async (req, res) => {
   console.log("scriptrender........");
   const isChecked = req.body.isChecked;
@@ -1581,19 +1592,20 @@ app.post("/webhooks/customers/data_request", (req, res) => {
       customer_phone
     );
     databaseData.getConnection((err, connection) => {
-      const checkExistenceQuery = "SELECT * FROM gdpr_data_request WHERE customer_id = ?";
-      
+      const checkExistenceQuery =
+        "SELECT * FROM gdpr_data_request WHERE customer_id = ?";
+
       databaseData.query(checkExistenceQuery, [customer_id], (err, rows) => {
         if (err) {
           console.error("Error checking existence:", err);
           return;
         }
-    
+
         if (rows.length > 0) {
           // Customer_id exists, perform update
           const updateQuery =
             "UPDATE gdpr_data_request SET shop_id = ?, shop_domain = ?, email = ?, phone = ? WHERE customer_id = ?";
-    
+
           databaseData.query(
             updateQuery,
             [shop_id, shop_domain, customer_email, customer_phone, customer_id],
@@ -1602,7 +1614,7 @@ app.post("/webhooks/customers/data_request", (req, res) => {
                 console.error("Error updating data:", err);
                 return;
               }
-    
+
               console.log("Data updated successfully!");
               console.log("Affected rows:", result.affectedRows);
             }
@@ -1611,7 +1623,7 @@ app.post("/webhooks/customers/data_request", (req, res) => {
           // Customer_id does not exist, perform insert
           const insertQuery =
             "INSERT INTO gdpr_data_request (shop_id, shop_domain, customer_id, email, phone) VALUES (?, ?, ?, ?, ?)";
-          
+
           databaseData.query(
             insertQuery,
             [shop_id, shop_domain, customer_id, customer_email, customer_phone],
@@ -1620,14 +1632,14 @@ app.post("/webhooks/customers/data_request", (req, res) => {
                 console.error("Error inserting data:", err);
                 return;
               }
-    
+
               console.log("Data inserted successfully!");
               console.log("Inserted ID:", result.insertId);
             }
           );
         }
       });
-    });    
+    });
   } else {
     return res.sendStatus(401);
   }
@@ -1656,19 +1668,20 @@ app.post("/webhooks/customers/redact", (req, res) => {
       customer_phone
     );
     databaseData.getConnection((err, connection) => {
-      const checkExistenceQuery = "SELECT * FROM gdpr_customer_redact WHERE customer_id = ?";
-      
+      const checkExistenceQuery =
+        "SELECT * FROM gdpr_customer_redact WHERE customer_id = ?";
+
       databaseData.query(checkExistenceQuery, [customer_id], (err, rows) => {
         if (err) {
           console.error("Error checking existence:", err);
           return;
         }
-    
+
         if (rows.length > 0) {
           // Customer_id exists, perform update
           const updateQuery =
             "UPDATE gdpr_customer_redact SET shop_id = ?, shop_domain = ?, email = ?, phone = ? WHERE customer_id = ?";
-    
+
           databaseData.query(
             updateQuery,
             [shop_id, shop_domain, customer_email, customer_phone, customer_id],
@@ -1677,7 +1690,7 @@ app.post("/webhooks/customers/redact", (req, res) => {
                 console.error("Error updating data:", err);
                 return;
               }
-    
+
               console.log("Data updated successfully!");
               console.log("Affected rows:", result.affectedRows);
             }
@@ -1686,7 +1699,7 @@ app.post("/webhooks/customers/redact", (req, res) => {
           // Customer_id does not exist, perform insert
           const insertQuery =
             "INSERT INTO gdpr_customer_redact (shop_id, shop_domain, customer_id, email, phone) VALUES (?, ?, ?, ?, ?)";
-          
+
           databaseData.query(
             insertQuery,
             [shop_id, shop_domain, customer_id, customer_email, customer_phone],
@@ -1695,14 +1708,14 @@ app.post("/webhooks/customers/redact", (req, res) => {
                 console.error("Error inserting data:", err);
                 return;
               }
-    
+
               console.log("Data inserted successfully!");
               console.log("Inserted ID:", result.insertId);
             }
           );
         }
       });
-    });    
+    });
   } else {
     return res.sendStatus(401);
   }
@@ -1718,22 +1731,23 @@ app.post("/webhooks/shop/redact", (req, res) => {
   );
   console.log("verified webhooks:::::", verified);
   if (verified) {
-    const { shop_id, shop_domain,} = req.body;
+    const { shop_id, shop_domain } = req.body;
     // const order_request_value = null; // Initialize order_request_value
     databaseData.getConnection((err, connection) => {
-      const checkExistenceQuery = "SELECT * FROM gdpr_shop_redact WHERE shop_id = ?";
-      
+      const checkExistenceQuery =
+        "SELECT * FROM gdpr_shop_redact WHERE shop_id = ?";
+
       databaseData.query(checkExistenceQuery, [customer_id], (err, rows) => {
         if (err) {
           console.error("Error checking existence:", err);
           return;
         }
-    
+
         if (rows.length > 0) {
           // Customer_id exists, perform update
           const updateQuery =
             "UPDATE gdpr_shop_redact SET shop_domain = ? WHERE shop_id = ?";
-    
+
           databaseData.query(
             updateQuery,
             [shop_domain, shop_id],
@@ -1742,7 +1756,7 @@ app.post("/webhooks/shop/redact", (req, res) => {
                 console.error("Error updating data:", err);
                 return;
               }
-    
+
               console.log("Data updated successfully!");
               console.log("Affected rows:", result.affectedRows);
             }
@@ -1751,7 +1765,7 @@ app.post("/webhooks/shop/redact", (req, res) => {
           // Customer_id does not exist, perform insert
           const insertQuery =
             "INSERT INTO gdpr_shop_redact (shop_id, shop_domain) VALUES (?, ?)";
-          
+
           databaseData.query(
             insertQuery,
             [shop_id, shop_domain],
@@ -1760,14 +1774,14 @@ app.post("/webhooks/shop/redact", (req, res) => {
                 console.error("Error inserting data:", err);
                 return;
               }
-    
+
               console.log("Data inserted successfully!");
               console.log("Inserted ID:", result.insertId);
             }
           );
         }
       });
-    }); 
+    });
   } else {
     return res.sendStatus(401);
   }
