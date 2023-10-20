@@ -250,26 +250,25 @@ function GetAccessToken(access_token_value, shop_domain) {
       console.log(".env file updated successfully.");
     });
   });
+  pageScriptTag(access_token_value,shop_domain);
 }
 
 // var request = require('request');
 
 // Check if the script tag already exists
-
-if(process.env.accessToken){
-
+function pageScriptTag(access_token_value,shop_domain){
 function checkScriptTagExistence(existingScriptTags, desiredSrc) {
   return existingScriptTags.some(function (scriptTag) {
     return scriptTag.src === desiredSrc;
   });
 }
-var shop_url = `https://${process.env.shopName}/admin/api/2023-04/script_tags.json`;
+var shop_url = `https://${shop_domain}/admin/api/2023-04/script_tags.json`;
 console.log(accessToken);
 var optionsGet = {
   method: "GET",
   url: shop_url,
   headers: {
-    "x-shopify-access-token": accessToken,
+    "x-shopify-access-token": access_token_value,
   },
 };
 
@@ -282,9 +281,9 @@ request(optionsGet, function (error, response) {
   if (!checkScriptTagExistence(existingScriptTags, desiredSrc)) {
     var optionsPost = {
       method: "POST",
-      url: `https://${process.env.shopName}/admin/api/2023-04/script_tags.json`,
+      url: `https://${shop_domain}/admin/api/2023-04/script_tags.json`,
       headers: {
-        "x-shopify-access-token": accessToken,
+        "x-shopify-access-token": access_token_value,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
@@ -304,8 +303,6 @@ request(optionsGet, function (error, response) {
     console.log("Script tag already exists.");
   }
 });
-}else{
-  console.log("AccessToken Empty");
 }
 app.post("/scriptrender/toggle", async (req, res) => {
   console.log("scriptrender........");
@@ -314,8 +311,8 @@ app.post("/scriptrender/toggle", async (req, res) => {
 
   if (isChecked === true) {
     console.log("working fine.......");
-    const shopifyAccessToken = accessToken;
-    const shopifyStoreUrl = `https://${process.env.shopName}`;
+    const shopifyAccessToken = access_token_value;
+    const shopifyStoreUrl = `https://${shop_domain}`;
     const apiVersion = "2023-01";
     const src =
       "https://shopify.unimedcrm.com/ChamonixShopifyAuthontication/sealAppScripttag.js";
