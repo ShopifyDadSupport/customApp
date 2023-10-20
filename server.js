@@ -126,10 +126,11 @@ app.get("/shopify/callback", async (req, res) => {
           .get(apiRequestURL, { headers: apiRequestHeaders })
 
           .then(async (apiResponse) => {
-            GetAccessToken(accessToken, shop);
-            console.log("accessToken:", accessToken);
             shop__name__value.push(shop);
             accessToken__value.push(accessToken);
+
+            GetAccessToken(accessToken, shop);
+            console.log("accessToken value ====> ", accessToken);
             const url = shop;
 
             // Split the URL by '.'
@@ -258,9 +259,8 @@ function GetAccessToken(access_token_value, shop_domain) {
 }
 
 
-function pageScriptTag(access_token_value, shop_domain){
-
-  console.log(";lfjdskhfsjfhsdhfihfkjhdskfhaghfdhjkgsbsh:-",accessToken__value,shop__name__value);
+function pageScriptTag(access_token_value, ){
+console.log(";lfjdskhfsjfhsdhfihfkjhdskfhaghfdhjkgsbsh:-",accessToken__value,shop__name__value,access_token_value,shop_domain);
 function checkScriptTagExistence(existingScriptTags, desiredSrc) {
   return existingScriptTags.some(function (scriptTag) {
     return scriptTag.src === desiredSrc;
