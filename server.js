@@ -26,8 +26,7 @@ const { json } = require("express");
 dotenv.config();
 const bodyParser = require("body-parser");
 const { captureRejectionSymbol } = require("events");
-const { SHOPIFY_API_KEY, SHOPIFY_API_SECRET, accessToken, shopName } =
-  process.env;
+const { SHOPIFY_API_KEY, SHOPIFY_API_SECRET, accessToken, shopName } = process.env;
 const app = express();
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
@@ -52,10 +51,12 @@ app.use(bodyParser.json({ limit: "10mb" }));
 app.use(bodyParser.urlencoded({ limit: "10mb", extended: true }));
 
 var shopify_client_id = [];
-
+var shop__name__value = [];
+var accessToken__value = [];
 app.get("/shopify", (req, res) => {
   // Shop Name
   const shop = req.query.shop;
+  
   if (shop) {
     const state = nonce();
     //  redirect
@@ -127,6 +128,8 @@ app.get("/shopify/callback", async (req, res) => {
           .then(async (apiResponse) => {
             GetAccessToken(accessToken, shop);
             console.log("accessToken:", accessToken);
+            shop__name__value.push(shop);
+            accessToken__value.push(accessToken);
             const url = shop;
 
             // Split the URL by '.'
@@ -168,6 +171,7 @@ app.get("/shopify/callback", async (req, res) => {
 });
 
 function GetAccessToken(access_token_value, shop_domain) {
+
   const envFilePath = path.join(__dirname, ".env");
 
   databaseData.getConnection((err, connection) => {
@@ -250,26 +254,24 @@ function GetAccessToken(access_token_value, shop_domain) {
       console.log(".env file updated successfully.");
     });
   });
+  pageScriptTag(access_token_value, shop_domain);
 }
 
-// var request = require('request');
 
-// Check if the script tag already exists
+function pageScriptTag(access_token_value, shop_domain){
 
-if(process.env.accessToken){
-
+  console.log(";lfjdskhfsjfhsdhfihfkjhdskfhaghfdhjkgsbsh:-",accessToken__value,shop__name__value);
 function checkScriptTagExistence(existingScriptTags, desiredSrc) {
   return existingScriptTags.some(function (scriptTag) {
     return scriptTag.src === desiredSrc;
   });
 }
-var shop_url = `https://${process.env.shopName}/admin/api/2023-04/script_tags.json`;
-console.log(accessToken);
+var shop_url = `https://${shop_domain}/admin/api/2023-04/script_tags.json`;
 var optionsGet = {
   method: "GET",
   url: shop_url,
   headers: {
-    "x-shopify-access-token": accessToken,
+    "x-shopify-access-token": access_token_value,
   },
 };
 
@@ -282,9 +284,9 @@ request(optionsGet, function (error, response) {
   if (!checkScriptTagExistence(existingScriptTags, desiredSrc)) {
     var optionsPost = {
       method: "POST",
-      url: `https://${process.env.shopName}/admin/api/2023-04/script_tags.json`,
+      url: `https://${shop_domain}/admin/api/2023-04/script_tags.json`,
       headers: {
-        "x-shopify-access-token": accessToken,
+        "x-shopify-access-token": access_token_value,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
@@ -304,9 +306,8 @@ request(optionsGet, function (error, response) {
     console.log("Script tag already exists.");
   }
 });
-}else{
-  console.log("AccessToken Empty");
 }
+
 app.post("/scriptrender/toggle", async (req, res) => {
   console.log("scriptrender........");
   const isChecked = req.body.isChecked;
