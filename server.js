@@ -171,9 +171,9 @@ function GetAccessToken(access_token_value, shop_domain) {
   const envFilePath = path.join(__dirname, ".env");
 
   databaseData.getConnection((err, connection) => {
-    const checkExistenceQuery = "SELECT * FROM GetAccessTokenWithDomainName WHERE AccessToken = ?";
+    const checkExistenceQuery = "SELECT * FROM GetAccessTokenWithDomainName WHERE DomainName = ?";
     
-    databaseData.query(checkExistenceQuery, [access_token_value], (err, rows) => {
+    databaseData.query(checkExistenceQuery, [shop_domain], (err, rows) => {
       if (err) {
         console.error("Error checking existence:", err);
         return;
@@ -182,11 +182,11 @@ function GetAccessToken(access_token_value, shop_domain) {
       if (rows.length > 0) {
         // Customer_id exists, perform update
         const updateQuery =
-          "UPDATE GetAccessTokenWithDomainName SET DomainName = ? WHERE AccessToken = ?";
+          "UPDATE GetAccessTokenWithDomainName SET AccessToken = ? WHERE  DomainName = ?";
   
         databaseData.query(
           updateQuery,
-          [shop_domain, access_token_value],
+          [access_token_value,shop_domain],
           (err, result) => {
             if (err) {
               console.error("Error updating data:", err);
