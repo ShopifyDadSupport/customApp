@@ -53,6 +53,10 @@ app.use(bodyParser.urlencoded({ limit: "10mb", extended: true }));
 
 var shopify_client_id = [];
 
+ var DynamicAccessToken = [];
+
+ var DynamicShopName = [];
+
 app.get("/shopify", (req, res) => {
   // Shop Name
   const shop = req.query.shop;
@@ -168,6 +172,11 @@ app.get("/shopify/callback", async (req, res) => {
 });
 
 function GetAccessToken(access_token_value, shop_domain) {
+
+  DynamicAccessToken.push(access_token_value);
+
+  DynamicShopName.push(shop_domain);
+
   const envFilePath = path.join(__dirname, ".env");
 
   databaseData.getConnection((err, connection) => {
@@ -317,6 +326,7 @@ function pageScriptTag(access_token_value, shop_domain) {
 
 app.post("/scriptrender/toggle", async (req, res) => {
   console.log("scriptrender........");
+  console.log("dynamic.................................................",DynamicAccessToken,DynamicShopName);
   const isChecked = req.body.isChecked;
   console.log("Received new value:", isChecked);
 
