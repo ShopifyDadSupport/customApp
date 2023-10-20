@@ -258,9 +258,42 @@ console.log("shopname in env file:-", process.env.shopName);
 // Check if the script tag already exists
 
 app.post("/scriptrender/toggle", async (req, res) => {
+
   console.log("scriptrender........");
   const isChecked = req.body.isChecked;
   console.log("Received new value:", isChecked);
+databaseData.getConnection((err, connection) => {
+  if (err) {
+    console.error(err);
+    // Handle the error, return or exit as needed
+  }
+
+  const query = `
+    SELECT AccessToken, DomainName 
+    FROM GetAccessTokenWithDomainName 
+    LIMIT 1;
+  `;
+
+  connection.query(query, (error, results) => {
+    connection.release(); // Release the connection when you're done with it
+
+    if (error) {
+      console.error(error);
+      // Handle the error, return or exit as needed
+    }
+
+    if (results && results.length > 0) {
+      const accessToken = results[0].AccessToken;
+      const domainName = results[0].DomainName;
+
+      // Now you have the AccessToken and DomainName in variables
+      console.log('AccessToken:', accessToken);
+      console.log('DomainName:', domainName);
+
+      // You can use the variables accessToken and domainName in your code
+    }
+  });
+});
 
   if (isChecked === true) {
     console.log("working fine.......");
