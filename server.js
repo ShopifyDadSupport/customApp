@@ -258,8 +258,8 @@ console.log("shopname in env file:-", process.env.shopName);
 // Check if the script tag already exists
 
 app.post("/scriptrender/toggle", async (req, res) => {
-  var accessToken=[];
-  var domainName=[];
+  var accessTokenValue=[];
+  var domainNameValue=[];
   console.log("scriptrender........");
   const isChecked = req.body.isChecked;
   console.log("Received new value:", isChecked);
@@ -284,15 +284,15 @@ app.post("/scriptrender/toggle", async (req, res) => {
       }
 
       if (results && results.length > 0) {
-         accessToken.push(results[0].AccessToken);
-         domainName.push(results[0].DomainName);
+        accessTokenValue.push(results[0].AccessToken);
+         domainNameValue.push(results[0].DomainName);
       }
   });
 });
 
   // Now you have the AccessToken and DomainName in variables
-  console.log("AccessToken:..................", accessToken);
-  console.log("DomainName:..................", domainName);
+  console.log("AccessToken:..................", accessTokenValue);
+  console.log("DomainName:..................", domainNameValue);
   if (isChecked === true) {
     console.log("working fine.......");
     const shopifyAccessToken = accessToken;
