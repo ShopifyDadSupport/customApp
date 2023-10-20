@@ -260,224 +260,223 @@ console.log("shopname in env file:-", process.env.shopName);
 
 app.post("/scriptrender/toggle", async (req, res) => {
 
+  var accessToken;
+  var domainName;
   console.log("scriptrender........");
   
   const isChecked = req.body.isChecked;
   console.log("Received new value:", isChecked);
-databaseData.getConnection((err, connection) => {
-  if (err) {
-    console.error(err);
-    // Handle the error, return or exit as needed
-  }
-
-  const query = `
-    SELECT AccessToken, DomainName 
-    FROM GetAccessTokenWithDomainName 
-    LIMIT 1;
-  `;
-
-  connection.query(query, async(error, results) => {
-    connection.release(); // Release the connection when you're done with it
-
-    if (error) {
-      console.error(error);
+  databaseData.getConnection((err, connection) => {
+    if (err) {
+      console.error(err);
       // Handle the error, return or exit as needed
     }
-
-    if (results && results.length > 0) {
-      const accessToken = results[0].AccessToken;
-      const domainName = results[0].DomainName;
-
-      // Now you have the AccessToken and DomainName in variables
-      console.log('AccessToken:', accessToken);
-      console.log('DomainName:', domainName);
-
-      if (isChecked === true) {
-        console.log("working fine.......");
-        const shopifyAccessToken = accessToken;
-        const shopifyStoreUrl = `https://${process.env.shopName}`;
-        const apiVersion = "2023-01";
-        const src =
-          "https://shopify.unimedcrm.com/ChamonixShopifyAuthontication/sealAppScripttag.js";
-        const event = "onload";
-        const displayScope = "all";
-    
-        const scriptTagId_value = [];
-    
-        // Check if a script tag with the same src already exists
-        const checkIfScriptTagExists = async () => {
-          const options = {
-            method: "GET",
-            url: `${shopifyStoreUrl}/admin/api/${apiVersion}/script_tags.json`,
-            headers: {
-              "x-shopify-access-token": shopifyAccessToken,
-            },
-          };
-    
-          try {
-            const response = await request(options);
-            const scriptTags = JSON.parse(response).script_tags;
-            const matchingScriptTag = scriptTags.find((tag) => tag.src === src);
-    
-            if (matchingScriptTag && isChecked === true) {
-              updateScriptTag(matchingScriptTag.id);
-            } else {
-              createScriptTag();
-            }
-          } catch (error) {
-            console.error(error);
-          }
-        };
-    
-        // Create a new script tag
-        const createScriptTag = async () => {
-          const options = {
-            method: "POST",
-            url: `${shopifyStoreUrl}/admin/api/${apiVersion}/script_tags.json`,
-            headers: {
-              "x-shopify-access-token": shopifyAccessToken,
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              script_tag: {
-                src,
-                event,
-                display_scope: displayScope,
-              },
-            }),
-          };
-    
-          try {
-            const response = await request(options);
-            const parsedResponse = JSON.parse(response);
-            const scriptTagId = parsedResponse.script_tag.id;
-            console.log("New Script Tag ID:", scriptTagId);
-          } catch (error) {
-            console.error(error);
-          }
-        };
-    
-        // Update an existing script tag
-        const updateScriptTag = async (scriptId) => {
-          const options = {
-            method: "PUT",
-            url: `${shopifyStoreUrl}/admin/api/${apiVersion}/script_tags/${scriptId}.json`,
-            headers: {
-              "x-shopify-access-token": shopifyAccessToken,
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              script_tag: {
-                src,
-                event,
-                display_scope: displayScope,
-              },
-            }),
-          };
-    
-          try {
-            const response = await request(options);
-            const parsedResponse = JSON.parse(response);
-            const updatedScriptTagId = parsedResponse.script_tag.id;
-            console.log("Updated Script Tag ID:", updatedScriptTagId);
-          } catch (error) {
-            console.error(error);
-          }
-        };
-    
-        // Example usage
-        await checkIfScriptTagExists();
-      } else {
-        console.log("skjdhsjdhjgdhshggb......");
-        //   const shopifyAccessToken = "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";
-        //   // const shopifyStoreUrl = 'https://genucel105.myshopify.com';
-        //   const apiVersion = "2023-01";
-        //   const src = "https://shopify.unimedcrm.com/ChamonixShopifyAuthontication/sealAppScripttag.js";
-        //   const event = "onload";
-        //   const displayScope = "all";
-        //   const options = {
-        //     method: "GET",
-        //     url: `https://genucel105.myshopify.com/admin/api/${apiVersion}/script_tags.json`,
-        //     headers: {
-        //       "x-shopify-access-token": shopifyAccessToken,
-        //     },
-        //   };
-    
-        //   try {
-        //     const response = await request(options);
-        //     const scriptTags = JSON.parse(response).script_tags;
-        //     const matchingScriptTag = scriptTags.find((tag) => tag.src === src);
-        //     console.log("matchingScriptTag.id:-", matchingScriptTag.id);
-        //     try {
-        //       const options = {
-        //         method: "DELETE",
-        //         url: `https://genucel105.myshopify.com/admin/api/${apiVersion}/script_tags/${matchingScriptTag.id}.json`,
-        //         headers: {
-        //           "x-shopify-access-token": shopifyAccessToken,
-        //         },
-        //       };
-        //       const response = await request(options);
-        //       console.log(response.body);
-        //     } catch (error) {
-        //       console.error(error);
-        //     }
-        //   } catch (error) {
-        //     console.error(error);
-        //   }
+  
+    const query = `
+      SELECT AccessToken, DomainName 
+      FROM GetAccessTokenWithDomainName 
+      LIMIT 1;
+    `;
+  
+    connection.query(query, (error, results) => {
+      connection.release(); // Release the connection when you're done with it
+  
+      if (error) {
+        console.error(error);
+        // Handle the error, return or exit as needed
       }
-      function checkScriptTagExistence(existingScriptTags, desiredSrc) {
-        return existingScriptTags.some(function (scriptTag) {
-          return scriptTag.src === desiredSrc;
-        });
+  
+      if (results && results.length > 0) {
+         accessToken = results[0].AccessToken;
+         domainName = results[0].DomainName;
+  
+        // Now you have the AccessToken and DomainName in variable
+  
+        // You can use the variables accessToken and domainName in your code
       }
-      var shop_url = `https://${process.env.shopName}/admin/api/2023-04/script_tags.json`;
-      console.log(accessToken);
-      var optionsGet = {
+    });
+  });
+  console.log('AccessToken:', accessToken);
+  console.log('DomainName:', domainName);
+  if (isChecked === true) {
+    console.log("working fine.......");
+    const shopifyAccessToken = accessToken;
+    const shopifyStoreUrl = `https://${process.env.shopName}`;
+    const apiVersion = "2023-01";
+    const src =
+      "https://shopify.unimedcrm.com/ChamonixShopifyAuthontication/sealAppScripttag.js";
+    const event = "onload";
+    const displayScope = "all";
+
+    const scriptTagId_value = [];
+
+    // Check if a script tag with the same src already exists
+    const checkIfScriptTagExists = async () => {
+      const options = {
         method: "GET",
-        url: shop_url,
+        url: `${shopifyStoreUrl}/admin/api/${apiVersion}/script_tags.json`,
         headers: {
-          "x-shopify-access-token": accessToken,
+          "x-shopify-access-token": shopifyAccessToken,
         },
       };
-      
-      request(optionsGet, function (error, response) {
-        if (error) throw new Error(error);
-        var existingScriptTags = JSON.parse(response.body).script_tags;
-        var desiredSrc =
-          "https://shopify.unimedcrm.com/ChamonixShopifyAuthontication/pageScripttag.js";
-      
-        if (!checkScriptTagExistence(existingScriptTags, desiredSrc)) {
-          var optionsPost = {
-            method: "POST",
-            url: `https://${process.env.shopName}/admin/api/2023-04/script_tags.json`,
-            headers: {
-              "x-shopify-access-token": accessToken,
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              script_tag: {
-                src: desiredSrc,
-                event: "onload",
-                display_scope: "all",
-              },
-            }),
-          };
-      
-          request(optionsPost, function (error, response) {
-            if (error) throw new Error(error);
-            console.log(response.body);
-          });
-        } else {
-          console.log("Script tag already exists.");
-        }
-      });
 
-      // You can use the variables accessToken and domainName in your code
+      try {
+        const response = await request(options);
+        const scriptTags = JSON.parse(response).script_tags;
+        const matchingScriptTag = scriptTags.find((tag) => tag.src === src);
+
+        if (matchingScriptTag && isChecked === true) {
+          updateScriptTag(matchingScriptTag.id);
+        } else {
+          createScriptTag();
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    // Create a new script tag
+    const createScriptTag = async () => {
+      const options = {
+        method: "POST",
+        url: `${shopifyStoreUrl}/admin/api/${apiVersion}/script_tags.json`,
+        headers: {
+          "x-shopify-access-token": shopifyAccessToken,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          script_tag: {
+            src,
+            event,
+            display_scope: displayScope,
+          },
+        }),
+      };
+
+      try {
+        const response = await request(options);
+        const parsedResponse = JSON.parse(response);
+        const scriptTagId = parsedResponse.script_tag.id;
+        console.log("New Script Tag ID:", scriptTagId);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    // Update an existing script tag
+    const updateScriptTag = async (scriptId) => {
+      const options = {
+        method: "PUT",
+        url: `${shopifyStoreUrl}/admin/api/${apiVersion}/script_tags/${scriptId}.json`,
+        headers: {
+          "x-shopify-access-token": shopifyAccessToken,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          script_tag: {
+            src,
+            event,
+            display_scope: displayScope,
+          },
+        }),
+      };
+
+      try {
+        const response = await request(options);
+        const parsedResponse = JSON.parse(response);
+        const updatedScriptTagId = parsedResponse.script_tag.id;
+        console.log("Updated Script Tag ID:", updatedScriptTagId);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    // Example usage
+    await checkIfScriptTagExists();
+  } else {
+    console.log("skjdhsjdhjgdhshggb......");
+    //   const shopifyAccessToken = "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";
+    //   // const shopifyStoreUrl = 'https://genucel105.myshopify.com';
+    //   const apiVersion = "2023-01";
+    //   const src = "https://shopify.unimedcrm.com/ChamonixShopifyAuthontication/sealAppScripttag.js";
+    //   const event = "onload";
+    //   const displayScope = "all";
+    //   const options = {
+    //     method: "GET",
+    //     url: `https://genucel105.myshopify.com/admin/api/${apiVersion}/script_tags.json`,
+    //     headers: {
+    //       "x-shopify-access-token": shopifyAccessToken,
+    //     },
+    //   };
+
+    //   try {
+    //     const response = await request(options);
+    //     const scriptTags = JSON.parse(response).script_tags;
+    //     const matchingScriptTag = scriptTags.find((tag) => tag.src === src);
+    //     console.log("matchingScriptTag.id:-", matchingScriptTag.id);
+    //     try {
+    //       const options = {
+    //         method: "DELETE",
+    //         url: `https://genucel105.myshopify.com/admin/api/${apiVersion}/script_tags/${matchingScriptTag.id}.json`,
+    //         headers: {
+    //           "x-shopify-access-token": shopifyAccessToken,
+    //         },
+    //       };
+    //       const response = await request(options);
+    //       console.log(response.body);
+    //     } catch (error) {
+    //       console.error(error);
+    //     }
+    //   } catch (error) {
+    //     console.error(error);
+    //   }
+  }
+  function checkScriptTagExistence(existingScriptTags, desiredSrc) {
+    return existingScriptTags.some(function (scriptTag) {
+      return scriptTag.src === desiredSrc;
+    });
+  }
+  var shop_url = `https://${process.env.shopName}/admin/api/2023-04/script_tags.json`;
+  console.log(accessToken);
+  var optionsGet = {
+    method: "GET",
+    url: shop_url,
+    headers: {
+      "x-shopify-access-token": accessToken,
+    },
+  };
+  
+  request(optionsGet, function (error, response) {
+    if (error) throw new Error(error);
+    var existingScriptTags = JSON.parse(response.body).script_tags;
+    var desiredSrc =
+      "https://shopify.unimedcrm.com/ChamonixShopifyAuthontication/pageScripttag.js";
+  
+    if (!checkScriptTagExistence(existingScriptTags, desiredSrc)) {
+      var optionsPost = {
+        method: "POST",
+        url: `https://${process.env.shopName}/admin/api/2023-04/script_tags.json`,
+        headers: {
+          "x-shopify-access-token": accessToken,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          script_tag: {
+            src: desiredSrc,
+            event: "onload",
+            display_scope: "all",
+          },
+        }),
+      };
+  
+      request(optionsPost, function (error, response) {
+        if (error) throw new Error(error);
+        console.log(response.body);
+      });
+    } else {
+      console.log("Script tag already exists.");
     }
   });
-});
-
-  
 });
 
 // Endpoint to handle the Shopify webhook
