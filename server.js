@@ -258,8 +258,8 @@ console.log("shopname in env file:-", process.env.shopName);
 // Check if the script tag already exists
 
 app.post("/scriptrender/toggle", async (req, res) => {
-  var accessToken;
-  var domainName;
+  var accessToken=[];
+  var domainName=[];
   console.log("scriptrender........");
   const isChecked = req.body.isChecked;
   console.log("Received new value:", isChecked);
@@ -284,8 +284,8 @@ app.post("/scriptrender/toggle", async (req, res) => {
       }
 
       if (results && results.length > 0) {
-         accessToken = results[0].AccessToken;
-         domainName = results[0].DomainName;
+         accessToken.push(results[0].AccessToken);
+         domainName.push(results[0].DomainName);
       }
   });
 });
