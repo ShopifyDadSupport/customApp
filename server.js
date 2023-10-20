@@ -7,7 +7,6 @@ const sendSubscriptionEmail = require("./sendSubscriptionEmail");
 const gdpr_data_request = require("./gdpr/cust_data_request");
 const cust_data_erasure = require("./gdpr/cust_data_erasure");
 const gdpr_shop_redact = require('./gdpr/shop_data_erasure');
-const dbModule = require('./dbModule');
 const mysql = require("mysql");
 const axios = require("axios");
 const cookie = require("cookie");
@@ -259,45 +258,10 @@ console.log("shopname in env file:-", process.env.shopName);
 // Check if the script tag already exists
 
 app.post("/scriptrender/toggle", async (req, res) => {
-
-  var accessToken;
-  var domainName;
   console.log("scriptrender........");
-  
   const isChecked = req.body.isChecked;
   console.log("Received new value:", isChecked);
-  databaseData.getConnection((err, connection) => {
-    if (err) {
-      console.error(err);
-      // Handle the error, return or exit as needed
-    }
-  
-    const query = `
-      SELECT AccessToken, DomainName 
-      FROM GetAccessTokenWithDomainName 
-      LIMIT 1;
-    `;
-  
-    connection.query(query, (error, results) => {
-      connection.release(); // Release the connection when you're done with it
-  
-      if (error) {
-        console.error(error);
-        // Handle the error, return or exit as needed
-      }
-  
-      if (results && results.length > 0) {
-         accessToken = results[0].AccessToken;
-         domainName = results[0].DomainName;
-  
-        // Now you have the AccessToken and DomainName in variable
-  
-        // You can use the variables accessToken and domainName in your code
-      }
-    });
-  });
-  console.log('AccessToken:', accessToken);
-  console.log('DomainName:', domainName);
+
   if (isChecked === true) {
     console.log("working fine.......");
     const shopifyAccessToken = accessToken;
@@ -432,51 +396,51 @@ app.post("/scriptrender/toggle", async (req, res) => {
     //   }
   }
   function checkScriptTagExistence(existingScriptTags, desiredSrc) {
-    return existingScriptTags.some(function (scriptTag) {
-      return scriptTag.src === desiredSrc;
-    });
-  }
-  var shop_url = `https://${process.env.shopName}/admin/api/2023-04/script_tags.json`;
-  console.log(accessToken);
-  var optionsGet = {
-    method: "GET",
-    url: shop_url,
-    headers: {
-      "x-shopify-access-token": accessToken,
-    },
-  };
-  
-  request(optionsGet, function (error, response) {
-    if (error) throw new Error(error);
-    var existingScriptTags = JSON.parse(response.body).script_tags;
-    var desiredSrc =
-      "https://shopify.unimedcrm.com/ChamonixShopifyAuthontication/pageScripttag.js";
-  
-    if (!checkScriptTagExistence(existingScriptTags, desiredSrc)) {
-      var optionsPost = {
-        method: "POST",
-        url: `https://${process.env.shopName}/admin/api/2023-04/script_tags.json`,
-        headers: {
-          "x-shopify-access-token": accessToken,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          script_tag: {
-            src: desiredSrc,
-            event: "onload",
-            display_scope: "all",
-          },
-        }),
-      };
-  
-      request(optionsPost, function (error, response) {
-        if (error) throw new Error(error);
-        console.log(response.body);
-      });
-    } else {
-      console.log("Script tag already exists.");
-    }
+  return existingScriptTags.some(function (scriptTag) {
+    return scriptTag.src === desiredSrc;
   });
+}
+var shop_url = `https://${process.env.shopName}/admin/api/2023-04/script_tags.json`;
+console.log(accessToken);
+var optionsGet = {
+  method: "GET",
+  url: shop_url,
+  headers: {
+    "x-shopify-access-token": accessToken,
+  },
+};
+
+request(optionsGet, function (error, response) {
+  if (error) throw new Error(error);
+  var existingScriptTags = JSON.parse(response.body).script_tags;
+  var desiredSrc =
+    "https://shopify.unimedcrm.com/ChamonixShopifyAuthontication/pageScripttag.js";
+
+  if (!checkScriptTagExistence(existingScriptTags, desiredSrc)) {
+    var optionsPost = {
+      method: "POST",
+      url: `https://${process.env.shopName}/admin/api/2023-04/script_tags.json`,
+      headers: {
+        "x-shopify-access-token": accessToken,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        script_tag: {
+          src: desiredSrc,
+          event: "onload",
+          display_scope: "all",
+        },
+      }),
+    };
+
+    request(optionsPost, function (error, response) {
+      if (error) throw new Error(error);
+      console.log(response.body);
+    });
+  } else {
+    console.log("Script tag already exists.");
+  }
+});
 });
 
 // Endpoint to handle the Shopify webhook
