@@ -126,9 +126,6 @@ app.get("/shopify/callback", async (req, res) => {
           .get(apiRequestURL, { headers: apiRequestHeaders })
 
           .then(async (apiResponse) => {
-            shop__name__value.push(shop);
-            accessToken__value.push(accessToken);
-
             GetAccessToken(accessToken, shop);
             console.log("accessToken value ====> ", accessToken);
             const url = shop;
@@ -172,6 +169,9 @@ app.get("/shopify/callback", async (req, res) => {
 });
 
 function GetAccessToken(access_token_value, shop_domain) {
+
+   shop__name__value.push(shop_domain);
+   accessToken__value.push(access_token_value);
 
   const envFilePath = path.join(__dirname, ".env");
 
@@ -256,6 +256,7 @@ function GetAccessToken(access_token_value, shop_domain) {
     });
   });
   pageScriptTag(access_token_value, shop_domain);
+
 }
 
 
