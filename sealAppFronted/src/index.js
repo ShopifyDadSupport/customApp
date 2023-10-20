@@ -9,7 +9,6 @@ const root = ReactDOM.createRoot(document.getElementById("root"));
 
 const shouldRenderLoginPage =
   window.location.href === "https://dynamic-auto-shipp-app.onrender.com/";
-
 const Main = () => {
   const [loggedIn, setLoggedIn] = useState(
     localStorage.getItem("isLoggedIn") === "true"
