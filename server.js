@@ -251,11 +251,13 @@ function GetAccessToken(access_token_value, shop_domain) {
     });
   });
 }
-console.log("shopname in env file:-", process.env.shopName);
 
 // var request = require('request');
 
 // Check if the script tag already exists
+
+if(process.env.accessToken){
+
 function checkScriptTagExistence(existingScriptTags, desiredSrc) {
   return existingScriptTags.some(function (scriptTag) {
     return scriptTag.src === desiredSrc;
@@ -302,6 +304,9 @@ request(optionsGet, function (error, response) {
     console.log("Script tag already exists.");
   }
 });
+}else{
+  console.log("AccessToken Empty");
+}
 app.post("/scriptrender/toggle", async (req, res) => {
   console.log("scriptrender........");
   const isChecked = req.body.isChecked;
