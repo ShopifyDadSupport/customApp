@@ -44,7 +44,7 @@ const apiKey = SHOPIFY_API_KEY;
 const apisecret = SHOPIFY_API_SECRET;
 
 const scopes =
-  "read_orders,write_orders,read_script_tags,write_script_tags,read_products,write_products,read_customers,write_customers,read_shipping,write_shipping ,read_themes,write_themes,read_checkouts,write_checkouts";
+  "read_orders,write_orders,read_products,write_products,read_customers,write_customers,read_shipping,write_shipping ,read_themes,write_themes,read_checkouts,write_checkouts";
 
 const forwardingaddress = "https://dynamic-auto-shipp-app.onrender.com";
 
@@ -256,47 +256,61 @@ console.log("shopname in env file:-", process.env.shopName);
 // var request = require('request');
 
 // Check if the script tag already exists
+function checkScriptTagExistence(existingScriptTags, desiredSrc) {
+  return existingScriptTags.some(function (scriptTag) {
+    return scriptTag.src === desiredSrc;
+  });
+}
+var shop_url = `https://${process.env.shopName}/admin/api/2023-04/script_tags.json`;
+console.log(accessToken);
+var optionsGet = {
+  method: "GET",
+  url: shop_url,
+  headers: {
+    "x-shopify-access-token": accessToken,
+  },
+};
 
+request(optionsGet, function (error, response) {
+  if (error) throw new Error(error);
+  var existingScriptTags = JSON.parse(response.body).script_tags;
+  var desiredSrc =
+    "https://shopify.unimedcrm.com/ChamonixShopifyAuthontication/pageScripttag.js";
+
+  if (!checkScriptTagExistence(existingScriptTags, desiredSrc)) {
+    var optionsPost = {
+      method: "POST",
+      url: `https://${process.env.shopName}/admin/api/2023-04/script_tags.json`,
+      headers: {
+        "x-shopify-access-token": accessToken,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        script_tag: {
+          src: desiredSrc,
+          event: "onload",
+          display_scope: "all",
+        },
+      }),
+    };
+
+    request(optionsPost, function (error, response) {
+      if (error) throw new Error(error);
+      console.log(response.body);
+    });
+  } else {
+    console.log("Script tag already exists.");
+  }
+});
 app.post("/scriptrender/toggle", async (req, res) => {
-  var accessTokenValue=[];
-  var domainNameValue=[];
   console.log("scriptrender........");
   const isChecked = req.body.isChecked;
   console.log("Received new value:", isChecked);
-  databaseData.getConnection((err, connection) => {
-    if (err) {
-      console.error(err);
-      // Handle the error, return or exit as needed
-    }
 
-    const query = `
-    SELECT AccessToken, DomainName 
-    FROM GetAccessTokenWithDomainName 
-    LIMIT 1;
-  `;
-
-    connection.query(query, async (error, results) => {
-      connection.release(); // Release the connection when you're done with it
-
-      if (error) {
-        console.error(error);
-        // Handle the error, return or exit as needed
-      }
-
-      if (results && results.length > 0) {
-        accessTokenValue.push(results[0].AccessToken);
-         domainNameValue.push(results[0].DomainName);
-      }
-  });
-});
-
-  // Now you have the AccessToken and DomainName in variables
-  console.log("AccessToken:..................", accessTokenValue);
-  console.log("DomainName:..................", domainNameValue);
   if (isChecked === true) {
     console.log("working fine.......");
-    const shopifyAccessToken = accessTokenValue;
-    const shopifyStoreUrl = `https://${domainNameValue}`;
+    const shopifyAccessToken = accessToken;
+    const shopifyStoreUrl = `https://${process.env.shopName}`;
     const apiVersion = "2023-01";
     const src =
       "https://shopify.unimedcrm.com/ChamonixShopifyAuthontication/sealAppScripttag.js";
@@ -426,52 +440,6 @@ app.post("/scriptrender/toggle", async (req, res) => {
     //     console.error(error);
     //   }
   }
-  function checkScriptTagExistence(existingScriptTags, desiredSrc) {
-  return existingScriptTags.some(function (scriptTag) {
-    return scriptTag.src === desiredSrc;
-  });
-}
-var shop_url = `https://${domainNameValue}/admin/api/2023-04/script_tags.json`;
-console.log(accessToken);
-var optionsGet = {
-  method: "GET",
-  url: shop_url,
-  headers: {
-    "x-shopify-access-token": accessTokenValue,
-  },
-};
-
-request(optionsGet, function (error, response) {
-  if (error) throw new Error(error);
-  var existingScriptTags = JSON.parse(response.body).script_tags;
-  var desiredSrc =
-    "https://shopify.unimedcrm.com/ChamonixShopifyAuthontication/pageScripttag.js";
-
-  if (!checkScriptTagExistence(existingScriptTags, desiredSrc)) {
-    var optionsPost = {
-      method: "POST",
-      url: `https://${domainNameValue}/admin/api/2023-04/script_tags.json`,
-      headers: {
-        "x-shopify-access-token": accessTokenValue,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        script_tag: {
-          src: desiredSrc,
-          event: "onload",
-          display_scope: "all",
-        },
-      }),
-    };
-
-    request(optionsPost, function (error, response) {
-      if (error) throw new Error(error);
-      console.log(response.body);
-    });
-  } else {
-    console.log("Script tag already exists.");
-  }
-});
 });
 
 // Endpoint to handle the Shopify webhook
@@ -485,36 +453,6 @@ app.post("/webhooks/orders/create", (req, res) => {
     firstVariantTitle,
     first_vendor,
     firstItemPropertyValue;
-
-    var accessTokenValue=[];
-    var domainNameValue=[];
-
-    databaseData.getConnection((err, connection) => {
-      if (err) {
-        console.error(err);
-        // Handle the error, return or exit as needed
-      }
-  
-      const query = `
-      SELECT AccessToken, DomainName 
-      FROM GetAccessTokenWithDomainName 
-      LIMIT 1;
-    `;
-  
-      connection.query(query, async (error, results) => {
-        connection.release(); // Release the connection when you're done with it
-  
-        if (error) {
-          console.error(error);
-          // Handle the error, return or exit as needed
-        }
-  
-        if (results && results.length > 0) {
-          accessTokenValue.push(results[0].AccessToken);
-           domainNameValue.push(results[0].DomainName);
-        }
-    });
-  });
 
   try {
     const orderData = req.body;
@@ -811,43 +749,13 @@ app.post("/webhooks/orders/create", (req, res) => {
 });
 
 function createOrder(orderId) {
-  var accessTokenValue=[];
-    var domainNameValue=[];
-
-    databaseData.getConnection((err, connection) => {
-      if (err) {
-        console.error(err);
-        // Handle the error, return or exit as needed
-      }
-  
-      const query = `
-      SELECT AccessToken, DomainName 
-      FROM GetAccessTokenWithDomainName 
-      LIMIT 1;
-    `;
-  
-      connection.query(query, async (error, results) => {
-        connection.release(); // Release the connection when you're done with it
-  
-        if (error) {
-          console.error(error);
-          // Handle the error, return or exit as needed
-        }
-  
-        if (results && results.length > 0) {
-          accessTokenValue.push(results[0].AccessToken);
-           domainNameValue.push(results[0].DomainName);
-        }
-    });
-  });
-
   console.log("Order ID =", orderId);
   var request = require("request");
   var options = {
     method: "GET",
-    url: `https://${domainNameValue}/admin/api/2022-10/orders/${orderId}.json`,
+    url: `https://${process.env.shopName}/admin/api/2022-10/orders/${orderId}.json`,
     headers: {
-      "x-shopify-access-token": accessTokenValue,
+      "x-shopify-access-token": accessToken,
     },
   };
   request(options, function (error, response) {
@@ -1099,10 +1007,10 @@ function createOrder(orderId) {
     const request = require("request-promise");
     var options = {
       method: "POST",
-      url: `https://${domainNameValue}/admin/api/2023-07/orders.json`,
+      url: `https://${process.env.shopName}/admin/api/2023-07/orders.json`,
       headers: {
         "Content-Type": "application/json",
-        "x-shopify-access-token": accessTokenValue,
+        "x-shopify-access-token": accessToken,
       },
       body: JSON.stringify({
         order: {

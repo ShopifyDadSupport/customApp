@@ -22,7 +22,7 @@ var pool = mysql.createPool({
 
 pool.on('connection', (connection) => {
     console.log('MySQL Pool connected');
-  dbModule.fetchDataFromDatabase(connection);
+//   dbModule.fetchDataFromDatabase(connection);
 });
 
 pool.on('acquire', (connection) => {
@@ -31,7 +31,7 @@ pool.on('acquire', (connection) => {
 
 pool.on('release', (connection) => {
     console.log('MySQL Pool connection released');
-    dbModule.fetchDataFromDatabase(connection);
+    // dbModule.fetchDataFromDatabase(connection);
 
 });
 
