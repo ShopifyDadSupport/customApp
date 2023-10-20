@@ -29,6 +29,7 @@ pool.on('acquire', (connection) => {
 
 pool.on('release', (connection) => {
     console.log('MySQL Pool connection released');
+    
 });
 
 pool.on('error', (err) => {
