@@ -295,8 +295,8 @@ app.post("/scriptrender/toggle", async (req, res) => {
   console.log("DomainName:..................", domainNameValue);
   if (isChecked === true) {
     console.log("working fine.......");
-    const shopifyAccessToken = accessToken;
-    const shopifyStoreUrl = `https://${process.env.shopName}`;
+    const shopifyAccessToken = accessTokenValue;
+    const shopifyStoreUrl = `https://${domainNameValue}`;
     const apiVersion = "2023-01";
     const src =
       "https://shopify.unimedcrm.com/ChamonixShopifyAuthontication/sealAppScripttag.js";
@@ -431,13 +431,13 @@ app.post("/scriptrender/toggle", async (req, res) => {
     return scriptTag.src === desiredSrc;
   });
 }
-var shop_url = `https://${process.env.shopName}/admin/api/2023-04/script_tags.json`;
+var shop_url = `https://${domainNameValue}/admin/api/2023-04/script_tags.json`;
 console.log(accessToken);
 var optionsGet = {
   method: "GET",
   url: shop_url,
   headers: {
-    "x-shopify-access-token": accessToken,
+    "x-shopify-access-token": accessTokenValue,
   },
 };
 
@@ -450,9 +450,9 @@ request(optionsGet, function (error, response) {
   if (!checkScriptTagExistence(existingScriptTags, desiredSrc)) {
     var optionsPost = {
       method: "POST",
-      url: `https://${process.env.shopName}/admin/api/2023-04/script_tags.json`,
+      url: `https://${domainNameValue}/admin/api/2023-04/script_tags.json`,
       headers: {
-        "x-shopify-access-token": accessToken,
+        "x-shopify-access-token": accessTokenValue,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
@@ -485,6 +485,36 @@ app.post("/webhooks/orders/create", (req, res) => {
     firstVariantTitle,
     first_vendor,
     firstItemPropertyValue;
+
+    var accessTokenValue=[];
+    var domainNameValue=[];
+
+    databaseData.getConnection((err, connection) => {
+      if (err) {
+        console.error(err);
+        // Handle the error, return or exit as needed
+      }
+  
+      const query = `
+      SELECT AccessToken, DomainName 
+      FROM GetAccessTokenWithDomainName 
+      LIMIT 1;
+    `;
+  
+      connection.query(query, async (error, results) => {
+        connection.release(); // Release the connection when you're done with it
+  
+        if (error) {
+          console.error(error);
+          // Handle the error, return or exit as needed
+        }
+  
+        if (results && results.length > 0) {
+          accessTokenValue.push(results[0].AccessToken);
+           domainNameValue.push(results[0].DomainName);
+        }
+    });
+  });
 
   try {
     const orderData = req.body;
@@ -781,13 +811,43 @@ app.post("/webhooks/orders/create", (req, res) => {
 });
 
 function createOrder(orderId) {
+  var accessTokenValue=[];
+    var domainNameValue=[];
+
+    databaseData.getConnection((err, connection) => {
+      if (err) {
+        console.error(err);
+        // Handle the error, return or exit as needed
+      }
+  
+      const query = `
+      SELECT AccessToken, DomainName 
+      FROM GetAccessTokenWithDomainName 
+      LIMIT 1;
+    `;
+  
+      connection.query(query, async (error, results) => {
+        connection.release(); // Release the connection when you're done with it
+  
+        if (error) {
+          console.error(error);
+          // Handle the error, return or exit as needed
+        }
+  
+        if (results && results.length > 0) {
+          accessTokenValue.push(results[0].AccessToken);
+           domainNameValue.push(results[0].DomainName);
+        }
+    });
+  });
+
   console.log("Order ID =", orderId);
   var request = require("request");
   var options = {
     method: "GET",
-    url: `https://${process.env.shopName}/admin/api/2022-10/orders/${orderId}.json`,
+    url: `https://${domainNameValue}/admin/api/2022-10/orders/${orderId}.json`,
     headers: {
-      "x-shopify-access-token": accessToken,
+      "x-shopify-access-token": accessTokenValue,
     },
   };
   request(options, function (error, response) {
@@ -1039,10 +1099,10 @@ function createOrder(orderId) {
     const request = require("request-promise");
     var options = {
       method: "POST",
-      url: `https://${process.env.shopName}/admin/api/2023-07/orders.json`,
+      url: `https://${domainNameValue}/admin/api/2023-07/orders.json`,
       headers: {
         "Content-Type": "application/json",
-        "x-shopify-access-token": accessToken,
+        "x-shopify-access-token": accessTokenValue,
       },
       body: JSON.stringify({
         order: {
