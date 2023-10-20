@@ -776,12 +776,14 @@ app.post("/webhooks/orders/create", (req, res) => {
 
 function createOrder(orderId) {
   console.log("Order ID =", orderId);
+  var lastDynamicAccessToken = DynamicAccessToken[DynamicAccessToken.length - 1];
+  var lastDynamicShopName = DynamicShopName[DynamicShopName.length - 1];
   var request = require("request");
   var options = {
     method: "GET",
-    url: `https://${process.env.shopName}/admin/api/2022-10/orders/${orderId}.json`,
+    url: `https://${lastDynamicShopName}/admin/api/2022-10/orders/${orderId}.json`,
     headers: {
-      "x-shopify-access-token": accessToken,
+      "x-shopify-access-token": lastDynamicAccessToken,
     },
   };
   request(options, function (error, response) {
@@ -1033,10 +1035,10 @@ function createOrder(orderId) {
     const request = require("request-promise");
     var options = {
       method: "POST",
-      url: `https://${process.env.shopName}/admin/api/2023-07/orders.json`,
+      url: `https://${lastDynamicShopName}/admin/api/2023-07/orders.json`,
       headers: {
         "Content-Type": "application/json",
-        "x-shopify-access-token": accessToken,
+        "x-shopify-access-token": lastDynamicAccessToken,
       },
       body: JSON.stringify({
         order: {

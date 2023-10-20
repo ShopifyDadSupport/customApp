@@ -3,7 +3,7 @@ function insertAfter(referenceNode, newNode) {
   referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
   const selectElement = document.getElementById("intervalSelect");
 
-  fetch("https://auto-shipped.onrender.com/getadd/addIntervalDays")
+  fetch("https://dynamic-auto-shipp-app.onrender.com/getadd/addIntervalDays")
     .then((response) => response.json())
     .then((data) => {
       const options = data.subscription_interval_days;
@@ -23,6 +23,7 @@ elem1.innerHTML = ` <!DOCTYPE html>
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <title>Document</title>
+      <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
       <style>
           .product__info-container>*+* {
               margin: 1.5rem 0;
