@@ -330,139 +330,139 @@ app.post("/scriptrender/toggle", async (req, res) => {
   const isChecked = req.body.isChecked;
   console.log("Received new value:", isChecked);
 
-  if (isChecked === true) {
-    console.log("working fine.......");
-    const shopifyAccessToken = access_token_value;
-    const shopifyStoreUrl = `https://${shop_domain}`;
-    const apiVersion = "2023-01";
-    const src =
-      "https://shopify.unimedcrm.com/ChamonixShopifyAuthontication/sealAppScripttag.js";
-    const event = "onload";
-    const displayScope = "all";
+  // if (isChecked === true) {
+  //   console.log("working fine.......");
+  //   const shopifyAccessToken = access_token_value;
+  //   const shopifyStoreUrl = `https://${shop_domain}`;
+  //   const apiVersion = "2023-01";
+  //   const src =
+  //     "https://shopify.unimedcrm.com/ChamonixShopifyAuthontication/sealAppScripttag.js";
+  //   const event = "onload";
+  //   const displayScope = "all";
 
-    const scriptTagId_value = [];
+  //   const scriptTagId_value = [];
 
-    // Check if a script tag with the same src already exists
-    const checkIfScriptTagExists = async () => {
-      const options = {
-        method: "GET",
-        url: `${shopifyStoreUrl}/admin/api/${apiVersion}/script_tags.json`,
-        headers: {
-          "x-shopify-access-token": shopifyAccessToken,
-        },
-      };
+  //   // Check if a script tag with the same src already exists
+  //   const checkIfScriptTagExists = async () => {
+  //     const options = {
+  //       method: "GET",
+  //       url: `${shopifyStoreUrl}/admin/api/${apiVersion}/script_tags.json`,
+  //       headers: {
+  //         "x-shopify-access-token": shopifyAccessToken,
+  //       },
+  //     };
 
-      try {
-        const response = await request(options);
-        const scriptTags = JSON.parse(response).script_tags;
-        const matchingScriptTag = scriptTags.find((tag) => tag.src === src);
+  //     try {
+  //       const response = await request(options);
+  //       const scriptTags = JSON.parse(response).script_tags;
+  //       const matchingScriptTag = scriptTags.find((tag) => tag.src === src);
 
-        if (matchingScriptTag && isChecked === true) {
-          updateScriptTag(matchingScriptTag.id);
-        } else {
-          createScriptTag();
-        }
-      } catch (error) {
-        console.error(error);
-      }
-    };
+  //       if (matchingScriptTag && isChecked === true) {
+  //         updateScriptTag(matchingScriptTag.id);
+  //       } else {
+  //         createScriptTag();
+  //       }
+  //     } catch (error) {
+  //       console.error(error);
+  //     }
+  //   };
 
-    // Create a new script tag
-    const createScriptTag = async () => {
-      const options = {
-        method: "POST",
-        url: `${shopifyStoreUrl}/admin/api/${apiVersion}/script_tags.json`,
-        headers: {
-          "x-shopify-access-token": shopifyAccessToken,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          script_tag: {
-            src,
-            event,
-            display_scope: displayScope,
-          },
-        }),
-      };
+  //   // Create a new script tag
+  //   const createScriptTag = async () => {
+  //     const options = {
+  //       method: "POST",
+  //       url: `${shopifyStoreUrl}/admin/api/${apiVersion}/script_tags.json`,
+  //       headers: {
+  //         "x-shopify-access-token": shopifyAccessToken,
+  //         "Content-Type": "application/json",
+  //       },
+  //       body: JSON.stringify({
+  //         script_tag: {
+  //           src,
+  //           event,
+  //           display_scope: displayScope,
+  //         },
+  //       }),
+  //     };
 
-      try {
-        const response = await request(options);
-        const parsedResponse = JSON.parse(response);
-        const scriptTagId = parsedResponse.script_tag.id;
-        console.log("New Script Tag ID:", scriptTagId);
-      } catch (error) {
-        console.error(error);
-      }
-    };
+  //     try {
+  //       const response = await request(options);
+  //       const parsedResponse = JSON.parse(response);
+  //       const scriptTagId = parsedResponse.script_tag.id;
+  //       console.log("New Script Tag ID:", scriptTagId);
+  //     } catch (error) {
+  //       console.error(error);
+  //     }
+  //   };
 
-    // Update an existing script tag
-    const updateScriptTag = async (scriptId) => {
-      const options = {
-        method: "PUT",
-        url: `${shopifyStoreUrl}/admin/api/${apiVersion}/script_tags/${scriptId}.json`,
-        headers: {
-          "x-shopify-access-token": shopifyAccessToken,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          script_tag: {
-            src,
-            event,
-            display_scope: displayScope,
-          },
-        }),
-      };
+  //   // Update an existing script tag
+  //   const updateScriptTag = async (scriptId) => {
+  //     const options = {
+  //       method: "PUT",
+  //       url: `${shopifyStoreUrl}/admin/api/${apiVersion}/script_tags/${scriptId}.json`,
+  //       headers: {
+  //         "x-shopify-access-token": shopifyAccessToken,
+  //         "Content-Type": "application/json",
+  //       },
+  //       body: JSON.stringify({
+  //         script_tag: {
+  //           src,
+  //           event,
+  //           display_scope: displayScope,
+  //         },
+  //       }),
+  //     };
 
-      try {
-        const response = await request(options);
-        const parsedResponse = JSON.parse(response);
-        const updatedScriptTagId = parsedResponse.script_tag.id;
-        console.log("Updated Script Tag ID:", updatedScriptTagId);
-      } catch (error) {
-        console.error(error);
-      }
-    };
+  //     try {
+  //       const response = await request(options);
+  //       const parsedResponse = JSON.parse(response);
+  //       const updatedScriptTagId = parsedResponse.script_tag.id;
+  //       console.log("Updated Script Tag ID:", updatedScriptTagId);
+  //     } catch (error) {
+  //       console.error(error);
+  //     }
+  //   };
 
-    // Example usage
-    await checkIfScriptTagExists();
-  } else {
-    console.log("skjdhsjdhjgdhshggb......");
-    //   const shopifyAccessToken = "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";
-    //   // const shopifyStoreUrl = 'https://genucel105.myshopify.com';
-    //   const apiVersion = "2023-01";
-    //   const src = "https://shopify.unimedcrm.com/ChamonixShopifyAuthontication/sealAppScripttag.js";
-    //   const event = "onload";
-    //   const displayScope = "all";
-    //   const options = {
-    //     method: "GET",
-    //     url: `https://genucel105.myshopify.com/admin/api/${apiVersion}/script_tags.json`,
-    //     headers: {
-    //       "x-shopify-access-token": shopifyAccessToken,
-    //     },
-    //   };
+  //   // Example usage
+  //   await checkIfScriptTagExists();
+  // } else {
+  //   console.log("skjdhsjdhjgdhshggb......");
+  //   //   const shopifyAccessToken = "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";
+  //   //   // const shopifyStoreUrl = 'https://genucel105.myshopify.com';
+  //   //   const apiVersion = "2023-01";
+  //   //   const src = "https://shopify.unimedcrm.com/ChamonixShopifyAuthontication/sealAppScripttag.js";
+  //   //   const event = "onload";
+  //   //   const displayScope = "all";
+  //   //   const options = {
+  //   //     method: "GET",
+  //   //     url: `https://genucel105.myshopify.com/admin/api/${apiVersion}/script_tags.json`,
+  //   //     headers: {
+  //   //       "x-shopify-access-token": shopifyAccessToken,
+  //   //     },
+  //   //   };
 
-    //   try {
-    //     const response = await request(options);
-    //     const scriptTags = JSON.parse(response).script_tags;
-    //     const matchingScriptTag = scriptTags.find((tag) => tag.src === src);
-    //     console.log("matchingScriptTag.id:-", matchingScriptTag.id);
-    //     try {
-    //       const options = {
-    //         method: "DELETE",
-    //         url: `https://genucel105.myshopify.com/admin/api/${apiVersion}/script_tags/${matchingScriptTag.id}.json`,
-    //         headers: {
-    //           "x-shopify-access-token": shopifyAccessToken,
-    //         },
-    //       };
-    //       const response = await request(options);
-    //       console.log(response.body);
-    //     } catch (error) {
-    //       console.error(error);
-    //     }
-    //   } catch (error) {
-    //     console.error(error);
-    //   }
-  }
+  //   //   try {
+  //   //     const response = await request(options);
+  //   //     const scriptTags = JSON.parse(response).script_tags;
+  //   //     const matchingScriptTag = scriptTags.find((tag) => tag.src === src);
+  //   //     console.log("matchingScriptTag.id:-", matchingScriptTag.id);
+  //   //     try {
+  //   //       const options = {
+  //   //         method: "DELETE",
+  //   //         url: `https://genucel105.myshopify.com/admin/api/${apiVersion}/script_tags/${matchingScriptTag.id}.json`,
+  //   //         headers: {
+  //   //           "x-shopify-access-token": shopifyAccessToken,
+  //   //         },
+  //   //       };
+  //   //       const response = await request(options);
+  //   //       console.log(response.body);
+  //   //     } catch (error) {
+  //   //       console.error(error);
+  //   //     }
+  //   //   } catch (error) {
+  //   //     console.error(error);
+  //   //   }
+  // }
 });
 
 // Endpoint to handle the Shopify webhook
