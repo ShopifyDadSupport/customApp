@@ -9,7 +9,7 @@ function LoginPage({ setLoggedIn }) {
   const navigate = useNavigate();
   const handleLogin = () => {
     axios
-      .post("https://auto-shipped.onrender.com/userauth", {
+      .post("https://dynamic-auto-shipp-app.onrender.com/userauth", {
         username: username,
         password: password
       })
