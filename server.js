@@ -169,6 +169,55 @@ app.get("/shopify/callback", async (req, res) => {
 
 function GetAccessToken(access_token_value, shop_domain) {
   const envFilePath = path.join(__dirname, ".env");
+
+  databaseData.getConnection((err, connection) => {
+    const checkExistenceQuery = "SELECT * FROM GetAccessTokenWithDomainName WHERE AccessToken = ?";
+    
+    databaseData.query(checkExistenceQuery, [access_token_value], (err, rows) => {
+      if (err) {
+        console.error("Error checking existence:", err);
+        return;
+      }
+  
+      if (rows.length > 0) {
+        // Customer_id exists, perform update
+        const updateQuery =
+          "UPDATE GetAccessTokenWithDomainName SET DomainName = ? WHERE AccessToken = ?";
+  
+        databaseData.query(
+          updateQuery,
+          [shop_domain, access_token_value],
+          (err, result) => {
+            if (err) {
+              console.error("Error updating data:", err);
+              return;
+            }
+  
+            console.log("Data updated successfully!");
+            console.log("Affected rows:", result.affectedRows);
+          }
+        );
+      } else {
+        // Customer_id does not exist, perform insert
+        const insertQuery =
+          "INSERT INTO GetAccessTokenWithDomainName (AccessToken, DomainName) VALUES (?, ?)";
+        
+        databaseData.query(
+          insertQuery,
+          [access_token_value, shop_domain],
+          (err, result) => {
+            if (err) {
+              console.error("Error inserting data:", err);
+              return;
+            }
+  
+            console.log("Data inserted successfully!");
+            console.log("Inserted ID:", result.insertId);
+          }
+        );
+      }
+    });
+  }); 
   const newVariables = {
     accessToken: access_token_value,
     shopName: shop_domain,
