@@ -1,5 +1,5 @@
-let accessToken;
-let domainName;
+var accessToken;
+var domainName;
 
 function fetchDataFromDatabase(connection) {
   const query = `
