@@ -1,6 +1,6 @@
- var myProxy =  (req,res,next)=>{
+ var myProxy =  (req, res, next)=>{
     console.log("myProxy is working.........")
-    next();
+    next()
 }
 
 
