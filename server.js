@@ -2119,7 +2119,7 @@ function getupdateDetails(portalTokenValue) {
 }
 
 app.get('/proxy/',(req,res)=>{
-  console.log("proxy::-",req.body);
+  console.log("proxy::-",req.query);
 })
 
 app.listen(7709, () => {
