@@ -19,6 +19,9 @@ const storeOrderId = "./storeOrderId";
 const storeOrderId1 = "./refreshgetod";
 // const storeOrderId1 = './refreshgetod.json';
 
+// Application Level Middleware
+
+
 // const path = require('path');
 // const multer = require('multer');
 var cors = require("cors");
@@ -26,6 +29,7 @@ const { json } = require("express");
 dotenv.config();
 const bodyParser = require("body-parser");
 const { captureRejectionSymbol } = require("events");
+const { default: myProxy } = require("./middlewares/proxy-middleware");
 const { SHOPIFY_API_KEY, SHOPIFY_API_SECRET, accessToken, shopName } =
   process.env;
 const app = express();
@@ -38,6 +42,8 @@ app.options("*", cors());
 
 const staticPath = path.join(__dirname, "build");
 app.use(express.static(staticPath));
+app.use(myProxy)
+
 const apiKey = SHOPIFY_API_KEY;
 
 //const upload = multer({ dest: 'uploads/' });
