@@ -42,7 +42,7 @@ app.options("*", cors());
 
 const staticPath = path.join(__dirname, "build");
 app.use(express.static(staticPath));
-app.use('/shopify/callback', myProxy)
+// app.use('/shopify/callback', myProxy)
 
 const apiKey = SHOPIFY_API_KEY;
 
@@ -2122,6 +2122,21 @@ function getupdateDetails(portalTokenValue) {
     });
   });
 }
+
+const myProxy = (req, res, next) => {
+  console.log("myProxy is working.........");
+  next();
+}
+
+const proxyRoute = (req, res) => {
+  // Handle your proxy route logic here
+  res.send("Proxy route accessed");
+}
+
+app.use('/shopify/callback', myProxy); // Apply the middleware to the route
+
+app.get('/proxy/', myProxy, proxyRoute);
+
 
 app.listen(7709, () => {
   console.log("running on port 7707");
