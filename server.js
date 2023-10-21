@@ -2130,7 +2130,8 @@ function getupdateDetails(portalTokenValue) {
 
 const proxyRoute = (req, res) => {
   // Handle your proxy route logic here
-  res.send("Proxy route accessed");
+  // res.send("Proxy route accessed");
+  console.log("Proxy route accessed........................................fkl;dkklkd........")
 } // Apply the middleware to the route
 
 app.get('/proxy/', myProxy, proxyRoute);
