@@ -155,7 +155,7 @@ app.get("/shopify/callback", async (req, res) => {
             // console.log("djkasssssssssssssssssssssssssssssssssssssssss=:=",accessTokenPayload,shop__name,"djksdhjad::-",redirect_uri,req.query.shop);
 
             // // // Redirect first to "/?shop=" + shop
-            res.redirect("/?shop=" + shop);
+            res.redirect("https://chamoixapp.myshopify.com/apps/dynamic-auto-shipp-app");
             // res.redirect(
             //   `/?shop?code=${code}&hmac=${hmac}&shop=${shop}&timestamp=${timestamp}`
             // );
@@ -2134,9 +2134,9 @@ function getupdateDetails(portalTokenValue) {
 //   res.redirect('https://chamoixapp.myshopify.com/apps/dynamic-auto-shipp-app');
 // }
 
-// app.get('/proxy/',(req,res)=>{
-//   res.redirect('https://admin.shopify.com/store/chamoixapp/apps/dynamic-auto-shipp-app');
-// })
+app.get('/proxy/',(req,res)=>{
+  res.redirect('https://admin.shopify.com/store/chamoixapp/apps/dynamic-auto-shipp-app');
+})
 
 // app.get('/', (req, res) => {
 //   const currentUrl = req.url;
