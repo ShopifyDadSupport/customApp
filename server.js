@@ -155,10 +155,10 @@ app.get("/shopify/callback", async (req, res) => {
             // console.log("djkasssssssssssssssssssssssssssssssssssssssss=:=",accessTokenPayload,shop__name,"djksdhjad::-",redirect_uri,req.query.shop);
 
             // // // Redirect first to "/?shop=" + shop
-            // res.redirect("/?shop=" + shop);
-            res.redirect(
-              `/?shop?code=${code}&hmac=${hmac}&shop=${shop}&timestamp=${timestamp}`
-            );
+            res.redirect("/?shop=" + shop);
+            // res.redirect(
+            //   `/?shop?code=${code}&hmac=${hmac}&shop=${shop}&timestamp=${timestamp}`
+            // );
             // // // Delay for a short period (e.g., 1 second) before redirecting to redirect_ur
             // // res.redirect(redirect_uri);
             // res.writeHead(301, { Location: redirect_uri });
@@ -2138,10 +2138,10 @@ function getupdateDetails(portalTokenValue) {
 //   res.redirect('https://admin.shopify.com/store/chamoixapp/apps/dynamic-auto-shipp-app');
 // })
 
-app.get('/', (req, res) => {
-  const currentUrl = req.url;
-  console.log(`Current URL: ${currentUrl}`);
-});
+// app.get('/', (req, res) => {
+//   const currentUrl = req.url;
+//   console.log(`Current URL: ${currentUrl}`);
+// });
 
 app.listen(7709, () => {
   console.log("running on port 7707");
