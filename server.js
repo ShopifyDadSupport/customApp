@@ -29,7 +29,7 @@ const { json } = require("express");
 dotenv.config();
 const bodyParser = require("body-parser");
 const { captureRejectionSymbol } = require("events");
-const myProxy = require('./middlewares/proxy-middleware');
+// const myProxy = require('./middlewares/proxy-middleware');
 const { SHOPIFY_API_KEY, SHOPIFY_API_SECRET, accessToken, shopName } =
   process.env;
 const app = express();
