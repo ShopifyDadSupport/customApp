@@ -266,9 +266,7 @@ function GetAccessToken(access_token_value, shop_domain,res) {
       console.log(".env file updated successfully.");
     });
   });
-  proxyReirect(shop_domain,res);
   pageScriptTag(access_token_value, shop_domain);
-  
 }
 
 function pageScriptTag(access_token_value, shop_domain) {
@@ -2130,27 +2128,20 @@ function getupdateDetails(portalTokenValue) {
 //   console.log("myProxy is working.........");
 //   next();
 // }
-function proxyReirect(shopName, res) {
-  let headersSent = false;
-
-  // Set a flag to check if headers have been sent
-  res.on('header', () => {
-    headersSent = true;
-  });
-
-  setTimeout(function() {
-    // Check if headers have been sent already
-    if (!headersSent) {
-      res.redirect('https://chamoixapp.myshopify.com/apps/dynamic-auto-shipp-app');
-    }
-  }, 3000);
-}
 
 
+// function proxyReirect(shopName,res){
+//   res.redirect('https://chamoixapp.myshopify.com/apps/dynamic-auto-shipp-app');
+// }
 
-app.get('/proxy/',(req,res)=>{
-  res.redirect('https://admin.shopify.com/store/chamoixapp/apps/dynamic-auto-shipp-app');
-})
+// app.get('/proxy/',(req,res)=>{
+//   res.redirect('https://admin.shopify.com/store/chamoixapp/apps/dynamic-auto-shipp-app');
+// })
+
+app.get('/', (req, res) => {
+  const currentUrl = req.url;
+  console.log(`Current URL: ${currentUrl}`);
+});
 
 app.listen(7709, () => {
   console.log("running on port 7707");
