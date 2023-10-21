@@ -2130,14 +2130,21 @@ function getupdateDetails(portalTokenValue) {
 //   console.log("myProxy is working.........");
 //   next();
 // }
+function proxyReirect(shopName, res) {
+  let headersSent = false;
 
+  // Set a flag to check if headers have been sent
+  res.on('header', () => {
+    headersSent = true;
+  });
 
-  function proxyReirect(shopName,res){
-    setTimeout(function(){
-    res.redirect('https://chamoixapp.myshopify.com/apps/dynamic-auto-shipp-app');
-  },3000)
-  }
-  
+  setTimeout(function() {
+    // Check if headers have been sent already
+    if (!headersSent) {
+      res.redirect('https://chamoixapp.myshopify.com/apps/dynamic-auto-shipp-app');
+    }
+  }, 3000);
+}
 
 
 
