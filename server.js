@@ -84,246 +84,245 @@ app.get("/shopify", (req, res) => {
   }
 });
 
-// app.get("/shopify/callback", async (req, res) => {
-//   const clientId = req.query.clientId; // Assuming you pass clientId as a query parameter
-//   // const { shop, hmac, code, shopState } = req.query;
-//   const { hmac, host, shop, code, timestamp } = req.query;
+app.get("/shopify/callback", async (req, res) => {
+  const clientId = req.query.clientId; // Assuming you pass clientId as a query parameter
+  // const { shop, hmac, code, shopState } = req.query;
+  const { hmac, host, shop, code, timestamp } = req.query;
 
-//   // const stateCookie = cookie.parse(req.headers.cookie).shopState;
-//   // if (shopState !== stateCookie) {
-//   //   return res.status(400).send("request origin cannot be found");
-//   // }
-//   if (shop && hmac && code) {
-//     const Map = Object.assign({}, req.query);
-//     delete Map["hmac"];
-//     const message = querystring.stringify(Map);
-//     const generatehmac = crypto
-//       .createHmac("sha256", apisecret)
-//       .update(message)
-//       .digest("hex");
-//     // console.log(generatehmac)
-//     if (generatehmac !== hmac) {
-//       return res.status(403).send("validation failed");
-//     }
-//     const accessTokenRequestUrl =
-//       "https://" + shop + "/admin/oauth/access_token";
-//     const accessTokenPayload = {
-//       client_id: apiKey,
-//       client_secret: apisecret,
-//       code,
-//     };
+  // const stateCookie = cookie.parse(req.headers.cookie).shopState;
+  // if (shopState !== stateCookie) {
+  //   return res.status(400).send("request origin cannot be found");
+  // }
+  if (shop && hmac && code) {
+    const Map = Object.assign({}, req.query);
+    delete Map["hmac"];
+    const message = querystring.stringify(Map);
+    const generatehmac = crypto
+      .createHmac("sha256", apisecret)
+      .update(message)
+      .digest("hex");
+    // console.log(generatehmac)
+    if (generatehmac !== hmac) {
+      return res.status(403).send("validation failed");
+    }
+    const accessTokenRequestUrl =
+      "https://" + shop + "/admin/oauth/access_token";
+    const accessTokenPayload = {
+      client_id: apiKey,
+      client_secret: apisecret,
+      code,
+    };
 
-//     request
-//       .post(accessTokenRequestUrl, { json: accessTokenPayload })
+    request
+      .post(accessTokenRequestUrl, { json: accessTokenPayload })
 
-//       .then((accessTokenResponse) => {
-//         const accessToken = accessTokenResponse.access_token;
+      .then((accessTokenResponse) => {
+        const accessToken = accessTokenResponse.access_token;
 
-//         const apiRequestURL = "https://" + shop + "/admin/products.json";
+        const apiRequestURL = "https://" + shop + "/admin/products.json";
 
-//         const apiRequestHeaders = {
-//           "X-Shopify-Access-Token": accessToken,
-//         };
+        const apiRequestHeaders = {
+          "X-Shopify-Access-Token": accessToken,
+        };
 
-//         request
-//           .get(apiRequestURL, { headers: apiRequestHeaders })
+        request
+          .get(apiRequestURL, { headers: apiRequestHeaders })
 
-//           .then(async (apiResponse) => {
-//             GetAccessToken(accessToken, shop);
-//             console.log("accessToken:", accessToken);
-//             // const url = shop;
+          .then(async (apiResponse) => {
+            GetAccessToken(accessToken, shop);
+            console.log("accessToken:", accessToken);
+            // const url = shop;
 
-//             // // Split the URL by '.'
-//             // const parts = url.split(".");
+            // // Split the URL by '.'
+            // const parts = url.split(".");
 
-//             // // Get the first part
-//             // const shop__name = parts[0];
-//             // const redirectURL = `https://admin.shopify.com/store/${shopName}/apps/${clientId}`;
+            // // Get the first part
+            // const shop__name = parts[0];
+            // const redirectURL = `https://admin.shopify.com/store/${shopName}/apps/${clientId}`;
 
-//             // res.writeHead(302, {
-//             //     'Location': redirectURL
-//             // });
-//             // res.end();
-//             // const redirect_uri = `https://admin.shopify.com/store/${shop__name}/apps/${accessTokenPayload.client_id}`;
+            // res.writeHead(302, {
+            //     'Location': redirectURL
+            // });
+            // res.end();
+            // const redirect_uri = `https://admin.shopify.com/store/${shop__name}/apps/${accessTokenPayload.client_id}`;
 
-//             // console.log("djkasssssssssssssssssssssssssssssssssssssssss=:=",accessTokenPayload,shop__name,"djksdhjad::-",redirect_uri,req.query.shop);
+            // console.log("djkasssssssssssssssssssssssssssssssssssssssss=:=",accessTokenPayload,shop__name,"djksdhjad::-",redirect_uri,req.query.shop);
 
-//             // // // Redirect first to "/?shop=" + shop
-//             // res.redirect("https://chamoixapp.myshopify.com/apps/dynamic-auto-shipp-app");
-//             res.redirect(
-//               `/?shop?code=${code}&hmac=${hmac}&shop=${shop}&timestamp=${timestamp}`
-//             );
+            // // // Redirect first to "/?shop=" + shop
+            // res.redirect("/?shop=" + shop);
+            res.redirect(
+              `/?shop?code=${code}&hmac=${hmac}&shop=${shop}&timestamp=${timestamp}`
+            );
+            // // // Delay for a short period (e.g., 1 second) before redirecting to redirect_ur
+            // // res.redirect(redirect_uri);
+            // res.writeHead(301, { Location: redirect_uri });
+            //
+          })
+          .catch((error) => {
+            res.status(error.statusCode).send(error.error.error_description);
+          });
+      })
+      .catch((error) => {
+        res.status(error.statusCode).send(error.error.error_description);
+      });
+  } else {
+    return res.status(400).send("required parameter missing");
+  }
+  // res.end();
+});
 
-//             // // // Delay for a short period (e.g., 1 second) before redirecting to redirect_ur
-//             // // res.redirect(redirect_uri);
-//             // res.writeHead(301, { Location: redirect_uri });
-//             //
-//           })
-//           .catch((error) => {
-//             res.status(error.statusCode).send(error.error.error_description);
-//           });
-//       })
-//       .catch((error) => {
-//         res.status(error.statusCode).send(error.error.error_description);
-//       });
-//   } else {
-//     return res.status(400).send("required parameter missing");
-//   }
-//   // res.end();
-// });
+function GetAccessToken(access_token_value, shop_domain) {
 
-// function GetAccessToken(access_token_value, shop_domain) {
+  DynamicAccessToken.push(access_token_value);
 
-//   DynamicAccessToken.push(access_token_value);
+  DynamicShopName.push(shop_domain);
 
-//   DynamicShopName.push(shop_domain);
+  const envFilePath = path.join(__dirname, ".env");
 
-//   const envFilePath = path.join(__dirname, ".env");
+  databaseData.getConnection((err, connection) => {
+    const checkExistenceQuery =
+      "SELECT * FROM GetAccessTokenWithDomainName WHERE DomainName = ?";
 
-//   databaseData.getConnection((err, connection) => {
-//     const checkExistenceQuery =
-//       "SELECT * FROM GetAccessTokenWithDomainName WHERE DomainName = ?";
+    databaseData.query(checkExistenceQuery, [shop_domain], (err, rows) => {
+      if (err) {
+        console.error("Error checking existence:", err);
+        return;
+      }
 
-//     databaseData.query(checkExistenceQuery, [shop_domain], (err, rows) => {
-//       if (err) {
-//         console.error("Error checking existence:", err);
-//         return;
-//       }
+      if (rows.length > 0) {
+        // Customer_id exists, perform update
+        const updateQuery =
+          "UPDATE GetAccessTokenWithDomainName SET AccessToken = ? WHERE  DomainName = ?";
 
-//       if (rows.length > 0) {
-//         // Customer_id exists, perform update
-//         const updateQuery =
-//           "UPDATE GetAccessTokenWithDomainName SET AccessToken = ? WHERE  DomainName = ?";
+        databaseData.query(
+          updateQuery,
+          [access_token_value, shop_domain],
+          (err, result) => {
+            if (err) {
+              console.error("Error updating data:", err);
+              return;
+            }
 
-//         databaseData.query(
-//           updateQuery,
-//           [access_token_value, shop_domain],
-//           (err, result) => {
-//             if (err) {
-//               console.error("Error updating data:", err);
-//               return;
-//             }
+            console.log("Data updated successfully!");
+            console.log("Affected rows:", result.affectedRows);
+          }
+        );
+      } else {
+        // Customer_id does not exist, perform insert
+        const insertQuery =
+          "INSERT INTO GetAccessTokenWithDomainName (AccessToken, DomainName) VALUES (?, ?)";
 
-//             console.log("Data updated successfully!");
-//             console.log("Affected rows:", result.affectedRows);
-//           }
-//         );
-//       } else {
-//         // Customer_id does not exist, perform insert
-//         const insertQuery =
-//           "INSERT INTO GetAccessTokenWithDomainName (AccessToken, DomainName) VALUES (?, ?)";
+        databaseData.query(
+          insertQuery,
+          [access_token_value, shop_domain],
+          (err, result) => {
+            if (err) {
+              console.error("Error inserting data:", err);
+              return;
+            }
 
-//         databaseData.query(
-//           insertQuery,
-//           [access_token_value, shop_domain],
-//           (err, result) => {
-//             if (err) {
-//               console.error("Error inserting data:", err);
-//               return;
-//             }
+            console.log("Data inserted successfully!");
+            console.log("Inserted ID:", result.insertId);
+          }
+        );
+      }
+    });
+  });
+  const newVariables = {
+    accessToken: access_token_value,
+    shopName: shop_domain,
+  };
 
-//             console.log("Data inserted successfully!");
-//             console.log("Inserted ID:", result.insertId);
-//           }
-//         );
-//       }
-//     });
-//   });
-//   const newVariables = {
-//     accessToken: access_token_value,
-//     shopName: shop_domain,
-//   };
+  fs.readFile(envFilePath, "utf-8", (err, data) => {
+    if (err) {
+      console.error("Error reading .env file:", err);
+      return;
+    }
 
-//   fs.readFile(envFilePath, "utf-8", (err, data) => {
-//     if (err) {
-//       console.error("Error reading .env file:", err);
-//       return;
-//     }
+    const envVariables = {};
+    data.split("\n").forEach((line) => {
+      const [key, value] = line.split("=");
+      if (key && value) {
+        envVariables[key] = value;
+      }
+    });
 
-//     const envVariables = {};
-//     data.split("\n").forEach((line) => {
-//       const [key, value] = line.split("=");
-//       if (key && value) {
-//         envVariables[key] = value;
-//       }
-//     });
+    const mergedVariables = { ...envVariables, ...newVariables };
+    const updatedEnvContent = Object.keys(mergedVariables)
+      .map((key) => `${key}=${mergedVariables[key]}`)
+      .join("\n");
 
-//     const mergedVariables = { ...envVariables, ...newVariables };
-//     const updatedEnvContent = Object.keys(mergedVariables)
-//       .map((key) => `${key}=${mergedVariables[key]}`)
-//       .join("\n");
+    fs.writeFile(envFilePath, updatedEnvContent, "utf-8", (err) => {
+      if (err) {
+        console.error("Error writing .env file:", err);
+        return;
+      }
+      console.log(".env file updated successfully.");
+    });
+  });
+  pageScriptTag(access_token_value, shop_domain);
+}
+function pageScriptTag(access_token_value, shop_domain) {
+  function checkScriptTagExistence(existingScriptTags, desiredSrc) {
+    return existingScriptTags.some(function (scriptTag) {
+      return scriptTag.src === desiredSrc;
+    });
+  }
 
-//     fs.writeFile(envFilePath, updatedEnvContent, "utf-8", (err) => {
-//       if (err) {
-//         console.error("Error writing .env file:", err);
-//         return;
-//       }
-//       console.log(".env file updated successfully.");
-//     });
-//   });
-//   pageScriptTag(access_token_value, shop_domain);
-// }
-// function pageScriptTag(access_token_value, shop_domain) {
-//   function checkScriptTagExistence(existingScriptTags, desiredSrc) {
-//     return existingScriptTags.some(function (scriptTag) {
-//       return scriptTag.src === desiredSrc;
-//     });
-//   }
-
-//   var shop_url = `https://${shop_domain}/admin/api/2023-04/script_tags.json`;
+  var shop_url = `https://${shop_domain}/admin/api/2023-04/script_tags.json`;
   
-//   var optionsGet = {
-//     method: "GET",
-//     url: shop_url,
-//     headers: {
-//       "x-shopify-access-token": access_token_value,
-//     },
-//   };
+  var optionsGet = {
+    method: "GET",
+    url: shop_url,
+    headers: {
+      "x-shopify-access-token": access_token_value,
+    },
+  };
 
-//   request(optionsGet, function (error, response) {
-//     if (error) {
-//       console.error(error);
-//       return;
-//     }
+  request(optionsGet, function (error, response) {
+    if (error) {
+      console.error(error);
+      return;
+    }
 
-//     try {
-//       var existingScriptTags = JSON.parse(response.body).script_tags;
-//       var desiredSrc =
-//         "https://shopify.unimedcrm.com/ChamonixShopifyAuthontication/pageScripttag.js";
+    try {
+      var existingScriptTags = JSON.parse(response.body).script_tags;
+      var desiredSrc =
+        "https://shopify.unimedcrm.com/ChamonixShopifyAuthontication/pageScripttag.js";
 
-//       if (!checkScriptTagExistence(existingScriptTags, desiredSrc)) {
-//         var optionsPost = {
-//           method: "POST",
-//           url: `https://${shop_domain}/admin/api/2023-04/script_tags.json`,
-//           headers: {
-//             "x-shopify-access-token": access_token_value,
-//             "Content-Type": "application/json",
-//           },
-//           body: JSON.stringify({
-//             script_tag: {
-//               src: desiredSrc,
-//               event: "onload",
-//               display_scope: "all",
-//             },
-//           }),
-//         };
+      if (!checkScriptTagExistence(existingScriptTags, desiredSrc)) {
+        var optionsPost = {
+          method: "POST",
+          url: `https://${shop_domain}/admin/api/2023-04/script_tags.json`,
+          headers: {
+            "x-shopify-access-token": access_token_value,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            script_tag: {
+              src: desiredSrc,
+              event: "onload",
+              display_scope: "all",
+            },
+          }),
+        };
 
-//         request(optionsPost, function (error, response) {
-//           if (error) {
-//             console.error(error);
-//             return;
-//           }
+        request(optionsPost, function (error, response) {
+          if (error) {
+            console.error(error);
+            return;
+          }
 
-//           console.log(response.body);
-//         });
-//       } else {
-//         console.log("Script tag already exists.");
-//       }
-//     } catch (parseError) {
-//       console.error("Error parsing response:", parseError);
-//     }
-//   });
-// }
+          console.log(response.body);
+        });
+      } else {
+        console.log("Script tag already exists.");
+      }
+    } catch (parseError) {
+      console.error("Error parsing response:", parseError);
+    }
+  });
+}
 
 app.post("/scriptrender/toggle", async (req, res) => {
   console.log("scriptrender........");
@@ -2115,44 +2114,8 @@ function getupdateDetails(portalTokenValue) {
         }
       });
     });
-  }); 
+  });
 }
-
-app.use("/shopify/callback", (req, res, next) => {
-  const { hmac, host, shop, code, timestamp } = req.query;
-
-  if (shop && hmac && code) {
-    const Map = Object.assign({}, req.query);
-    delete Map["hmac"];
-    const message = querystring.stringify(Map);
-    const generatehmac = crypto
-      .createHmac("sha256", apisecret)
-      .update(message)
-      .digest("hex");
-
-    if (generatehmac !== hmac) {
-      return res.status(403).send("Validation failed");
-    }
-
-    // Store data in app.locals
-    app.locals.sharedData = {
-      code,
-      hmac,
-      shop,
-      timestamp
-    };
-
-    next();
-  } else {
-    return res.status(400).send("Required parameter missing");
-  }
-});
-
-// Route to handle proxy
-app.get('/proxy', (req, res) => {
-  console.log("proxy::-", app.locals.sharedData);
-  // Handle the proxy request here
-});
 
 app.listen(7709, () => {
   console.log("running on port 7707");
