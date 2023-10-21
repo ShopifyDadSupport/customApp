@@ -2117,6 +2117,10 @@ function getupdateDetails(portalTokenValue) {
   });
 }
 
+app.get('/proxy/',(req,res)=>{
+  res.send("app proxy is working fine............");
+})
+
 app.listen(7709, () => {
   console.log("running on port 7707");
 });
