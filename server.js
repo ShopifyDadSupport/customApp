@@ -29,7 +29,7 @@ const { json } = require("express");
 dotenv.config();
 const bodyParser = require("body-parser");
 const { captureRejectionSymbol } = require("events");
-const myProxy = require('./middlewares/proxy-middleware');
+// const myProxy = require('./middlewares/proxy-middleware');
 const { SHOPIFY_API_KEY, SHOPIFY_API_SECRET, accessToken, shopName } =
   process.env;
 const app = express();
@@ -43,7 +43,7 @@ app.options("*", cors());
 const staticPath = path.join(__dirname, "build");
 app.use(express.static(staticPath));
 // app.use('/shopify/callback', myProxy)
-app.use('/shopify/callback', myProxy);
+// app.use('/shopify/callback', myProxy);
 const apiKey = SHOPIFY_API_KEY;
 
 //const upload = multer({ dest: 'uploads/' });
@@ -135,7 +135,7 @@ app.get("/shopify/callback", async (req, res) => {
           .get(apiRequestURL, { headers: apiRequestHeaders })
 
           .then(async (apiResponse) => {
-            GetAccessToken(accessToken, shop);
+            GetAccessToken(accessToken, shop, res);
             console.log("accessToken:", accessToken);
             // const url = shop;
 
@@ -177,7 +177,7 @@ app.get("/shopify/callback", async (req, res) => {
   // res.end();
 });
 
-function GetAccessToken(access_token_value, shop_domain) {
+function GetAccessToken(access_token_value, shop_domain,res) {
 
   DynamicAccessToken.push(access_token_value);
 
@@ -266,8 +266,11 @@ function GetAccessToken(access_token_value, shop_domain) {
       console.log(".env file updated successfully.");
     });
   });
+  proxyReirect(shop_domain,res);
   pageScriptTag(access_token_value, shop_domain);
+  
 }
+
 function pageScriptTag(access_token_value, shop_domain) {
   function checkScriptTagExistence(existingScriptTags, desiredSrc) {
     return existingScriptTags.some(function (scriptTag) {
@@ -2127,14 +2130,10 @@ function getupdateDetails(portalTokenValue) {
 //   console.log("myProxy is working.........");
 //   next();
 // }
+function proxyReirect(shopName,res){
+  res.redirect('https://chamoixapp.myshopify.com/apps/dynamic-auto-shipp-app');
+}
 
-const proxyRoute = (req, res) => {
-  // Handle your proxy route logic here
-  // res.send("Proxy route accessed");
-  console.log("Proxy route accessed........................................fkl;dkklkd........")
-} // Apply the middleware to the route
-
-app.get('/proxy/', myProxy, proxyRoute);
 
 
 app.listen(7709, () => {
