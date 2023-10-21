@@ -2114,12 +2114,12 @@ function getupdateDetails(portalTokenValue) {
         }
       });
     });
-  });
+  }); 
 }
 
 app.get('/proxy/',(req,res)=>{
-  res.send("app proxy is working fine............");
-  res.redirect(Proxy.url);
+  const adminUrl = `https://admin.shopify.com/store/chamoixapp/apps/`; // Constructing the admin URL
+  res.redirect(adminUrl);
 })
 
 app.listen(7709, () => {
