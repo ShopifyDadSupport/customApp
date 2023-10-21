@@ -1,5 +1,6 @@
-var myProxy =  (req,res,next)=>{
+ var myProxy =  (req,res,next)=>{
     console.log("myProxy is working.........")
 }
 
-export default myProxy;
+
+module.exports = myProxy;
