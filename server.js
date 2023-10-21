@@ -2118,7 +2118,7 @@ function getupdateDetails(portalTokenValue) {
   }); 
 }
 
-const saveDataMiddleware = (req, res, next) => {
+app.use("/shopify/callback", (req, res, next) => {
   const { hmac, host, shop, code, timestamp } = req.query;
 
   if (shop && hmac && code) {
@@ -2134,30 +2134,23 @@ const saveDataMiddleware = (req, res, next) => {
       return res.status(403).send("Validation failed");
     }
 
-    // Store data in req.sharedData
-    req.sharedData = {
+    // Store data in app.locals
+    app.locals.sharedData = {
       code,
       hmac,
       shop,
       timestamp
     };
 
-    next(); // Move on to the next middleware/route
+    next();
   } else {
     return res.status(400).send("Required parameter missing");
   }
-};
-
-// Route to handle Shopify callback
-app.get("/shopify/callback", saveDataMiddleware, async (req, res) => {
-  // ... (your existing code)
-
-  res.redirect(`/proxy`);
 });
 
 // Route to handle proxy
 app.get('/proxy', (req, res) => {
-  console.log("proxy::-", req.sharedData);
+  console.log("proxy::-", app.locals.sharedData);
   // Handle the proxy request here
 });
 
