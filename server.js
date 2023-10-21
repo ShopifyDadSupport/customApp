@@ -2118,7 +2118,7 @@ function getupdateDetails(portalTokenValue) {
   }); 
 }
 
-app.get('/?shop',(req,res)=>{
+app.get('/',(req,res)=>{
   const adminUrl = `https://admin.shopify.com/store/chamoixapp/apps/`; // Constructing the admin URL
   res.redirect(adminUrl);
 })
