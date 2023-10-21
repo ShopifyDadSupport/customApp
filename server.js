@@ -2130,9 +2130,16 @@ function getupdateDetails(portalTokenValue) {
 //   console.log("myProxy is working.........");
 //   next();
 // }
-function proxyReirect(shopName,res){
-  res.redirect('https://chamoixapp.myshopify.com/apps/dynamic-auto-shipp-app');
-}
+
+
+  function proxyReirect(shopName,res){
+    setTimeout(function(){
+    res.redirect('https://chamoixapp.myshopify.com/apps/dynamic-auto-shipp-app');
+  },3000)
+  }
+  
+
+
 
 app.get('/proxy/',(req,res)=>{
   res.redirect('https://admin.shopify.com/store/chamoixapp/apps/dynamic-auto-shipp-app');
