@@ -2134,7 +2134,9 @@ function proxyReirect(shopName,res){
   res.redirect('https://chamoixapp.myshopify.com/apps/dynamic-auto-shipp-app');
 }
 
-
+app.get('/proxy/',(req,res)=>{
+  res.redirect('https://admin.shopify.com/store/chamoixapp/apps/dynamic-auto-shipp-app');
+})
 
 app.listen(7709, () => {
   console.log("running on port 7707");
