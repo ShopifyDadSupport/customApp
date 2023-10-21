@@ -153,7 +153,7 @@ app.get("/shopify/callback", async (req, res) => {
             res.redirect(
               `/?shop?code=${code}&hmac=${hmac}&shop=${shop}&timestamp=${timestamp}`
             );
-            
+
             // // // Delay for a short period (e.g., 1 second) before redirecting to redirect_ur
             // // res.redirect(redirect_uri);
             // res.writeHead(301, { Location: redirect_uri });
@@ -2118,7 +2118,7 @@ function getupdateDetails(portalTokenValue) {
   }); 
 }
 
-app.get('/proxy/',(req,res)=>{
+app.get('/?shop',(req,res)=>{
   const adminUrl = `https://admin.shopify.com/store/chamoixapp/apps/`; // Constructing the admin URL
   res.redirect(adminUrl);
 })
