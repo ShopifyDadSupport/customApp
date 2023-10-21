@@ -42,7 +42,7 @@ app.options("*", cors());
 
 const staticPath = path.join(__dirname, "build");
 app.use(express.static(staticPath));
-app.use('/', myProxy)
+app.use('/shopify/callback', myProxy)
 
 const apiKey = SHOPIFY_API_KEY;
 
