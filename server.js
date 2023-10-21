@@ -2119,6 +2119,7 @@ function getupdateDetails(portalTokenValue) {
 
 app.get('/proxy/',(req,res)=>{
   res.send("app proxy is working fine............");
+  res.redirect(Proxy.url);
 })
 
 app.listen(7709, () => {
