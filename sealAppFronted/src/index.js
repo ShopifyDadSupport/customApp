@@ -1,4 +1,3 @@
-// index.js
 import React, { useState, useEffect } from "react";
 import { BrowserRouter } from "react-router-dom";
 import ReactDOM from "react-dom/client";
@@ -8,7 +7,7 @@ import LoginPage from "./LoginPage";
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
 const shouldRenderLoginPage =
-  window.location.href === "https://dynamic-auto-shipp-app.onrender.com/";
+  window.location.href === "http://localhost:3000/";
 const Main = () => {
   const [loggedIn, setLoggedIn] = useState(
     localStorage.getItem("isLoggedIn") === "true"
@@ -24,6 +23,10 @@ const Main = () => {
 
   if (shouldRenderLoginPage && !loggedIn) {
     return <LoginPage setLoggedIn={setLoggedIn} />;
+  }
+
+  if (loggedIn) {
+    return <a class="redirectShopify__url"href="https://admin.shopify.com/store">Go To the Shopify Store</a>;
   }
 
   return <App />;
