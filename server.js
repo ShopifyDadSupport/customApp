@@ -17,7 +17,7 @@ var cron = require("node-cron");
 const fs = require("fs");
 const storeOrderId = "./storeOrderId";
 const storeOrderId1 = "./refreshgetod";
-
+import { shopifyApi } from "@shopify/shopify-api";
 // const storeOrderId1 = './refreshgetod.json';
 
 // Application Level Middleware
@@ -27,7 +27,7 @@ const storeOrderId1 = "./refreshgetod";
 // const multer = require('multer');
 var cors = require("cors");
 const { json } = require("express");
-const session = require('express-session');
+
 dotenv.config();
 const bodyParser = require("body-parser");
 const { captureRejectionSymbol } = require("events");
@@ -35,7 +35,6 @@ const { captureRejectionSymbol } = require("events");
 const { SHOPIFY_API_KEY, SHOPIFY_API_SECRET, accessToken, shopName } =
   process.env;
 const app = express();
-
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
 app.use(express.urlencoded({ extended: true }));
@@ -56,11 +55,7 @@ const scopes =
   "read_orders,read_content,write_content,write_orders,read_script_tags,write_script_tags,read_products,write_products,read_customers,write_customers,read_shipping,write_shipping ,read_themes,write_themes,read_checkouts,write_checkouts";
 
 const forwardingaddress = "https://dynamic-auto-shipp-app.onrender.com";
-app.use(session({
-  secret: apisecret, // Replace with an actual secret key
-  resave: false,
-  saveUninitialized: true,
-}));
+
 app.use(bodyParser.json({ limit: "10mb" }));
 app.use(bodyParser.urlencoded({ limit: "10mb", extended: true }));
 
@@ -97,14 +92,35 @@ app.get("/shopify", (req, res) => {
   }
 });
 
+
+
+
+
+
 app.get("/shopify/callback", async (req, res) => {
-  const clientId = req.query.clientId;
-  req.session.clientId = clientId; // Store clientId in the session
-
-  const storedClientId = req.session.clientId; 
-
-   console.log("jkshjkdhsjkhdjkshdjkhdsfjgsfgsjlfgjagfjlgadfdafjgfjgdjf,,,,,,,,,,,:==",storedClientId);
+  const clientId = req.query.clientId; // Assuming you pass clientId as a query parameter
   // const { shop, hmac, code, shopState } = req.query;
+  const shopify = shopifyApi({
+    apiKey: process.env.SHOPIFY_API_KEY,
+    apiSecretKey: process.env.SHOPIFY_API_SECRET,
+    scopes: scopes,
+    hostName: forwardingaddress.replace(/https:\/\//, ""),
+    hostScheme: "https",
+    apiVersion: "2023-10",
+    isEmbeddedApp: true,
+    logger: { level: isDev ? 3 : 0 }, //Error = 0,Warning = 1,Info = 2,Debug = 3
+  });
+  
+
+  const callbackResponse = await shopify.auth.callback({
+    rawRequest: req,
+    rawResponse: res,
+  });
+
+  const { session } = callbackResponse;
+console.log("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:-",session)
+
+
   const { hmac, host, shop, code, timestamp } = req.query;
 
   // const stateCookie = cookie.parse(req.headers.cookie).shopState;
