@@ -17,9 +17,6 @@ var cron = require("node-cron");
 const fs = require("fs");
 const storeOrderId = "./storeOrderId";
 const storeOrderId1 = "./refreshgetod";
-// import { shopifyApi } from "@shopify/shopify-api";
-
-const shopifyApi = require('@shopify/shopify-api');
 // const storeOrderId1 = './refreshgetod.json';
 
 // Application Level Middleware
@@ -29,7 +26,6 @@ const shopifyApi = require('@shopify/shopify-api');
 // const multer = require('multer');
 var cors = require("cors");
 const { json } = require("express");
-
 dotenv.config();
 const bodyParser = require("body-parser");
 const { captureRejectionSymbol } = require("events");
@@ -94,35 +90,9 @@ app.get("/shopify", (req, res) => {
   }
 });
 
-
-
-
-
-
 app.get("/shopify/callback", async (req, res) => {
   const clientId = req.query.clientId; // Assuming you pass clientId as a query parameter
   // const { shop, hmac, code, shopState } = req.query;
-  const shopify = shopifyApi({
-    apiKey: process.env.SHOPIFY_API_KEY,
-    apiSecretKey: process.env.SHOPIFY_API_SECRET,
-    scopes: scopes,
-    hostName: forwardingaddress.replace(/https:\/\//, ""),
-    hostScheme: "https",
-    apiVersion: "2023-10",
-    isEmbeddedApp: true,
-    logger: { level: isDev ? 3 : 0 }, //Error = 0,Warning = 1,Info = 2,Debug = 3
-  });
-  
-
-  const callbackResponse = await shopify.auth.callback({
-    rawRequest: req,
-    rawResponse: res,
-  });
-
-  const { session } = callbackResponse;
-console.log("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:-",session)
-
-
   const { hmac, host, shop, code, timestamp } = req.query;
 
   // const stateCookie = cookie.parse(req.headers.cookie).shopState;
