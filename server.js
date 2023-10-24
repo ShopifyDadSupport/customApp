@@ -155,7 +155,7 @@ app.get("/shopify/callback", async (req, res) => {
             // console.log("djkasssssssssssssssssssssssssssssssssssssssss=:=",accessTokenPayload,shop__name,"djksdhjad::-",redirect_uri,req.query.shop);
 
             // // // Redirect first to "/?shop=" + shop
-            res.redirect("/");
+            res.redirect(redirect_uri);
             // res.redirect(
             //   `/?shop?code=${code}&hmac=${hmac}&shop=${shop}&timestamp=${timestamp}`
             // );
