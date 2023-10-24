@@ -65,7 +65,7 @@ var shopify_client_id = [];
 
 app.get("/shopify", (req, res) => {
   // Shop Name
-  console.log("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:====",window.location.href)
+  console.log("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:====", req.url);
   const shop = req.query.shop;
   if (shop) {
     const state = nonce();
