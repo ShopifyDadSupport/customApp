@@ -137,13 +137,13 @@ app.get("/shopify/callback", async (req, res) => {
           .then(async (apiResponse) => {
             GetAccessToken(accessToken, shop, res);
             console.log("accessToken:", accessToken);
-            // const url = shop;
+            const url = shop;
 
-            // // Split the URL by '.'
-            // const parts = url.split(".");
+            // Split the URL by '.'
+            const parts = url.split(".");
 
-            // // Get the first part
-            // const shop__name = parts[0];
+            // Get the first part
+            const shop__name = parts[0];
             // const redirectURL = `https://admin.shopify.com/store/${shopName}/apps/${clientId}`;
 
             // res.writeHead(302, {
