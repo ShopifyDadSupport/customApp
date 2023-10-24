@@ -2,7 +2,7 @@ const crypto = require("crypto");
 const nonce = require("nonce")();
 const request = require("request-promise");
 const querystring = require("querystring");
-// const databaseData = require("./db/demo_db_connection");
+const databaseData = require("./db/demo_db_connection");
 const sendSubscriptionEmail = require("./sendSubscriptionEmail");
 const gdpr_data_request = require("./gdpr/cust_data_request");
 const cust_data_erasure = require("./gdpr/cust_data_erasure");
@@ -150,7 +150,7 @@ app.get("/shopify/callback", async (req, res) => {
             //     'Location': redirectURL
             // });
             // res.end();
-            const redirect_uri = `https://admin.shopify.com/store/${shop__name}/apps/${accessTokenPayload.client_id}`;
+            // const redirect_uri = `https://admin.shopify.com/store/${shop__name}/apps/${accessTokenPayload.client_id}`;
 
             // console.log("djkasssssssssssssssssssssssssssssssssssssssss=:=",accessTokenPayload,shop__name,"djksdhjad::-",redirect_uri,req.query.shop);
 
