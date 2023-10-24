@@ -25,9 +25,9 @@ const Main = () => {
     return <LoginPage setLoggedIn={setLoggedIn} />;
   }
 
-  if (loggedIn) {
-    return <a class="redirectShopify__url"href="https://admin.shopify.com/store">Go To the Shopify Store</a>;
-  }
+  // if (loggedIn) {
+  //   return <a class="redirectShopify__url"href="https://admin.shopify.com/store">Go To the Shopify Store</a>;
+  // }
 
   return <App />;
 };
