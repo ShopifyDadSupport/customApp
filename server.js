@@ -137,25 +137,25 @@ app.get("/shopify/callback", async (req, res) => {
           .then(async (apiResponse) => {
             GetAccessToken(accessToken, shop, res);
             console.log("accessToken:", accessToken);
-            const url = shop;
+            // const url = shop;
 
-            // Split the URL by '.'
-            const parts = url.split(".");
+            // // Split the URL by '.'
+            // const parts = url.split(".");
 
-            // Get the first part
-            const shop__name = parts[0];
+            // // Get the first part
+            // const shop__name = parts[0];
             // const redirectURL = `https://admin.shopify.com/store/${shopName}/apps/${clientId}`;
 
             // res.writeHead(302, {
             //     'Location': redirectURL
             // });
             // res.end();
-            const redirect_uri = `https://admin.shopify.com/store/${shop__name}/apps/auto-ship-app`;
+            // const redirect_uri = `https://admin.shopify.com/store/${shop__name}/apps/${accessTokenPayload.client_id}`;
 
             // console.log("djkasssssssssssssssssssssssssssssssssssssssss=:=",accessTokenPayload,shop__name,"djksdhjad::-",redirect_uri,req.query.shop);
 
             // // // Redirect first to "/?shop=" + shop
-            res.redirect(redirect_uri);
+            res.redirect("/");
             // res.redirect(
             //   `/?shop?code=${code}&hmac=${hmac}&shop=${shop}&timestamp=${timestamp}`
             // );
