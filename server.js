@@ -17,7 +17,9 @@ var cron = require("node-cron");
 const fs = require("fs");
 const storeOrderId = "./storeOrderId";
 const storeOrderId1 = "./refreshgetod";
-import { shopifyApi } from "@shopify/shopify-api";
+// import { shopifyApi } from "@shopify/shopify-api";
+
+const shopifyApi = require('@shopify/shopify-api');
 // const storeOrderId1 = './refreshgetod.json';
 
 // Application Level Middleware
