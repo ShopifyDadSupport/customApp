@@ -134,10 +134,25 @@
 // // Output the value
 // console.log(clientId);
 
-const crypto = require('crypto');
+// const crypto = require('crypto');
   
-const a = Buffer.alloc("<Buffer 73 4e 39 35 43 67 42 55 44 2f 47 70 46 39 43 38 36 65 72 4e 79 69 66 4e 55 73 67 37 68 78 67 49 36 4e 50 2f 41 6c 71 52 4e 45 55 3d>"); 
-const b = Buffer.alloc("<Buffer 35 71 75 70 36 4e 72 44 68 69 57 62 41 4d 38 6e 4d 78 51 4f 44 6b 34 53 42 42 50 57 6c 53 74 37 43 6f 43 6f 71 34 7a 6c 67 34 4d 3d>"); 
+// const a = Buffer.alloc("<Buffer 73 4e 39 35 43 67 42 55 44 2f 47 70 46 39 43 38 36 65 72 4e 79 69 66 4e 55 73 67 37 68 78 67 49 36 4e 50 2f 41 6c 71 52 4e 45 55 3d>"); 
+// const b = Buffer.alloc("<Buffer 35 71 75 70 36 4e 72 44 68 69 57 62 41 4d 38 6e 4d 78 51 4f 44 6b 34 53 42 42 50 57 6c 53 74 37 43 6f 43 6f 71 34 7a 6c 67 34 4d 3d>"); 
   
-let res = crypto.timingSafeEqual(a, b); 
-console.log(res);
+// let res = crypto.timingSafeEqual(a, b); 
+// console.log(res);
+
+let url = "/shopify?hmac=5e2d5e572746949ce11aec7f5043c545ea69e25e0687d95bf6a85cbb5f26b5b1&host=YWRtaW4uc2hvcGlmeS5jb20vc3RvcmUvY2hhbW9peGFwcA&shop=chamoixapp.myshopify.com&timestamp=1698192625";
+
+let modifiedUrl = url.replace(/^\/shopify/, '');
+
+console.log(modifiedUrl);
+
+let parsedUrl = new URL("http://example.com" + modifiedUrl);
+
+// Remove the first segment (in this case, "/shopify")
+parsedUrl.pathname = parsedUrl.pathname.substring(parsedUrl.pathname.indexOf('/', 1));
+
+let RedirectEmbedurl = parsedUrl.toString();
+
+console.log("sjsjkhsjkhsj=",modifiedUrl1)

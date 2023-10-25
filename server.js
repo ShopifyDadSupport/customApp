@@ -161,7 +161,14 @@ app.get("/shopify/callback", async (req, res) => {
             // console.log("djkasssssssssssssssssssssssssssssssssssssssss=:=",accessTokenPayload,shop__name,"djksdhjad::-",redirect_uri,req.query.shop);
 
             // // // Redirect first to "/?shop=" + shop
-            res.redirect("/");
+               let modifiedUrl = lastgetEmbedUrl.replace(/^\/shopify/, '');
+                let parsedUrl = new URL(forwardingaddress + modifiedUrl);
+
+                // Remove the first segment (in this case, "/shopify")
+                parsedUrl.pathname = parsedUrl.pathname.substring(parsedUrl.pathname.indexOf('/', 1));
+
+                let RedirectEmbedurl = parsedUrl.toString();
+                 res.redirect(RedirectEmbedurl);
             // res.redirect(
             //   `/?shop?code=${code}&hmac=${hmac}&shop=${shop}&timestamp=${timestamp}`
             // );
