@@ -64,6 +64,12 @@ var shopify_client_id = [];
  var DynamicShopName = [];
 
  var getEmbedUrl = [];
+
+app.get('*',(req,res)=>{
+  console.log("url:=========",req.url);
+})
+
+
 app.get("/shopify", (req, res) => {
   // Shop Name
   console.log("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:====", req.url);
