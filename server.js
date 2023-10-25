@@ -331,50 +331,58 @@ function pageScriptTag(access_token_value, shop_domain) {
 // const apiKey = '5feb19f628f0ea402b056b575a6bfa6e';
 // const password = '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';
 
-const webhookData = {
-  "webhook": [
-      {
+const webhookData = [
+  {
+      "webhook": {
           "topic": "orders/create",
           "address": "https://dynamic-auto-shipp-app.onrender.com/webhooks/orders/create",
           "format": "json"
-      },
-      {
+      }
+  },
+  {
+      "webhook": {
           "topic": "app/uninstalled",
           "address": "https://dynamic-auto-shipp-app.onrender.com/webhooks/app/uninstalled",
           "format": "json"
       }
-  ]
-};
+  },
+  // Add more webhooks as needed
+];
 
 const createOrUpdateWebhook = (access_token_value, shop_domain) => {
-  // Check if the webhook already exists
-  axios.get(`https://${apiKey}:${access_token_value}@${shop_domain}/admin/api/2021-07/webhooks.json?topic=${webhookData.webhook[0].topic}`)
-      .then(response => {
-          if (response.data.webhooks.length > 0) {
-              // Webhook already exists, update it
-              const existingWebhookId = response.data.webhooks[0].id;
-              axios.put(`https://${apiKey}:${access_token_value}@${shop_domain}/admin/api/2021-07/webhooks/${existingWebhookId}.json`, webhookData)
-                  .then(updateResponse => {
-                      console.log('Webhooks updated successfully:', updateResponse.data);
-                  })
-                  .catch(updateError => {
-                      console.error('Error updating webhook:', updateError.response.data);
-                  });
-          } else {
-              // Webhook doesn't exist, create it
-              axios.post(`https://${apiKey}:${access_token_value}@${shop_domain}/admin/api/2021-07/webhooks.json`, webhookData)
-                  .then(createResponse => {
-                      console.log('Webhooks created successfully:', createResponse.data);
-                  })
-                  .catch(createError => {
-                      console.error('Error creating webhook:', createError.response.data);
-                  });
-          }
-      })
-      .catch(error => {
-          console.error('Error checking for existing webhook:', error.response.data);
-      });
+  webhookData.forEach(data => {
+      const webhook = data.webhook;
+
+      // Check if the webhook already exists
+      axios.get(`https://${apiKey}:${access_token_value}@${shop_domain}/admin/api/2021-07/webhooks.json?topic=${webhook.topic}`)
+          .then(response => {
+              if (response.data.webhooks.length > 0) {
+                  // Webhook already exists, update it
+                  const existingWebhookId = response.data.webhooks[0].id;
+                  axios.put(`https://${apiKey}:${access_token_value}@${shop_domain}/admin/api/2021-07/webhooks/${existingWebhookId}.json`, { webhook })
+                      .then(updateResponse => {
+                          console.log(`Webhook ${webhook.topic} updated successfully:`, updateResponse.data);
+                      })
+                      .catch(updateError => {
+                          console.error(`Error updating webhook ${webhook.topic}:`, updateError.response.data);
+                      });
+              } else {
+                  // Webhook doesn't exist, create it
+                  axios.post(`https://${apiKey}:${access_token_value}@${shop_domain}/admin/api/2021-07/webhooks.json`, { webhook })
+                      .then(createResponse => {
+                          console.log(`Webhook ${webhook.topic} created successfully:`, createResponse.data);
+                      })
+                      .catch(createError => {
+                          console.error(`Error creating webhook ${webhook.topic}:`, createError.response.data);
+                      });
+              }
+          })
+          .catch(error => {
+              console.error(`Error checking for existing webhook ${webhook.topic}:`, error.response.data);
+          });
+  });
 };
+
 
 // Call the createOrUpdateWebhook function to create or update the webhook
 
