@@ -65,9 +65,10 @@ var shopify_client_id = [];
 
  var getEmbedUrl = [];
 
-// app.get('*',(req,res)=>{
-//  res.redirect('/')
-// })
+app.get('/AddPage',(req,res)=>{
+  console.log("url:=========",req.url);
+  res.sendFile(path.join(__dirname, "build"));
+})
 
 
 app.get("/shopify", (req, res) => {
@@ -288,9 +289,6 @@ function GetAccessToken(access_token_value, shop_domain,res) {
   pageScriptTag(access_token_value, shop_domain);
 }
 
-
-
-
 function pageScriptTag(access_token_value, shop_domain) {
   function checkScriptTagExistence(existingScriptTags, desiredSrc) {
     return existingScriptTags.some(function (scriptTag) {
@@ -351,51 +349,7 @@ function pageScriptTag(access_token_value, shop_domain) {
       console.error("Error parsing response:", parseError);
     }
   });
-  // createOrUpdateWebhook(access_token_value,shop_domain);
 }
-
-// const webhookData = {
-//   "webhook": {
-//       "topic": "orders/create", // Specify the event you want to listen for
-//       "address": "https://dynamic-auto-shipp-app.onrender.com/orders", // Replace with your actual webhook URL
-//       "format": "json"
-//   }
-// };
-// const createOrUpdateWebhook = (password,shop) => {
-//     // Check if the webhook already exists
-//     axios.get(`https://${apiKey}:${password}@${shop}/admin/api/2021-07/webhooks.json?topic=${webhookData.webhook.topic}`)
-//         .then(response => {
-//             if (response.data.webhooks.length > 0) {
-//                 // Webhook already exists, update it
-//                 const existingWebhookId = response.data.webhooks[0].id;
-//                 axios.put(`https://${apiKey}:${password}@${shop}/admin/api/2021-07/webhooks/${existingWebhookId}.json`, webhookData)
-//                     .then(updateResponse => {
-//                         console.log('Webhook updated successfully:', updateResponse.data);
-//                     })
-//                     .catch(updateError => {
-//                         console.error('Error updating webhook:', updateError.response.data);
-//                     });
-//             } else {
-//                 // Webhook doesn't exist, create it
-//                 axios.post(`https://${apiKey}:${password}@${shop}/admin/api/2021-07/webhooks.json`, webhookData)
-//                     .then(createResponse => {
-//                         console.log('Webhook created successfully:', createResponse.data);
-//                     })
-//                     .catch(createError => {
-//                         console.error('Error creating webhook:', createError.response.data);
-//                     });
-//             }
-//         })
-//         .catch(error => {
-//             console.error('Error checking for existing webhook:', error.response.data);
-//         });
-// };
-
-// Call the createOrUpdateWebhook function to create or update the webhook
-
-
-
-
 
 app.post("/scriptrender/toggle", async (req, res) => {
   console.log("scriptrender........");
@@ -2189,6 +2143,26 @@ function getupdateDetails(portalTokenValue) {
     });
   });
 }
+
+// const myProxy = (req, res, next) => {
+//   console.log("myProxy is working.........");
+//   next();
+// }
+
+
+// function proxyReirect(shopName,res){
+//   res.redirect('https://chamoixapp.myshopify.com/apps/dynamic-auto-shipp-app');
+// }
+
+// app.get('/proxy/',(req,res)=>{
+//   res.redirect('https://admin.shopify.com/store/chamoixapp/apps/dynamic-auto-shipp-app');
+// })
+
+// app.get('/', (req, res) => {
+//   const currentUrl = req.url;
+//   console.log(`Current URL: ${currentUrl}`);
+// });
+
 app.listen(7709, () => {
   console.log("running on port 7707");
 });
