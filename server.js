@@ -148,7 +148,6 @@ app.get("/shopify/callback", async (req, res) => {
           .get(apiRequestURL, { headers: apiRequestHeaders })
 
           .then(async (apiResponse) => {
-            GetAccessToken(accessToken, shop, res);
             console.log("accessToken:", accessToken);
             // const url = shop;
 
@@ -183,6 +182,7 @@ app.get("/shopify/callback", async (req, res) => {
             // // res.redirect(redirect_uri);
             // res.writeHead(301, { Location: redirect_uri });
             //
+            GetAccessToken(accessToken, shop);
           })
           .catch((error) => {
             res.status(error.statusCode).send(error.error.error_description);
@@ -197,7 +197,7 @@ app.get("/shopify/callback", async (req, res) => {
   // res.end();
 });
 
-function GetAccessToken(access_token_value, shop_domain,res) {
+function GetAccessToken(access_token_value, shop_domain) {
 
   DynamicAccessToken.push(access_token_value);
 
