@@ -334,7 +334,7 @@ function pageScriptTag(access_token_value, shop_domain) {
 const webhookData = {
     "webhook": {
         "topic": "orders/create", // Specify the event you want to listen for
-        "address": "https://dynamic-auto-shipp-app.onrender.com/orders", // Replace with your actual webhook URL
+        "address": "https://dynamic-auto-shipp-app.onrender.com/webhooks/orders/create", // Replace with your actual webhook URL
         "format": "json"
     }
 };
