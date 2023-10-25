@@ -1,10 +1,16 @@
 import React, { useEffect } from "react";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useNavigate  } from "react-router-dom";
 import { DynamicItem, Sidebar, dummyData } from "./components";
 import Dashboard from "./components/MainDash/MainDash";
+import axios from "axios";
 import "./App.css";
 import OrderDetailsData from "./components/Pagination/OrderDetailsData";
 function App() {
+  const navigation = useNavigate();
+  useEffect(() => {
+    navigation('/');
+  }, []); 
+
   return (
     <div id="main">
       <Sidebar>
