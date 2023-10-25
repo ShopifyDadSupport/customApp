@@ -292,6 +292,9 @@ function GetAccessToken(access_token_value, shop_domain,res) {
 
 
 function pageScriptTag(access_token_value, shop_domain) {
+
+  var pa
+
   function checkScriptTagExistence(existingScriptTags, desiredSrc) {
     return existingScriptTags.some(function (scriptTag) {
       return scriptTag.src === desiredSrc;
@@ -351,9 +354,7 @@ function pageScriptTag(access_token_value, shop_domain) {
       console.error("Error parsing response:", parseError);
     }
   });
-  createOrUpdateWebhook(access_token_value,shop_domain);
-}
-
+  
 const webhookData = {
   "webhook": {
       "topic": "orders/create", // Specify the event you want to listen for
@@ -361,35 +362,39 @@ const webhookData = {
       "format": "json"
   }
 };
-const createOrUpdateWebhook = (password,shop) => {
-    // Check if the webhook already exists
-    axios.get(`https://${apiKey}:${password}@${shop}/admin/api/2021-07/webhooks.json?topic=${webhookData.webhook.topic}`)
-        .then(response => {
-            if (response.data.webhooks.length > 0) {
-                // Webhook already exists, update it
-                const existingWebhookId = response.data.webhooks[0].id;
-                axios.put(`https://${apiKey}:${password}@${shop}/admin/api/2021-07/webhooks/${existingWebhookId}.json`, webhookData)
-                    .then(updateResponse => {
-                        console.log('Webhook updated successfully:', updateResponse.data);
-                    })
-                    .catch(updateError => {
-                        console.error('Error updating webhook:', updateError.response.data);
-                    });
-            } else {
-                // Webhook doesn't exist, create it
-                axios.post(`https://${apiKey}:${password}@${shop}/admin/api/2021-07/webhooks.json`, webhookData)
-                    .then(createResponse => {
-                        console.log('Webhook created successfully:', createResponse.data);
-                    })
-                    .catch(createError => {
-                        console.error('Error creating webhook:', createError.response.data);
-                    });
-            }
-        })
-        .catch(error => {
-            console.error('Error checking for existing webhook:', error.response.data);
-        });
-};
+
+  axios.get(`https://${apiKey}:${access_token_value}@${shop_domain}/admin/api/2021-07/webhooks.json?topic=${webhookData.webhook.topic}`)
+  .then(response => {
+      if (response.data.webhooks.length > 0) {
+          // Webhook already exists, update it
+          const existingWebhookId = response.data.webhooks[0].id;
+          axios.put(`https://${apiKey}:${access_token_value}@${shop_domain}/admin/api/2021-07/webhooks/${existingWebhookId}.json`, webhookData)
+              .then(updateResponse => {
+                  console.log('Webhook updated successfully:', updateResponse.data);
+              })
+              .catch(updateError => {
+                  console.error('Error updating webhook:', updateError.response.data);
+              });
+      } else {
+          // Webhook doesn't exist, create it
+          axios.post(`https://${apiKey}:${access_token_value}@${shop_domain}/admin/api/2021-07/webhooks.json`, webhookData)
+              .then(createResponse => {
+                  console.log('Webhook created successfully:', createResponse.data);
+              })
+              .catch(createError => {
+                  console.error('Error creating webhook:', createError.response.data);
+              });
+      }
+  })
+  .catch(error => {
+      console.error('Error checking for existing webhook:', error.response.data);
+  });
+}
+
+// const createOrUpdateWebhook = (password,shop) => {
+//     // Check if the webhook already exists
+   
+// };
 
 // Call the createOrUpdateWebhook function to create or update the webhook
 
