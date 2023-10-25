@@ -66,7 +66,7 @@ var shopify_client_id = [];
  var getEmbedUrl = [];
 
 app.get('*',(req,res)=>{
-  console.log("url:=========",req.url);
+ res.redirect('/')
 })
 
 
@@ -1891,11 +1891,11 @@ function scheduleDailySynOrder() {
 }
 scheduleDailySynOrder();
 
-databaseData.getConnection((err, connection) => {
-  if (err) {
-    console.error("Error connecting to MySQL:", err);
-    return;
-  }
+// databaseData.getConnection((err, connection) => {
+//   if (err) {
+//     console.error("Error connecting to MySQL:", err);
+//     return;
+//   }
 
   console.log("Connected to MySQL!");
 
@@ -1912,7 +1912,7 @@ databaseData.getConnection((err, connection) => {
 
   //     console.log('Results:', results);
   // });
-});
+// });
 // databaseData.connect(function (err) {
 //   if (err) throw err;
 //   console.log(
