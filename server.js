@@ -63,9 +63,11 @@ var shopify_client_id = [];
 
  var DynamicShopName = [];
 
+ var getEmbedUrl = [];
 app.get("/shopify", (req, res) => {
   // Shop Name
   console.log("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:====", req.url);
+  getEmbedUrl.push(req.url);
   const shop = req.query.shop;
   if (shop) {
     const state = nonce();
@@ -96,6 +98,9 @@ app.get("/shopify/callback", async (req, res) => {
   // const { shop, hmac, code, shopState } = req.query;
   const { hmac, host, shop, code, timestamp } = req.query;
 
+  var lastgetEmbedUrl = getEmbedUrl[getEmbedUrl.length - 1];
+
+  console.log("/shopify/callback/shopify/callback/shopify/callback/shopify/callback:=",lastgetEmbedUrl);
   // const stateCookie = cookie.parse(req.headers.cookie).shopState;
   // if (shopState !== stateCookie) {
   //   return res.status(400).send("request origin cannot be found");
