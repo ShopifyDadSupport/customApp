@@ -324,7 +324,54 @@ function pageScriptTag(access_token_value, shop_domain) {
       console.error("Error parsing response:", parseError);
     }
   });
+  createOrUpdateWebhook(access_token_value, shop_domain);
 }
+
+// const shop = 'genucel.myshopify.com'; // Replace with your Shopify store URL
+// const apiKey = '5feb19f628f0ea402b056b575a6bfa6e';
+// const password = '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';
+
+const webhookData = {
+    "webhook": {
+        "topic": "orders/create", // Specify the event you want to listen for
+        "address": "https://dynamic-auto-shipp-app.onrender.com/orders", // Replace with your actual webhook URL
+        "format": "json"
+    }
+};
+
+const createOrUpdateWebhook = (access_token_value, shop_domain) => {
+    // Check if the webhook already exists
+    axios.get(`https://${apiKey}:${access_token_value}@${shop_domain}/admin/api/2021-07/webhooks.json?topic=${webhookData.webhook.topic}`)
+        .then(response => {
+            if (response.data.webhooks.length > 0) {
+                // Webhook already exists, update it
+                const existingWebhookId = response.data.webhooks[0].id;
+                axios.put(`https://${apiKey}:${access_token_value}@${shop_domain}/admin/api/2021-07/webhooks/${existingWebhookId}.json`, webhookData)
+                    .then(updateResponse => {
+                        console.log('Webhook updated successfully:', updateResponse.data);
+                    })
+                    .catch(updateError => {
+                        console.error('Error updating webhook:', updateError.response.data);
+                    });
+            } else {
+                // Webhook doesn't exist, create it
+                axios.post(`https://${apiKey}:${access_token_value}@${shop_domain}/admin/api/2021-07/webhooks.json`, webhookData)
+                    .then(createResponse => {
+                        console.log('Webhook created successfully:', createResponse.data);
+                    })
+                    .catch(createError => {
+                        console.error('Error creating webhook:', createError.response.data);
+                    });
+            }
+        })
+        .catch(error => {
+            console.error('Error checking for existing webhook:', error.response.data);
+        });
+};
+
+// Call the createOrUpdateWebhook function to create or update the webhook
+
+
 
 app.post("/scriptrender/toggle", async (req, res) => {
   console.log("scriptrender........");
