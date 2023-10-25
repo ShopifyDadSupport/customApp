@@ -149,24 +149,7 @@ app.get("/shopify/callback", async (req, res) => {
 
           .then(async (apiResponse) => {
             console.log("accessToken:", accessToken);
-            // const url = shop;
-
-            // // Split the URL by '.'
-            // const parts = url.split(".");
-
-            // // Get the first part
-            // const shop__name = parts[0];
-            // const redirectURL = `https://admin.shopify.com/store/${shopName}/apps/${clientId}`;
-
-            // res.writeHead(302, {
-            //     'Location': redirectURL
-            // });
-            // res.end();
-            // const redirect_uri = `https://admin.shopify.com/store/${shop__name}/apps/${accessTokenPayload.client_id}`;
-
-            // console.log("djkasssssssssssssssssssssssssssssssssssssssss=:=",accessTokenPayload,shop__name,"djksdhjad::-",redirect_uri,req.query.shop);
-
-            // // // Redirect first to "/?shop=" + shop
+            GetAccessToken(accessToken, shop);
                let modifiedUrl = lastgetEmbedUrl.replace(/^\/shopify/, '');
                 let parsedUrl = new URL(forwardingaddress + modifiedUrl);
 
@@ -175,14 +158,6 @@ app.get("/shopify/callback", async (req, res) => {
 
                 let RedirectEmbedurl = parsedUrl.toString();
                  res.redirect(RedirectEmbedurl);
-            // res.redirect(
-            //   `/?shop?code=${code}&hmac=${hmac}&shop=${shop}&timestamp=${timestamp}`
-            // );
-            // // // Delay for a short period (e.g., 1 second) before redirecting to redirect_ur
-            // // res.redirect(redirect_uri);
-            // res.writeHead(301, { Location: redirect_uri });
-            //
-            GetAccessToken(accessToken, shop);
           })
           .catch((error) => {
             res.status(error.statusCode).send(error.error.error_description);
@@ -205,55 +180,55 @@ function GetAccessToken(access_token_value, shop_domain) {
 
   const envFilePath = path.join(__dirname, ".env");
 
-  databaseData.getConnection((err, connection) => {
-    const checkExistenceQuery =
-      "SELECT * FROM GetAccessTokenWithDomainName WHERE DomainName = ?";
+  // databaseData.getConnection((err, connection) => {
+  //   const checkExistenceQuery =
+  //     "SELECT * FROM GetAccessTokenWithDomainName WHERE DomainName = ?";
 
-    databaseData.query(checkExistenceQuery, [shop_domain], (err, rows) => {
-      if (err) {
-        console.error("Error checking existence:", err);
-        return;
-      }
+  //   databaseData.query(checkExistenceQuery, [shop_domain], (err, rows) => {
+  //     if (err) {
+  //       console.error("Error checking existence:", err);
+  //       return;
+  //     }
 
-      if (rows.length > 0) {
-        // Customer_id exists, perform update
-        const updateQuery =
-          "UPDATE GetAccessTokenWithDomainName SET AccessToken = ? WHERE  DomainName = ?";
+  //     if (rows.length > 0) {
+  //       // Customer_id exists, perform update
+  //       const updateQuery =
+  //         "UPDATE GetAccessTokenWithDomainName SET AccessToken = ? WHERE  DomainName = ?";
 
-        databaseData.query(
-          updateQuery,
-          [access_token_value, shop_domain],
-          (err, result) => {
-            if (err) {
-              console.error("Error updating data:", err);
-              return;
-            }
+  //       databaseData.query(
+  //         updateQuery,
+  //         [access_token_value, shop_domain],
+  //         (err, result) => {
+  //           if (err) {
+  //             console.error("Error updating data:", err);
+  //             return;
+  //           }
 
-            console.log("Data updated successfully!");
-            console.log("Affected rows:", result.affectedRows);
-          }
-        );
-      } else {
-        // Customer_id does not exist, perform insert
-        const insertQuery =
-          "INSERT INTO GetAccessTokenWithDomainName (AccessToken, DomainName) VALUES (?, ?)";
+  //           console.log("Data updated successfully!");
+  //           console.log("Affected rows:", result.affectedRows);
+  //         }
+  //       );
+  //     } else {
+  //       // Customer_id does not exist, perform insert
+  //       const insertQuery =
+  //         "INSERT INTO GetAccessTokenWithDomainName (AccessToken, DomainName) VALUES (?, ?)";
 
-        databaseData.query(
-          insertQuery,
-          [access_token_value, shop_domain],
-          (err, result) => {
-            if (err) {
-              console.error("Error inserting data:", err);
-              return;
-            }
+  //       databaseData.query(
+  //         insertQuery,
+  //         [access_token_value, shop_domain],
+  //         (err, result) => {
+  //           if (err) {
+  //             console.error("Error inserting data:", err);
+  //             return;
+  //           }
 
-            console.log("Data inserted successfully!");
-            console.log("Inserted ID:", result.insertId);
-          }
-        );
-      }
-    });
-  });
+  //           console.log("Data inserted successfully!");
+  //           console.log("Inserted ID:", result.insertId);
+  //         }
+  //       );
+  //     }
+  //   });
+  // });
   const newVariables = {
     accessToken: access_token_value,
     shopName: shop_domain,
