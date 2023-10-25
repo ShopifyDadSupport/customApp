@@ -332,62 +332,58 @@ function pageScriptTag(access_token_value, shop_domain) {
 // const password = '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';
 
 const webhookData = {
-    "webhook": {
-        "topic": "orders/create", // Specify the event you want to listen for
-        "address": "https://dynamic-auto-shipp-app.onrender.com/webhooks/orders/create", // Replace with your actual webhook URL
-        "format": "json"
-    }
+  "webhook": [
+      {
+          "topic": "orders/create",
+          "address": "https://dynamic-auto-shipp-app.onrender.com/webhooks/orders/create",
+          "format": "json"
+      },
+      {
+          "topic": "app/uninstalled",
+          "address": "https://dynamic-auto-shipp-app.onrender.com/webhooks/app/uninstalled",
+          "format": "json"
+      }
+  ]
 };
 
 const createOrUpdateWebhook = (access_token_value, shop_domain) => {
-    // Check if the webhook already exists
-    axios.get(`https://${apiKey}:${access_token_value}@${shop_domain}/admin/api/2021-07/webhooks.json?topic=${webhookData.webhook.topic}`)
-        .then(response => {
-            if (response.data.webhooks.length > 0) {
-                // Webhook already exists, update it
-                const existingWebhookId = response.data.webhooks[0].id;
-                axios.put(`https://${apiKey}:${access_token_value}@${shop_domain}/admin/api/2021-07/webhooks/${existingWebhookId}.json`, webhookData)
-                    .then(updateResponse => {
-                        console.log('Webhook updated successfully:', updateResponse.data);
-                    })
-                    .catch(updateError => {
-                        console.error('Error updating webhook:', updateError.response.data);
-                    });
-            } else {
-                // Webhook doesn't exist, create it
-                axios.post(`https://${apiKey}:${access_token_value}@${shop_domain}/admin/api/2021-07/webhooks.json`, webhookData)
-                    .then(createResponse => {
-                        console.log('Webhook created successfully:', createResponse.data);
-                    })
-                    .catch(createError => {
-                        console.error('Error creating webhook:', createError.response.data);
-                    });
-            }
-        })
-        .catch(error => {
-            console.error('Error checking for existing webhook:', error.response.data);
-        });
+  // Check if the webhook already exists
+  axios.get(`https://${apiKey}:${access_token_value}@${shop_domain}/admin/api/2021-07/webhooks.json?topic=${webhookData.webhook[0].topic}`)
+      .then(response => {
+          if (response.data.webhooks.length > 0) {
+              // Webhook already exists, update it
+              const existingWebhookId = response.data.webhooks[0].id;
+              axios.put(`https://${apiKey}:${access_token_value}@${shop_domain}/admin/api/2021-07/webhooks/${existingWebhookId}.json`, webhookData)
+                  .then(updateResponse => {
+                      console.log('Webhooks updated successfully:', updateResponse.data);
+                  })
+                  .catch(updateError => {
+                      console.error('Error updating webhook:', updateError.response.data);
+                  });
+          } else {
+              // Webhook doesn't exist, create it
+              axios.post(`https://${apiKey}:${access_token_value}@${shop_domain}/admin/api/2021-07/webhooks.json`, webhookData)
+                  .then(createResponse => {
+                      console.log('Webhooks created successfully:', createResponse.data);
+                  })
+                  .catch(createError => {
+                      console.error('Error creating webhook:', createError.response.data);
+                  });
+          }
+      })
+      .catch(error => {
+          console.error('Error checking for existing webhook:', error.response.data);
+      });
 };
 
 // Call the createOrUpdateWebhook function to create or update the webhook
 
 
+// Handle app/uninstalled webhook
 app.post('/webhooks/app/uninstalled', (req, res) => {
-  const hmacHeader = req.get('X-Shopify-Hmac-Sha256');
-
-  // Verify the request using your app's secret key
-  const hmac = crypto
-    .createHmac('sha256', apisecret)
-    .update(JSON.stringify(req.body))
-    .digest('hex');
-
-  if (hmacHeader === hmac) {
-    // Handle app uninstallation here
-    console.log('App uninstalled:', req.body);
-    res.status(200).send('Webhook received successfully');
-  } else {
-    res.status(401).send('Unauthorized request');
-  }
+  // Process app/uninstalled webhook data here
+  console.log('Received app/uninstalled webhook:', req.body);
+  res.status(200).send('Webhook received');
 });
 
 app.post("/scriptrender/toggle", async (req, res) => {
