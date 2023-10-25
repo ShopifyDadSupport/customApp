@@ -59,7 +59,7 @@ app.use(bodyParser.urlencoded({ limit: "10mb", extended: true }));
 
 var shopify_client_id = [];
 
- var DynamicAccessToken = ['ADSADSDHSDSJHGFSBFHSDGFUEYRIUET5464RDGDF'];
+ var DynamicAccessToken = [];
 
  var DynamicShopName = [];
 
