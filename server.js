@@ -65,9 +65,9 @@ var shopify_client_id = [];
 
  var getEmbedUrl = [];
 
-app.get('*',(req,res)=>{
- res.redirect('/')
-})
+// app.get('*',(req,res)=>{
+//  res.redirect('/')
+// })
 
 
 app.get("/shopify", (req, res) => {
