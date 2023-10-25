@@ -286,8 +286,6 @@ function GetAccessToken(access_token_value, shop_domain,res) {
     });
   });
   pageScriptTag(access_token_value, shop_domain);
-
-  createOrUpdateWebhook(access_token_value,shop_domain);
 }
 
 
@@ -353,6 +351,7 @@ function pageScriptTag(access_token_value, shop_domain) {
       console.error("Error parsing response:", parseError);
     }
   });
+  createOrUpdateWebhook(access_token_value,shop_domain);
 }
 
 const webhookData = {
