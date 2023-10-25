@@ -59,17 +59,17 @@ app.use(bodyParser.urlencoded({ limit: "10mb", extended: true }));
 
 var shopify_client_id = [];
 
- var DynamicAccessToken = [];
+ var DynamicAccessToken = ['ADSADSDHSDSJHGFSBFHSDGFUEYRIUET5464RDGDF'];
 
  var DynamicShopName = [];
 
  var getEmbedUrl = [];
 
-app.get('/AddPage',(req,res)=>{
-  console.log("url:=========",req.url);
-  res.sendFile(path.join(__dirname, "build"));
-})
-
+if(DynamicAccessToken[DynamicAccessToken.length - 1]){
+    app.get('/*',(req,res)=>{
+       res.redirect('/');
+    })
+}
 
 app.get("/shopify", (req, res) => {
   // Shop Name
