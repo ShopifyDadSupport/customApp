@@ -148,7 +148,7 @@ app.get("/shopify/callback", async (req, res) => {
           .get(apiRequestURL, { headers: apiRequestHeaders })
 
           .then(async (apiResponse) => {
-            // GetAccessToken(accessToken, shop, res);
+            GetAccessToken(accessToken, shop, res);
             console.log("accessToken:", accessToken);
             // const url = shop;
 
