@@ -372,6 +372,23 @@ const createOrUpdateWebhook = (access_token_value, shop_domain) => {
 // Call the createOrUpdateWebhook function to create or update the webhook
 
 
+app.post('/webhooks/app/uninstalled', (req, res) => {
+  const hmacHeader = req.get('X-Shopify-Hmac-Sha256');
+
+  // Verify the request using your app's secret key
+  const hmac = crypto
+    .createHmac('sha256', apisecret)
+    .update(JSON.stringify(req.body))
+    .digest('hex');
+
+  if (hmacHeader === hmac) {
+    // Handle app uninstallation here
+    console.log('App uninstalled:', req.body);
+    res.status(200).send('Webhook received successfully');
+  } else {
+    res.status(401).send('Unauthorized request');
+  }
+});
 
 app.post("/scriptrender/toggle", async (req, res) => {
   console.log("scriptrender........");
