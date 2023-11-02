@@ -32,7 +32,6 @@ const Clipboard = ({ Copyportal, SubscriptionOrderId,SubscriptionPortalToken }) 
 						value={portalCustomerUrl}
 						onChange={handleCopyText}
 						placeholder='Enter the text you want to copy' />
-
 					<Button onClick={copyToClipboard}>
 						Copy to Clipboard
 					</Button>

@@ -9,7 +9,7 @@ const OrderDetailsData = () => {
   var dynamicSubscriptionOrderUrl ,SubscriptionOrderId ,subscriptionPortalToken ,subscription_order_id ,Subscription_email_id ;
   useEffect(() => {
     // Fetch data from the API
-    fetch("http://localhost:7709/order")
+    fetch("https://autoshipunimed.com/order")
       .then((response) => response.json())
       .then((data) => {
         setOrderData(data); // Set the fetched data to state
@@ -32,7 +32,7 @@ const OrderDetailsData = () => {
   function resendSubscription(){
     console.log("resendSubscription is working..............")
     axios
-    .post(`https://auto-shipped.onrender.com/resendSubscriptionEmail/order/${subscriptionPortalToken}`, {
+    .post(`https://autoshipunimed.com/resendSubscriptionEmail/order/${subscriptionPortalToken}`, {
       subscriptionPortalToken: subscriptionPortalToken,
       subscription_email_id:Subscription_email_id,
     })

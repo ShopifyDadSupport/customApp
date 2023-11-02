@@ -9,6 +9,8 @@ const cust_data_erasure = require("./gdpr/cust_data_erasure");
 const gdpr_shop_redact = require("./gdpr/shop_data_erasure");
 const mysql = require("mysql");
 const axios = require("axios");
+
+
 const cookie = require("cookie");
 const express = require("express");
 const path = require("path");
@@ -63,13 +65,13 @@ var shopify_client_id = [];
 
  var DynamicShopName = [];
 
- var getEmbedUrl = [];
+ var getEmbedUrl = [];  
 
-if(DynamicAccessToken[DynamicAccessToken.length - 1]){
-    app.get('/*',(req,res)=>{
-       res.redirect('/');
-    })
-}
+// if(DynamicAccessToken[DynamicAccessToken.length - 1]){
+//     app.get('/*',(req,res)=>{
+//        res.redirect('/');
+//     })
+// }
 
 app.get("/shopify", (req, res) => {
   // Shop Name
@@ -2088,7 +2090,7 @@ app.post("/send/portal/data", (req, res) => {
   });
   getupdateDetails(portalToken);
 });
-app.post("/userauth", (req, res) => {
+app.post("/userauth", (req, res) => { 
   const { username, password } = req.body;
   console.log("userName,password", username, password);
   databaseData.getConnection((err, connection) => {
@@ -2206,6 +2208,6 @@ function getupdateDetails(portalTokenValue) {
 //   console.log(`Current URL: ${currentUrl}`);
 // });
 
-app.listen(7709, () => {
-  console.log("running on port 7707");
+app.listen(7708, () => {
+  console.log("running on port 7708");
 });

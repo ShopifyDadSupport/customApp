@@ -7,7 +7,7 @@ import LoginPage from "./LoginPage";
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
 const shouldRenderLoginPage =
-  window.location.href === "https://dynamic-auto-shipp-app.onrender.com/";
+  window.location.href === "https://autoshipunimed.com/";
 const Main = () => {
   const [loggedIn, setLoggedIn] = useState(
     localStorage.getItem("isLoggedIn") === "true"

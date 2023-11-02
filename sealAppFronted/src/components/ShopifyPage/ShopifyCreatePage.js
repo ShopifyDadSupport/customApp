@@ -6,9 +6,8 @@ const ShopifyCreatePage = () => {
 
   return (
     <div>
-      <a className="create__page" href='https://admin.shopify.com/store/genucel105/pages/new'>Create Page</a>
+      <a className="create__page" href='https://admin.shopify.com/store'>Create Page</a>
       {/* Render the fetched HTML document */}
-      
     </div>
   );
 }

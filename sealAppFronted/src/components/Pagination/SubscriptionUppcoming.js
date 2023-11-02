@@ -13,7 +13,7 @@ export default function SubscriptionUpcoming() {
   const [isLoading, setIsLoading] = useState(true); // New state for loading indicator
 
   useEffect(() => {
-    fetch('https://dynamic-auto-shipp-app.onrender.com/subscription/order')
+    fetch('https://autoshipunimed.com/subscription/order')
       .then(response => response.json())
       .then(data => {
         setData(data);
