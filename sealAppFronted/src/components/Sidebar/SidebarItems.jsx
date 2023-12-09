@@ -39,7 +39,7 @@ const SidebarItems = ({ displaySidebar }) => {
           </Link>
         </ItemContainer>
       ))}
-  { (window.location.href === "https://auto-shipped.onrender.com/") && (
+  { (window.location.href === "https://dynamic-auto-shipp-app.onrender.com/") && (
    
   <li onClick={LogoutFun} class="sc-iBkjds ilfVKo">
     <a href="">

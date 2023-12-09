@@ -13,9 +13,9 @@ var mysql = require('mysql');
 var pool = mysql.createPool({
     connectionLimit: 10, // Adjust this as needed
     host: "sql8.freesqldatabase.com",
-    user: "sql8654366",
-    password: "dH3WC7AVW2",
-    database: 'sql8654366',
+    user: "sql8668580",
+    password: "Axnpnceuse",
+    database: 'sql8668580',
     waitForConnections: true,
     queueLimit: 0
 });
@@ -49,9 +49,9 @@ function handleDisconnect() {
     pool = mysql.createPool({
         connectionLimit: 10,
         host: "sql8.freesqldatabase.com",
-        user: "sql8654366",
-        password: "dH3WC7AVW2",
-        database: 'sql8654366',
+        user: "sql8668580",
+        password: "Axnpnceuse",
+        database: 'sql8668580',
         waitForConnections: true,
         queueLimit: 0
     });

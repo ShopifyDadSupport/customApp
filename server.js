@@ -2,7 +2,7 @@ const crypto = require("crypto");
 const nonce = require("nonce")();
 const request = require("request-promise");
 const querystring = require("querystring");
-// const databaseData = require("./db/demo_db_connection");
+const databaseData = require("./db/demo_db_connection");
 const sendSubscriptionEmail = require("./sendSubscriptionEmail");
 const gdpr_data_request = require("./gdpr/cust_data_request");
 const cust_data_erasure = require("./gdpr/cust_data_erasure");
@@ -52,9 +52,9 @@ const apiKey = SHOPIFY_API_KEY;
 const apisecret = SHOPIFY_API_SECRET;
 
 const scopes =
-  "read_orders,read_content,write_content,write_orders,read_script_tags,write_script_tags,read_products,write_products,read_customers,write_customers,read_shipping,write_shipping ,read_themes,write_themes,read_checkouts,write_checkouts";
+  "read_orders,read_content,write_content,write_orders,read_draft_orders,write_draft_orders,read_script_tags,write_script_tags,read_products,write_products,read_customers,write_customers,read_shipping,write_shipping ,read_themes,write_themes,read_checkouts,write_checkouts";
 
-const forwardingaddress = "https://dynamic-auto-shipp-app.onrender.com";
+const forwardingaddress = "https://8ba3-183-82-162-30.ngrok-free.app";
 
 app.use(bodyParser.json({ limit: "10mb" }));
 app.use(bodyParser.urlencoded({ limit: "10mb", extended: true }));
@@ -337,14 +337,14 @@ const webhookData = [
   {
       "webhook": {
           "topic": "orders/create",
-          "address": "https://dynamic-auto-shipp-app.onrender.com/webhooks/orders/create",
+          "address": "https://3368-183-82-160-163.ngrok-free.app/webhooks/orders/create",
           "format": "json"
       }
   },
   {
       "webhook": {
           "topic": "app/uninstalled",
-          "address": "https://dynamic-auto-shipp-app.onrender.com/webhooks/app/uninstalled",
+          "address": "https://3368-183-82-160-163.ngrok-free.app/webhooks/app/uninstalled",
           "format": "json"
       }
   },
@@ -542,6 +542,7 @@ app.post("/scriptrender/toggle", async (req, res) => {
 
 // Endpoint to handle the Shopify webhook
 // var storeAllOrderDate = [];
+
 app.post("/webhooks/orders/create", (req, res) => {
   console.log("working fine");
   var firstItemTitle,
@@ -706,7 +707,10 @@ app.post("/webhooks/orders/create", (req, res) => {
     );
     if (lineItems && Array.isArray(lineItems)) {
       lineItems.forEach((lineItem) => {
+
         const lineItemProperties = lineItem.properties;
+        const subscription_varient_id_data = lineItem.variant_id;
+        console.log("variant_id...................................>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>",lineItem.variant_id);
         lineItemProperties.forEach((property) => {
           const propertyName = property.name;
           const propertyValue = property.value;
@@ -775,6 +779,7 @@ app.post("/webhooks/orders/create", (req, res) => {
                     subscription_customer_email,
                     create_order_date,
                     subscription_order_id,
+                    subscription_varient_id,
                     Next_Shipment_Date,
                     subscription_interval_days,
                     subscription_total_price,
@@ -789,7 +794,7 @@ app.post("/webhooks/orders/create", (req, res) => {
                     subscriptionshippingAddress_zip,
                     subscriptionshippingAddress_country,
                     portalToken
-                  ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                  ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)
                 `;
 
                 const status = "Active";
@@ -802,6 +807,7 @@ app.post("/webhooks/orders/create", (req, res) => {
                     Customer_Email,
                     date_with_time,
                     orderId,
+                    subscription_varient_id_data,
                     updatedDate,
                     propertyValue,
                     orderData_total_price,
@@ -847,15 +853,18 @@ app.post("/webhooks/orders/create", (req, res) => {
 });
 
 function createOrder(orderId) {
+
+
   console.log("Order ID =", orderId);
+
   var lastDynamicAccessToken = DynamicAccessToken[DynamicAccessToken.length - 1];
   var lastDynamicShopName = DynamicShopName[DynamicShopName.length - 1];
   var request = require("request");
   var options = {
     method: "GET",
-    url: `https://${lastDynamicShopName}/admin/api/2022-10/orders/${orderId}.json`,
+    url: `https://genucel105.myshopify.com/admin/api/2022-10/orders/${orderId}.json`,
     headers: {
-      "x-shopify-access-token": lastDynamicAccessToken,
+      "x-shopify-access-token": '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',
     },
   };
   request(options, function (error, response) {
@@ -870,7 +879,11 @@ function createOrder(orderId) {
       const lineItems = responseData.order.line_items;
       console.log("line items data:", lineItems);
       var item_data_arr = [];
+      var subscription_varient_id__arr = [];
       lineItems.forEach((item, index) => {
+        subscription_varient_id__data = item.variant_id;
+        subscription_varient_id__arr.push(subscription_varient_id__data);
+        console.log("subscription_varient_id__data>>>>>>>>>>>>>>>>>>>>>!!!!!!>>~~~~~~~~~~~~~~~~~~~~~~>>",subscription_varient_id__arr[subscription_varient_id__arr.length - 1])
         if (item.properties && item.properties.length > 0) {
           item.properties.forEach((property) => {
             console.log("Property:", property.name, "-", property.value);
@@ -889,7 +902,7 @@ function createOrder(orderId) {
 
         console.log("\n");
       });
-
+      const subscription_varient_id= subscription_varient_id__arr[subscription_varient_id__arr.length - 1];
       const firstItemTitle = item_data_arr[0].Title;
       const firstItemPrice = item_data_arr[0].Price;
       const firstItemQuantity = item_data_arr[0].Quantity;
@@ -911,6 +924,7 @@ function createOrder(orderId) {
       // Extracting customer information
       const customer = responseData.order.customer;
       var Customer_Email = customer.email;
+      var Customer_id = customer.id;
       var Customer_First_Name = customer.first_name;
       var Customer_Last_Name = customer.last_name;
       // Exstracting billing addres
@@ -1052,7 +1066,9 @@ function createOrder(orderId) {
         totalLineItemsPriceSet_amount,
         totalLineItemsPriceSet_currency_code,
         totalPriceSet_amount,
-        totalPriceSet_currency_code
+        totalPriceSet_currency_code,
+        Customer_id,
+        subscription_varient_id
       );
 
       // res.sendStatus(200);
@@ -1101,195 +1117,317 @@ function createOrder(orderId) {
     totalLineItemsPriceSet_amount,
     totalLineItemsPriceSet_currency_code,
     totalPriceSet_amount,
-    totalPriceSet_currency_code
+    totalPriceSet_currency_code,
+    Customer_id,
+    subscription_varient_id
   ) {
-    // Your logic to create the order goes here
-    const request = require("request-promise");
-    var options = {
-      method: "POST",
-      url: `https://${lastDynamicShopName}/admin/api/2023-07/orders.json`,
-      headers: {
-        "Content-Type": "application/json",
-        "x-shopify-access-token": lastDynamicAccessToken,
+
+var request = require('request');
+var options = {
+  'method': 'POST',
+  'url': 'https://genucel105.myshopify.com/admin/api/2023-10/draft_orders.json',
+  'headers': {
+    'x-shopify-access-token': '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',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    "draft_order": {
+      "line_items": [
+        {
+          "variant_id": subscription_varient_id,
+          "quantity": 1
+        }
+      ],
+      "customer": {
+        "id": Customer_id
       },
-      body: JSON.stringify({
-        order: {
-          line_items: [
-            {
-              title: firstItemTitle,
-              price: firstItemPrice,
-              quantity: firstItemQuantity,
-              sku: firstItemSKU,
-              variant_title: firstVariantTitle,
-              vendor: first_vendor,
-              properties: [
-                {
-                  name: "Subscription interval",
-                  value: firstItemPropertyValue,
-                },
-              ],
-            },
-          ],
-          customer: {
-            email: Customer_Email,
-            first_name: Customer_First_Name,
-            last_name: Customer_Last_Name,
-          },
-          billing_address: {
-            first_name: Billing_First_Name,
-            last_name: Billing_Last_Name,
-            address1: billingAddress_address1,
-            city: billingAddress_city,
-            province: billingAddress_province,
-            country: billingAddress_country,
-            zip: billingAddress_zip,
-          },
-          shipping_address: {
-            first_name: shippingAddress_first_name,
-            last_name: shippingAddress_last_name,
-            address1: shippingAddress_address1,
-            city: shippingAddress_city,
-            province: shippingAddress_province,
-            country: shippingAddress_country,
-            zip: shippingAddress_zip,
-          },
-          email: orderData_email,
-          currency: orderData_currency,
-          financial_status: orderData_financial_status,
-          total_price: orderData_total_price,
-          total_tax: orderData_total_tax,
-          total_discounts: orderData_total_discounts,
-          total_line_items_price: orderData_total_line_items_price,
-          total_shipping_price_set: {
-            shop_money: {
-              amount: totalShippingPrice_amount,
-              currency_code: totalShippingPrice_currency_code,
-            },
-            presentment_money: {
-              amount: totalShippingPrice_amount,
-              currency_code: totalShippingPrice_currency_code,
-            },
-          },
-          total_discounts_set: {
-            shop_money: {
-              amount: totalDiscountsSet_amount,
-              currency_code: totalDiscountsSet_currency_code,
-            },
-            presentment_money: {
-              amount: totalDiscountsSet_amount,
-              currency_code: totalDiscountsSet_currency_code,
-            },
-          },
-          total_line_items_price_set: {
-            shop_money: {
-              amount: totalLineItemsPriceSet_amount,
-              currency_code: totalLineItemsPriceSet_currency_code,
-            },
-            presentment_money: {
-              amount: totalLineItemsPriceSet_amount,
-              currency_code: totalLineItemsPriceSet_currency_code,
-            },
-          },
-          total_price_set: {
-            shop_money: {
-              amount: totalPriceSet_amount,
-              currency_code: totalPriceSet_currency_code,
-            },
-            presentment_money: {
-              amount: totalPriceSet_amount,
-              currency_code: totalPriceSet_currency_code,
-            },
-          },
-          note_attributes: [
-            {
-              name: "Reshipped order",
-              value: `Reshipped interval:${firstItemPropertyValue}`,
-            },
-          ],
+      "shipping_address": {
+        "first_name": shippingAddress_first_name,
+        "address1": shippingAddress_address1,
+        "phone": null,
+        "city": shippingAddress_city,
+        "zip": shippingAddress_zip,
+        "province": shippingAddress_province,
+        "country": shippingAddress_country,
+        "last_name": shippingAddress_last_name,
+        "address2": null,
+        "company": null,
+        "latitude": null,
+        "longitude": null,
+        "name": `${shippingAddress_first_name} ${shippingAddress_last_name}`,
+        "country_code": "US",
+        "province_code": "IL"
+      },
+      note_attributes: [
+        {
+          name: "Reshipped order",
+          value: `Reshipped interval:${firstItemPropertyValue}`,
         },
-      }),
-    };
-    request(options, function (error, response) {
-      if (error) throw new Error(error);
-      // console.log("data", response.body);
-      const responseData = JSON.parse(response.body);
-      const lineItems = responseData.order.line_items;
-      console.log("line items data:", lineItems);
+      ],
+    }
+  })
 
-      if (lineItems && Array.isArray(lineItems)) {
-        lineItems.forEach((lineItem) => {
-          const lineItemProperties = lineItem.properties;
-          lineItemProperties.forEach((property) => {
-            const propertyName = property.name;
-            const propertyValue = property.value;
-            const numberOnly = parseInt(propertyValue.match(/\d+/)[0], 10);
-            var timestamp = responseData.order.created_at;
-            var reship_OrderId = responseData.order.id;
-            const originalDate = timestamp.substring(0, 10);
-            const numberOfDaysToAdd = numberOnly;
-            // Convert the original date string to a Date object
-            const dateObject = new Date(originalDate);
-            dateObject.setDate(dateObject.getDate() + numberOfDaysToAdd);
-            const updatedDate = dateObject.toISOString().slice(0, 10);
-            // const getOrderIDwithCreateOrderDate = {
-            //   'createOrder': updatedDate,
-            //   'OrderId': OrderId
-            // };
-            console.log("updatedDateupdatedDateupdatedDate::", updatedDate);
-            // storeAllOrderDate.push(getOrderIDwithCreateOrderDate);
-            // console.log("storeAllOrderDatestoreAllOrderDate::", storeAllOrderDate);
-            const createOrderDate = updatedDate;
-            // const orderId = OrderId;
-            databaseData.getConnection((err, connection) => {
-              const updateQuery =
-                "UPDATE subscriptionorder SET create_order_date = ?, Next_Shipment_Date = ? WHERE subscription_order_id = ?";
+};
+request(options, function (error, response) {
+  if (error) throw new Error(error);
+ console.log('draft order created....')
+});
 
-              databaseData.query(
-                updateQuery,
-                [originalDate, updatedDate, orderId],
-                (err, result) => {
-                  if (err) {
-                    console.error("Error updating data:", err);
-                    return;
-                  }
+    // Your logic to create the order goes here
+    // const request = require("request-promise");
+    // var options = {
+    //   method: "POST",
+    //   url: `https://${lastDynamicShopName}/admin/api/2023-07/orders.json`,
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //     "x-shopify-access-token": lastDynamicAccessToken,
+    //   },
+    //   body: JSON.stringify({
+    //     order: {
+    //       line_items: [
+    //         {
+    //           title: firstItemTitle,
+    //           price: firstItemPrice,
+    //           quantity: firstItemQuantity,
+    //           sku: firstItemSKU,
+    //           variant_title: firstVariantTitle,
+    //           vendor: first_vendor,
+    //           properties: [
+    //             {
+    //               name: "Subscription interval",
+    //               value: firstItemPropertyValue,
+    //             },
+    //           ],
+    //         },
+    //       ],
+    //       customer: {
+    //         email: Customer_Email,
+    //         first_name: Customer_First_Name,
+    //         last_name: Customer_Last_Name,
+    //       },
+    //       billing_address: {
+    //         first_name: Billing_First_Name,
+    //         last_name: Billing_Last_Name,
+    //         address1: billingAddress_address1,
+    //         city: billingAddress_city,
+    //         province: billingAddress_province,
+    //         country: billingAddress_country,
+    //         zip: billingAddress_zip,
+    //       },
+    //       shipping_address: {
+    //         first_name: shippingAddress_first_name,
+    //         last_name: shippingAddress_last_name,
+    //         address1: shippingAddress_address1,
+    //         city: shippingAddress_city,
+    //         province: shippingAddress_province,
+    //         country: shippingAddress_country,
+    //         zip: shippingAddress_zip,
+    //       },
+    //       email: orderData_email,
+    //       currency: orderData_currency,
+    //       financial_status: orderData_financial_status,
+    //       total_price: orderData_total_price,
+    //       total_tax: orderData_total_tax,
+    //       total_discounts: orderData_total_discounts,
+    //       total_line_items_price: orderData_total_line_items_price,
+    //       total_shipping_price_set: {
+    //         shop_money: {
+    //           amount: totalShippingPrice_amount,
+    //           currency_code: totalShippingPrice_currency_code,
+    //         },
+    //         presentment_money: {
+    //           amount: totalShippingPrice_amount,
+    //           currency_code: totalShippingPrice_currency_code,
+    //         },
+    //       },
+    //       total_discounts_set: {
+    //         shop_money: {
+    //           amount: totalDiscountsSet_amount,
+    //           currency_code: totalDiscountsSet_currency_code,
+    //         },
+    //         presentment_money: {
+    //           amount: totalDiscountsSet_amount,
+    //           currency_code: totalDiscountsSet_currency_code,
+    //         },
+    //       },
+    //       total_line_items_price_set: {
+    //         shop_money: {
+    //           amount: totalLineItemsPriceSet_amount,
+    //           currency_code: totalLineItemsPriceSet_currency_code,
+    //         },
+    //         presentment_money: {
+    //           amount: totalLineItemsPriceSet_amount,
+    //           currency_code: totalLineItemsPriceSet_currency_code,
+    //         },
+    //       },
+    //       total_price_set: {
+    //         shop_money: {
+    //           amount: totalPriceSet_amount,
+    //           currency_code: totalPriceSet_currency_code,
+    //         },
+    //         presentment_money: {
+    //           amount: totalPriceSet_amount,
+    //           currency_code: totalPriceSet_currency_code,
+    //         },
+    //       },
+    //       note_attributes: [
+    //         {
+    //           name: "Reshipped order",
+    //           value: `Reshipped interval:${firstItemPropertyValue}`,
+    //         },
+    //       ],
+    //     },
+    //   }),
+    // };
+    // request(options, function (error, response) {
+    //   if (error) throw new Error(error);
+    //   // console.log("data", response.body);
+    //   const responseData = JSON.parse(response.body);
+    //   const lineItems = responseData.order.line_items;
+    //   console.log("line items data:", lineItems);
 
-                  console.log("Data updated successfully!");
-                  console.log("Affected rows:", result.affectedRows);
-                }
-              );
+    //   if (lineItems && Array.isArray(lineItems)) {
+    //     lineItems.forEach((lineItem) => {
+    //       const lineItemProperties = lineItem.properties;
+    //       lineItemProperties.forEach((property) => {
+    //         const propertyName = property.name;
+    //         const propertyValue = property.value;
+    //         const numberOnly = parseInt(propertyValue.match(/\d+/)[0], 10);
+    //         var timestamp = responseData.order.created_at;
+    //         var reship_OrderId = responseData.order.id;
+    //         const originalDate = timestamp.substring(0, 10);
+    //         const numberOfDaysToAdd = numberOnly;
+    //         // Convert the original date string to a Date object
+    //         const dateObject = new Date(originalDate);
+    //         dateObject.setDate(dateObject.getDate() + numberOfDaysToAdd);
+    //         const updatedDate = dateObject.toISOString().slice(0, 10);
+    //         // const getOrderIDwithCreateOrderDate = {
+    //         //   'createOrder': updatedDate,
+    //         //   'OrderId': OrderId
+    //         // };
+    //         console.log("updatedDateupdatedDateupdatedDate::", updatedDate);
+    //         // storeAllOrderDate.push(getOrderIDwithCreateOrderDate);
+    //         // console.log("storeAllOrderDatestoreAllOrderDate::", storeAllOrderDate);
+    //         const createOrderDate = updatedDate;
+    //         // const orderId = OrderId;
+    //         databaseData.getConnection((err, connection) => {
+    //           const updateQuery =
+    //             "UPDATE subscriptionorder SET create_order_date = ?, Next_Shipment_Date = ? WHERE subscription_order_id = ?";
 
-              const insertQuery =
-                "INSERT INTO reshipped_order (subscription_order_id, reshipped_order_id, reshipped_create_date) VALUES (?, ?, ?)";
-              const subscriptionOrderId = orderId; // Subscription Order ID
-              const reshippedOrderIds = reship_OrderId; // Comma-separated list of reshipped_order_ids
-              const reshippedCreate_Date = createOrderDate;
+    //           databaseData.query(
+    //             updateQuery,
+    //             [originalDate, updatedDate, orderId],
+    //             (err, result) => {
+    //               if (err) {
+    //                 console.error("Error updating data:", err);
+    //                 return;
+    //               }
 
-              databaseData.query(
-                insertQuery,
-                [subscriptionOrderId, reshippedOrderIds, reshippedCreate_Date],
-                (err, result) => {
-                  if (err) {
-                    console.error("Error inserting data:", err);
-                    return;
-                  }
+    //               console.log("Data updated successfully!");
+    //               console.log("Affected rows:", result.affectedRows);
+    //             }
+    //           );
 
-                  console.log("Data inserted successfully!");
-                  console.log("Inserted ID:", result.insertId);
-                }
-              );
-            });
-          });
-        });
-      } else {
-        console.log("lineItems is null or not an array.");
-      }
-    });
+    //           const insertQuery =
+    //             "INSERT INTO reshipped_order (subscription_order_id, reshipped_order_id, reshipped_create_date) VALUES (?, ?, ?)";
+    //           const subscriptionOrderId = orderId; // Subscription Order ID
+    //           const reshippedOrderIds = reship_OrderId; // Comma-separated list of reshipped_order_ids
+    //           const reshippedCreate_Date = createOrderDate;
+
+    //           databaseData.query(
+    //             insertQuery,
+    //             [subscriptionOrderId, reshippedOrderIds, reshippedCreate_Date],
+    //             (err, result) => {
+    //               if (err) {
+    //                 console.error("Error inserting data:", err);
+    //                 return;
+    //               }
+
+    //               console.log("Data inserted successfully!");
+    //               console.log("Inserted ID:", result.insertId);
+    //             }
+    //           );
+    //         });
+    //       });
+    //     });
+    //   } else {
+    //     console.log("lineItems is null or not an array.");
+    //   }
+    // });
 
     // console.log('Recurring Order created:', orderData);
   }
 }
 
 // const Customer_Email="xyz@gmail.com",subscription_order_name = "7686";
+app.post('/webhooks/draftorders/create', (req, res) => {
+  try {
+    // Assuming the id property is at the top level of req.body
+    var draftOrderId = req.body.id;
+    var draftOrderEmail = req.body.email;
+    // Log the draft order ID
+    console.log('Draft Order ID:', draftOrderId,draftOrderEmail);
+  var request = require('request');
+  var options = {
+  'method': 'POST',
+  'url': `https://genucel105.myshopify.com/admin/api/2023-10/draft_orders/${draftOrderId}/send_invoice.json`,
+  'headers': {
+    'x-shopify-access-token': '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',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    "draft_order_invoice": {
+      "to": draftOrderEmail,
+      "from": draftOrderEmail
+    }
+  })
+
+  };
+  request(options, function (error, response) {
+  if (error) throw new Error(error);
+  console.log("invoice sent at your email......");
+  });
+
+    // Send a success response
+    res.status(200).send("Webhook received successfully");
+
+    // Now you can work with draftOrderId as needed
+  } catch (error) {
+    console.error('Error parsing JSON:', error);
+
+    // Handle the error appropriately, e.g., by sending an error response
+    res.status(400).json({ error: 'Invalid JSON' });
+  }
+});
+
+
+// app.post('/webhooks/draftorders/create',(req,res)=>{
+//  var rsponse = JSON.parse(req.body);
+
+//   console.log("draft order webhooks call>>>>>>>>>>>>>>>>>>>>>",Response);
+//   console.log("draft order webhooks call>>>>>>>>>>>>>>>>>>>>>",Response.draft_order.id);
+  // var request = require('request');
+  // var options = {
+  // 'method': 'POST',
+  // 'url': 'https://genucel105.myshopify.com/admin/api/2023-10/draft_orders/1138321850650/send_invoice.json',
+  // 'headers': {
+  //   'x-shopify-access-token': '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',
+  //   'Content-Type': 'application/json'
+  // },
+  // body: JSON.stringify({
+  //   "draft_order_invoice": {
+  //     "to": Customer_Email,
+  //     "from": Customer_Email
+  //   }
+  // })
+
+  // };
+  // request(options, function (error, response) {
+  // if (error) throw new Error(error);
+  // console.log(response.body);
+  // });
+// })
+
 app.get("/subscription/order", (req, res) => {
   databaseData.getConnection((err, connection) => {
     const query = 'SELECT * FROM subscriptionorder where Status = "Active"';
@@ -1642,19 +1780,6 @@ app.post("/resendSubscriptionEmail/order/:orderId", (req, res) => {
   });
 });
 
-// app.post('', (req, res) => {
-//   console.log("working fine...........customer data requedt......")
-//   const hmacHeader = req.get('X-Shopify-Hmac-Sha256');
-//   const webhookPayload = JSON.stringify(req.body);
-
-//   const verified = verifyWebhook(webhookPayload, hmacHeader);
-
-//   if (verified) {
-//     console.log("sajdbsbnsgyhbh");
-//   } else {
-//     res.status(401).send('Unauthorized');
-//   }
-// });
 app.post("/webhooks/customers/data_request", (req, res) => {
   const hmacHeader = req.get("X-Shopify-Hmac-Sha256");
   const webhookPayload = JSON.stringify(req.body);
@@ -1880,7 +2005,7 @@ function scheduleDailySynOrder() {
 
   console.log("time:-", targetTime);
 
-  targetTime.setHours(13, 57, 0, 0);
+  targetTime.setHours(11, 35, 0, 0);
   if (now > targetTime) {
     targetTime.setDate(targetTime.getDate() + 1);
   }
@@ -2099,7 +2224,7 @@ app.post("/userauth", (req, res) => {
     }
 
     const query =
-      "SELECT * FROM userAuth WHERE user_name = ? AND user_pass = ?";
+      "SELECT * FROM userauth WHERE user_name = ? AND user_pass = ?";
 
     connection.query(query, [username, password], (error, results) => {
       connection.release(); // Release the connection back to the pool

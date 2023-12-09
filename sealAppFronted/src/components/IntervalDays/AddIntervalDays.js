@@ -25,7 +25,7 @@ function TagsInput() {
     setCurrentURL(window.location.hostname);
     localStorage.setItem("tempStoreName", window.location.hostname);
 
-    fetch("https://autoshipunimed.com/getadd/addIntervalDays")
+    fetch("https://8ba3-183-82-162-30.ngrok-free.app/getadd/addIntervalDays")
       .then((response) => response.json())
       .then((data) => {
         setData(data.subscription_interval_days);
@@ -46,7 +46,7 @@ function TagsInput() {
   const removeTag = (tag, index) => {
     console.log(tag, index);
     axios
-      .post("https://autoshipunimed.com/remove/addIntervaldays", {
+      .post("https://8ba3-183-82-162-30.ngrok-free.app/remove/addIntervaldays", {
         tag: tag,
         url: currentURL,
       })
@@ -90,7 +90,7 @@ function TagsInput() {
     }
 
     axios
-      .post("https://autoshipunimed.com/add/addIntervalDays", {
+      .post("https://8ba3-183-82-162-30.ngrok-free.app/add/addIntervalDays", {
         tag: inputValue,
         url: currentURL,
       })
