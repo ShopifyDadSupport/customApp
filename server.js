@@ -67,11 +67,17 @@ var shopify_client_id = [];
 
  var getEmbedUrl = [];  
 
-if(DynamicAccessToken[DynamicAccessToken.length - 1]){
-    app.get('/*',(req,res)=>{
-       res.redirect('/');
-    })
-}
+ app.get('/*', (req, res) => {
+  // Check if the request is already for the root URL
+  if (req.url !== '/') {
+    // Redirect to the root URL
+    res.redirect('/');
+  } else {
+    // Continue processing for the root URL
+    // (optional: you can add additional logic here if needed)
+    res.send('Welcome to the root URL!');
+  }
+});
 
 app.get("/shopify", (req, res) => {
   // Shop Name
