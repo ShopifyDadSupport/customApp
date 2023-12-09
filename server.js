@@ -67,11 +67,11 @@ var shopify_client_id = [];
 
  var getEmbedUrl = [];  
 
-// if(DynamicAccessToken[DynamicAccessToken.length - 1]){
-//     app.get('/*',(req,res)=>{
-//        res.redirect('/');
-//     })
-// }
+if(DynamicAccessToken[DynamicAccessToken.length - 1]){
+    app.get('/*',(req,res)=>{
+       res.redirect('/');
+    })
+}
 
 app.get("/shopify", (req, res) => {
   // Shop Name
