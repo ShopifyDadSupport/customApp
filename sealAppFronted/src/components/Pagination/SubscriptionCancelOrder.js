@@ -22,7 +22,7 @@ export default function PaginationApp() {
   const [isLoading, setIsLoading] = useState(true);
   useEffect(() => {
     // Fetch data from the API
-    fetch('https://8ba3-183-82-162-30.ngrok-free.app/subscription/cancelledorder')
+    fetch('https://auto-ship-app.onrender.com/subscription/cancelledorder')
       .then(response => response.json())
       .then(data => {
         setData(data);
@@ -41,7 +41,7 @@ export default function PaginationApp() {
 
   //   const handleCancel = (orderId) => {
   //     // Send a DELETE request to your backend API using Axios
-  //     axios.post(`https://8ba3-183-82-162-30.ngrok-free.app/subscription/order/${orderId}`)
+  //     axios.post(`https://auto-ship-app.onrender.com/subscription/order/${orderId}`)
   //       .then(response => {
   //         // Remove the item from the data in state
   //         const updatedData = data.filter(item => item.subscription_order_id !== orderId);

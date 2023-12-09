@@ -25,7 +25,7 @@ export default function PaginationApp() {
   
   useEffect(() => {
     // Fetch data from the API
-    fetch("https://8ba3-183-82-162-30.ngrok-free.app/subscription/order")
+    fetch("https://auto-ship-app.onrender.com/subscription/order")
       .then((response) => response.json())
       .then((data) => {
         setData(data);
@@ -86,7 +86,7 @@ export default function PaginationApp() {
 
     // Send a DELETE request to your backend API using Axios
     axios
-      .post(`https://8ba3-183-82-162-30.ngrok-free.app/subscription/order/${subscriptionPortalToken}`, {
+      .post(`https://auto-ship-app.onrender.com/subscription/order/${subscriptionPortalToken}`, {
         cancellationDateTime: date_with_time,
       })
       .then((response) => {

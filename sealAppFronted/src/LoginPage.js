@@ -9,7 +9,7 @@ function LoginPage({ setLoggedIn }) {
   const navigate = useNavigate();
   const handleLogin = () => {
     axios
-      .post("https://8ba3-183-82-162-30.ngrok-free.app/userauth", {
+      .post("https://auto-ship-app.onrender.com/userauth", {
         username: username,
         password: password
       })

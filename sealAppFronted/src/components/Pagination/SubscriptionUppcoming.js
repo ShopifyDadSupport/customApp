@@ -13,7 +13,7 @@ export default function SubscriptionUpcoming() {
   const [isLoading, setIsLoading] = useState(true); // New state for loading indicator
 
   useEffect(() => {
-    fetch('https://8ba3-183-82-162-30.ngrok-free.app/subscription/order')
+    fetch('https://auto-ship-app.onrender.com/subscription/order')
       .then(response => response.json())
       .then(data => {
         setData(data);

@@ -19,7 +19,7 @@ const MainDash = () => {
     
     localStorage.setItem('subscriptionToggleState', newValue);
 
-    axios.post('https://8ba3-183-82-162-30.ngrok-free.app/scriptrender/toggle', { isChecked: newValue })
+    axios.post('https://auto-ship-app.onrender.com/scriptrender/toggle', { isChecked: newValue })
       .then((response) => {
         console.log('Data sent successfully:', response.data);
       })

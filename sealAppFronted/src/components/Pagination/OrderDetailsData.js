@@ -9,7 +9,7 @@ const OrderDetailsData = () => {
   var dynamicSubscriptionOrderUrl ,SubscriptionOrderId ,subscriptionPortalToken ,subscription_order_id ,Subscription_email_id ;
   useEffect(() => {
     // Fetch data from the API
-    fetch("https://8ba3-183-82-162-30.ngrok-free.app/order")
+    fetch("https://auto-ship-app.onrender.com/order")
       .then((response) => response.json())
       .then((data) => {
         setOrderData(data); // Set the fetched data to state
@@ -32,7 +32,7 @@ const OrderDetailsData = () => {
   function resendSubscription(){
     console.log("resendSubscription is working..............")
     axios
-    .post(`https://8ba3-183-82-162-30.ngrok-free.app/resendSubscriptionEmail/order/${subscriptionPortalToken}`, {
+    .post(`https://auto-ship-app.onrender.com/resendSubscriptionEmail/order/${subscriptionPortalToken}`, {
       subscriptionPortalToken: subscriptionPortalToken,
       subscription_email_id:Subscription_email_id,
     })

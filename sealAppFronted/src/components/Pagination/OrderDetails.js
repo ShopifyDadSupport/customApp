@@ -35,7 +35,7 @@ if (data && data.length > 0 && data[0].subscription_interval_days) {
     console.log("order id:",subscriptionPortalToken);
     console.log(orderData.id)
     axios
-    .post(`https://8ba3-183-82-162-30.ngrok-free.app/subscriptionPortal/order/${subscriptionPortalToken}`, {
+    .post(`https://auto-ship-app.onrender.com/subscriptionPortal/order/${subscriptionPortalToken}`, {
       subscriptionPortalToken: subscriptionPortalToken,
     })
     .then((response) => {
@@ -52,7 +52,7 @@ if (data && data.length > 0 && data[0].subscription_interval_days) {
   // console.log("itemnjhskjdjsdhushbdjkashdaghdbhasmgda..........",item.portalToken);
   const handleRefreshClick = async () => {
     try {
-      const response = await axios.get('https://8ba3-183-82-162-30.ngrok-free.app/subscriptionPortal/orderdetails');
+      const response = await axios.get('https://auto-ship-app.onrender.com/subscriptionPortal/orderdetails');
   
       // console.log(response.data[0].subscription_interval_days);
       // updateData.push(response.data[0].subscription_interval_days);
@@ -80,7 +80,7 @@ if (data && data.length > 0 && data[0].subscription_interval_days) {
   function resendSubscription(){
     console.log("resendSubscription is working..............")
     axios
-    .post(`https://8ba3-183-82-162-30.ngrok-free.app/resendSubscriptionEmail/order/${subscriptionPortalToken}`, {
+    .post(`https://auto-ship-app.onrender.com/resendSubscriptionEmail/order/${subscriptionPortalToken}`, {
       subscriptionPortalToken: subscriptionPortalToken,
       subscription_email_id:Subscription_email_id,
     })
