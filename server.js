@@ -337,14 +337,14 @@ const webhookData = [
   {
       "webhook": {
           "topic": "orders/create",
-          "address": "https://3368-183-82-160-163.ngrok-free.app/webhooks/orders/create",
+          "address": "https://auto-ship-app.onrender.com/webhooks/orders/create",
           "format": "json"
       }
   },
   {
       "webhook": {
           "topic": "app/uninstalled",
-          "address": "https://3368-183-82-160-163.ngrok-free.app/webhooks/app/uninstalled",
+          "address": "https://auto-ship-app.onrender.com/webhooks/app/uninstalled",
           "format": "json"
       }
   },
