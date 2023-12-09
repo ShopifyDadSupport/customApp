@@ -14,6 +14,7 @@ const Main = () => {
   );
 
   useEffect(() => {
+    console.log("current url get>>",window.location.href);
     if (loggedIn) {
       localStorage.setItem("isLoggedIn", "true");
     } else {
