@@ -291,7 +291,7 @@ function pageScriptTag(access_token_value, shop_domain) {
     try {
       var existingScriptTags = JSON.parse(response.body).script_tags;
       var desiredSrc =
-        "https://shopify.unimedcrm.com/ChamonixShopifyAuthontication/pageScripttag.js";
+        "https://03cb-183-82-162-30.ngrok-free.app/customapp/pageScripttag.js";
 
       if (!checkScriptTagExistence(existingScriptTags, desiredSrc)) {
         var optionsPost = {
@@ -410,7 +410,7 @@ app.post("/scriptrender/toggle", async (req, res) => {
     const shopifyStoreUrl = `https://${lastDynamicShopName}`;
     const apiVersion = "2023-01";
     const src =
-      "https://shopify.unimedcrm.com/ChamonixShopifyAuthontication/sealAppScripttag.js";
+      "https://03cb-183-82-162-30.ngrok-free.app/customapp/sealAppScripttag.js";
     const event = "onload";
     const displayScope = "all";
 
@@ -504,7 +504,7 @@ app.post("/scriptrender/toggle", async (req, res) => {
     //   const shopifyAccessToken = "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";
     //   // const shopifyStoreUrl = 'https://genucel105.myshopify.com';
     //   const apiVersion = "2023-01";
-    //   const src = "https://shopify.unimedcrm.com/ChamonixShopifyAuthontication/sealAppScripttag.js";
+    //   const src = "https://03cb-183-82-162-30.ngrok-free.app/customapp/sealAppScripttag.js";
     //   const event = "onload";
     //   const displayScope = "all";
     //   const options = {
