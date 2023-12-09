@@ -54,7 +54,7 @@ const apisecret = SHOPIFY_API_SECRET;
 const scopes =
   "read_orders,read_content,write_content,write_orders,read_draft_orders,write_draft_orders,read_script_tags,write_script_tags,read_products,write_products,read_customers,write_customers,read_shipping,write_shipping ,read_themes,write_themes,read_checkouts,write_checkouts";
 
-const forwardingaddress = "https://8ba3-183-82-162-30.ngrok-free.app";
+const forwardingaddress = "https://auto-ship-app.onrender.com";
 
 app.use(bodyParser.json({ limit: "10mb" }));
 app.use(bodyParser.urlencoded({ limit: "10mb", extended: true }));
